@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroSection from "../components/public/HeroSection.astro";
+import CategoryStrip from "../components/public/CategoryStrip.astro";
+import ProductGrid from "../components/public/ProductGrid.astro";
+import MarketingBand from "../components/public/MarketingBand.astro";
+import { buildPublicAssetUrl, getActiveCategories, getBrandingAssets, getPublishedProducts } from "../lib/api";
+
+const [categories, products, branding] = await Promise.all([
+  getActiveCategories(),
+  getPublishedProducts(),
+  getBrandingAssets()
+]);
+---
+<BaseLayout title="Pastelería | Inicio" lang="es">
+  <HeroSection
+    title="Tortas y postres hechos para celebrar, compartir y sorprender"
+    description="Descubre una carta pensada para cumpleaños, reuniones, mesas dulces y detalles personalizados con sabor artesanal."
+    backgroundImageUrl={buildPublicAssetUrl(branding.bannerPath)}
+    backgroundImageAlt="Fondo artesanal de la pastelería"
+  />
+  <CategoryStrip
+    categories={categories}
+    backgroundImageUrl={buildPublicAssetUrl(branding.categoryBannerPath)}
+    backgroundImageAlt="Fondo de familias del catálogo"
+  />
+  <ProductGrid title="Favoritos del momento" products={products.slice(0, 4)} />
+  <MarketingBand />
+</BaseLayout>

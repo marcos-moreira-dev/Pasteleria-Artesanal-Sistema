@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import HeroSection from "../../components/public/HeroSection.astro";
+import CategoryStrip from "../../components/public/CategoryStrip.astro";
+import ProductGrid from "../../components/public/ProductGrid.astro";
+import MarketingBand from "../../components/public/MarketingBand.astro";
+import { buildPublicAssetUrl, getActiveCategories, getBrandingAssets, getPublishedProducts } from "../../lib/api";
+
+const [categories, products, branding] = await Promise.all([
+  getActiveCategories(),
+  getPublishedProducts(),
+  getBrandingAssets()
+]);
+---
+<BaseLayout title="Bakery | Home" lang="en">
+  <HeroSection
+    eyebrow="Artisan bakery"
+    title="Cakes and desserts made to celebrate, share and delight"
+    description="Explore a menu designed for birthdays, gatherings, dessert tables and custom-made sweet details."
+    primaryCta="View catalog"
+    primaryHref="/en/catalog"
+    secondaryCta="Request a quote"
+    secondaryHref="/en/contact"
+    backgroundImageUrl={buildPublicAssetUrl(branding.bannerPath)}
+    backgroundImageAlt="Artisan bakery background"
+  />
+  <CategoryStrip
+    categories={categories}
+    kicker="Collections"
+    title="Flavors and formats for different moments"
+    fallbackDescription="Active category inside the bakery menu."
+    emptyCopy="The catalog groups will appear here as soon as the local backend is available."
+    backgroundImageUrl={buildPublicAssetUrl(branding.categoryBannerPath)}
+    backgroundImageAlt="Collections background"
+  />
+  <ProductGrid
+    title="Season favorites"
+    products={products.slice(0, 4)}
+    kicker="Catalog"
+    fallbackDescription="Artisan product available for order and celebration planning."
+    availableLabel="Available"
+    quoteLabel="Quote"
+    emptyTitle="The catalog cannot be loaded yet"
+    emptyCopy="This section depends on the local backend. When the service is running, the featured products will be listed here."
+  />
+  <MarketingBand
+    kicker="Made to order"
+    title="Cakes, desserts and sweet details shaped around each event."
+    description="If you already have an idea in mind, we can turn it into a proposal with flavors, size, decoration and presentation tailored to your occasion."
+    cta="Plan your order"
+    href="/en/contact"
+  />
+</BaseLayout>

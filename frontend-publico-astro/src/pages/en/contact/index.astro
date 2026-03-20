@@ -1,0 +1,161 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { buildPublicApiUrl } from "../../../lib/api";
+
+const publicQuotationUrl = buildPublicApiUrl("/public/cotizaciones");
+---
+<BaseLayout title="Bakery | Contact" lang="en">
+  <main class="page-shell">
+    <section class="contact-shell">
+      <div>
+        <p class="section-kicker">Sales contact</p>
+        <h1 class="contact-hero-title">Tell us what kind of celebration you have in mind</h1>
+        <p>If you need a custom cake, a dessert table or a special event order, this is the right place to start the conversation.</p>
+
+        <div class="contact-promises">
+          <span><img src="/assets/icons/quote.svg" alt="Commercial proposal icon" width="22" height="22" /> Clear proposal based on servings, style and budget</span>
+          <span><img src="/assets/icons/whisk.svg" alt="Production icon" width="22" height="22" /> Artisan production coordinated around each order</span>
+          <span><img src="/assets/icons/delivery.svg" alt="Delivery icon" width="22" height="22" /> Organized delivery with schedule and notes</span>
+        </div>
+      </div>
+
+      <div class="contact-channel-grid">
+        <article class="contact-channel-card">
+          <img src="/assets/icons/quote.svg" alt="Commercial channel icon" width="28" height="28" />
+          <h2>Current channels</h2>
+          <ul>
+            <li>Sales WhatsApp: +593 99 000 0000</li>
+            <li>Email: pedidos@pasteleria.local</li>
+            <li>Business hours: Monday to Saturday, 09:00 to 18:00</li>
+          </ul>
+        </article>
+
+        <article class="contact-channel-card">
+          <img src="/assets/icons/gift.svg" alt="Celebrations icon" width="28" height="28" />
+          <h2>Ideal for</h2>
+          <ul>
+            <li>Birthdays, anniversaries and baby showers</li>
+            <li>Dessert tables for gatherings and events</li>
+            <li>Special orders with references or a custom theme</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact-form-shell">
+      <div class="section-heading">
+        <p class="section-kicker">Quote request</p>
+        <h2>Share the main details and we will answer with a proposal</h2>
+        <p>Fill out this form with the general idea of your order. We can later refine size, flavors, decoration, delivery and budget.</p>
+      </div>
+
+      <form class="quotation-form" id="quotation-form">
+        <div class="form-grid">
+          <label>
+            Full name
+            <input type="text" name="fullName" required maxlength="160" placeholder="Ex. Maria Lopez" />
+          </label>
+          <label>
+            Phone
+            <input type="text" name="phone" maxlength="30" placeholder="Ex. 0990000000" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" maxlength="120" placeholder="Ex. maria@email.com" />
+          </label>
+          <label>
+            Celebration type
+            <input type="text" name="celebrationType" required maxlength="1000" placeholder="Birthday, baby shower, anniversary..." />
+          </label>
+          <label class="wide">
+            What would you like us to quote?
+            <textarea name="requestedProduct" rows="4" required maxlength="1000" placeholder="Tell us if you need a cake, desserts, a dessert table or something more special."></textarea>
+          </label>
+          <label>
+            Estimated servings
+            <input type="number" name="estimatedServings" min="1" required value="20" />
+          </label>
+          <label>
+            Estimated budget
+            <input type="number" name="estimatedBudget" min="0" step="0.01" required value="35.00" />
+          </label>
+          <label class="wide">
+            Additional details
+            <textarea name="notes" rows="4" maxlength="1000" placeholder="Flavors, colors, target date, visual references or any other useful detail."></textarea>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button-primary">Send request</button>
+          <p class="form-copy">We will contact you to refine the order and confirm availability.</p>
+        </div>
+
+        <p id="quotation-feedback" class="contact-note" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script is:inline define:vars={{ publicQuotationUrl }}>
+    const form = document.getElementById("quotation-form");
+    const feedback = document.getElementById("quotation-feedback");
+
+    if (form && feedback) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Sending request...";
+        }
+
+        feedback.textContent = "";
+
+        const formData = new FormData(form);
+        const payload = {
+          fullName: String(formData.get("fullName") ?? ""),
+          phone: String(formData.get("phone") ?? "") || null,
+          email: String(formData.get("email") ?? "") || null,
+          celebrationType: String(formData.get("celebrationType") ?? ""),
+          requestedProduct: String(formData.get("requestedProduct") ?? ""),
+          estimatedServings: Number(formData.get("estimatedServings") ?? 1),
+          estimatedBudget: Number(formData.get("estimatedBudget") ?? 0),
+          notes: String(formData.get("notes") ?? "") || null
+        };
+
+        try {
+          const response = await fetch(publicQuotationUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Request-Id": crypto.randomUUID()
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message ?? "We could not receive your request right now.");
+          }
+
+          feedback.textContent = "We received your request. We will contact you soon to continue with the quote.";
+          feedback.classList.add("contact-note--success");
+          feedback.classList.remove("contact-note--error");
+          form.reset();
+        } catch (error) {
+          feedback.textContent = error instanceof Error
+            ? error.message
+            : "We could not receive your request. Please try again or contact us on WhatsApp.";
+          feedback.classList.add("contact-note--error");
+          feedback.classList.remove("contact-note--success");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Send request";
+          }
+        }
+      });
+    }
+  </script>
+</BaseLayout>

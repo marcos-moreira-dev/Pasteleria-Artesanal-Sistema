@@ -1,0 +1,200 @@
+---
+import "../styles/global.css";
+import { buildPublicAssetUrl, getBrandingAssets } from "../lib/api";
+
+interface Props {
+  title?: string;
+  lang?: "es" | "en";
+  navLabels?: {
+    home: string;
+    catalog: string;
+    contact: string;
+  };
+  footerCopy?: string;
+  brandKicker?: string;
+  brandHeadline?: string;
+}
+
+const pathname = Astro.url.pathname;
+const currentYear = new Date().getFullYear();
+const branding = await getBrandingAssets();
+
+const {
+  title = "Pastelería",
+  lang = "es",
+  navLabels = {
+    home: lang === "en" ? "Home" : "Inicio",
+    catalog: lang === "en" ? "Catalog" : "Catálogo",
+    contact: lang === "en" ? "Contact" : "Contacto"
+  },
+  footerCopy = lang === "en"
+    ? "Artisan bakery for birthdays, gatherings, corporate details and made-to-order celebrations."
+    : "Pastelería artesanal para cumpleaños, reuniones, detalles corporativos y celebraciones hechas a medida.",
+  brandKicker = lang === "en" ? "Artisan bakery" : "Pastelería artesanal",
+  brandHeadline = lang === "en"
+    ? "Flavors that arrive ready to celebrate"
+    : "Sabores que llegan listos para celebrarse"
+} = Astro.props;
+
+const localeSwitch = (() => {
+  if (lang === "en") {
+    const spanishPath = pathname
+      .replace(/^\/en\/catalog\/?$/, "/catalogo")
+      .replace(/^\/en\/contact\/?$/, "/contacto")
+      .replace(/^\/en\/?$/, "/");
+
+    return {
+      href: spanishPath,
+      label: "Español"
+    };
+  }
+
+  const englishPath = pathname
+    .replace(/^\/catalogo\/?$/, "/en/catalog")
+    .replace(/^\/contacto\/?$/, "/en/contact")
+    .replace(/^\/$/, "/en");
+
+  return {
+    href: englishPath,
+    label: "English"
+  };
+})();
+
+const navItems = [
+  {
+    href: lang === "en" ? "/en" : "/",
+    label: navLabels.home,
+    active: lang === "en" ? /^\/en\/?$/.test(pathname) : /^\/$/.test(pathname)
+  },
+  {
+    href: lang === "en" ? "/en/catalog" : "/catalogo",
+    label: navLabels.catalog,
+    active: lang === "en" ? /^\/en\/catalog\/?$/.test(pathname) : /^\/catalogo\/?$/.test(pathname)
+  },
+  {
+    href: lang === "en" ? "/en/contact" : "/contacto",
+    label: navLabels.contact,
+    active: lang === "en" ? /^\/en\/contact\/?$/.test(pathname) : /^\/contacto\/?$/.test(pathname)
+  }
+];
+
+const footerLabels = lang === "en"
+  ? {
+      quickLinks: "Quick links",
+      service: "Service rhythm",
+      serviceCopy: "Made-to-order coordination for celebrations, dessert tables and custom cakes.",
+      contactTitle: "Current channels",
+      catalogCta: "View catalog",
+      quoteCta: "Request a quote",
+      schedule: "Mon to Sat · 09:00 to 18:00",
+      whatsapp: "Business WhatsApp",
+      email: "Orders email",
+      legal: "Artisan baking, custom coordination and timely delivery.",
+      madeWithCare: "Made with care",
+      artisanProduction: "Artisan production",
+      coordinatedDelivery: "Coordinated delivery"
+    }
+  : {
+      quickLinks: "Enlaces rápidos",
+      service: "Ritmo de atención",
+      serviceCopy: "Coordinación por pedido para celebraciones, mesas dulces y tortas personalizadas.",
+      contactTitle: "Canales actuales",
+      catalogCta: "Ver catálogo",
+      quoteCta: "Solicitar cotización",
+      schedule: "Lun a sáb · 09:00 a 18:00",
+      whatsapp: "WhatsApp comercial",
+      email: "Correo de pedidos",
+      legal: "Pastelería artesanal, coordinación personalizada y entregas a tiempo.",
+      madeWithCare: "Hecho con detalle",
+      artisanProduction: "Producción artesanal",
+      coordinatedDelivery: "Entrega coordinada"
+    };
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href={buildPublicAssetUrl(branding.logoSquarePath)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="site-brand" href={lang === "en" ? "/en" : "/"}>
+        <img
+          class="site-brand__logo"
+          src={buildPublicAssetUrl(branding.logoSquarePath)}
+          alt={lang === "en" ? "Bakery logo" : "Logo de la pastelería"}
+          width="52"
+          height="52"
+        />
+        <span class="site-brand__kicker">{brandKicker}</span>
+        <strong>{brandHeadline}</strong>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={{ "is-active": item.active }}
+              aria-current={item.active ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+        <a class="locale-switch" href={localeSwitch.href} hreflang={lang === "en" ? "es" : "en"}>
+          {localeSwitch.label}
+        </a>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <section class="site-footer__grid">
+        <article class="site-footer__brand">
+          <div class="site-footer__title">
+            <img src={buildPublicAssetUrl(branding.logoSquarePath)} alt={lang === "en" ? "Bakery logo" : "Logo de la pastelería"} width="60" height="60" />
+            <div>
+              <p class="site-footer__kicker">{brandKicker}</p>
+              <strong>{brandHeadline}</strong>
+            </div>
+          </div>
+          <p>{footerCopy}</p>
+          <div class="site-footer__chips">
+            <span><img src="/assets/icons/heart.svg" alt="" width="18" height="18" aria-hidden="true" /> {footerLabels.madeWithCare}</span>
+            <span><img src="/assets/icons/whisk.svg" alt="" width="18" height="18" aria-hidden="true" /> {footerLabels.artisanProduction}</span>
+            <span><img src="/assets/icons/delivery.svg" alt="" width="18" height="18" aria-hidden="true" /> {footerLabels.coordinatedDelivery}</span>
+          </div>
+        </article>
+
+        <article class="site-footer__column">
+          <p class="site-footer__heading">{footerLabels.quickLinks}</p>
+          <nav class="site-footer__nav">
+            <a href={lang === "en" ? "/en" : "/"}>{navLabels.home}</a>
+            <a href={lang === "en" ? "/en/catalog" : "/catalogo"}>{footerLabels.catalogCta}</a>
+            <a href={lang === "en" ? "/en/contact" : "/contacto"}>{footerLabels.quoteCta}</a>
+          </nav>
+        </article>
+
+        <article class="site-footer__column">
+          <p class="site-footer__heading">{footerLabels.service}</p>
+          <p>{footerLabels.serviceCopy}</p>
+          <p class="site-footer__meta">{footerLabels.schedule}</p>
+        </article>
+
+        <article class="site-footer__column">
+          <p class="site-footer__heading">{footerLabels.contactTitle}</p>
+          <ul class="site-footer__contact">
+            <li><img src="/assets/icons/quote.svg" alt="" width="18" height="18" aria-hidden="true" /> {footerLabels.whatsapp}: +593 99 000 0000</li>
+            <li><img src="/assets/icons/catalog.svg" alt="" width="18" height="18" aria-hidden="true" /> {footerLabels.email}: pedidos@pasteleria.local</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="site-footer__bottom">
+        <p>{footerLabels.legal}</p>
+        <p>© {currentYear} Pastelería.</p>
+      </section>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,167 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { buildPublicApiUrl } from "../../lib/api";
+
+const publicQuotationUrl = buildPublicApiUrl("/public/cotizaciones");
+---
+<BaseLayout title="Pastelería | Contacto">
+  <main class="page-shell">
+    <section class="contact-shell">
+      <div>
+        <p class="section-kicker">Contacto comercial</p>
+        <h1 class="contact-hero-title">Cuéntanos qué celebración tienes en mente</h1>
+        <p>
+          Si necesitas una torta especial, una mesa dulce o un pedido para evento,
+          aquí empieza la conversación para afinar sabores, cantidades y acabados.
+        </p>
+
+        <div class="contact-promises">
+          <span><img src="/assets/icons/quote.svg" alt="Icono de propuesta comercial" width="22" height="22" /> Propuesta clara según porciones, estilo y presupuesto</span>
+          <span><img src="/assets/icons/whisk.svg" alt="Icono de producción" width="22" height="22" /> Producción artesanal coordinada por pedido</span>
+          <span><img src="/assets/icons/delivery.svg" alt="Icono de entrega" width="22" height="22" /> Entrega organizada con horario y observaciones</span>
+        </div>
+      </div>
+
+      <div class="contact-channel-grid">
+        <article class="contact-channel-card">
+          <img src="/assets/icons/quote.svg" alt="Icono de canal comercial" width="28" height="28" />
+          <h2>Canales actuales</h2>
+          <ul>
+            <li>WhatsApp comercial: +593 99 000 0000</li>
+            <li>Correo: pedidos@pasteleria.local</li>
+            <li>Horario de atención: lunes a sábado, 09:00 a 18:00</li>
+          </ul>
+        </article>
+
+        <article class="contact-channel-card">
+          <img src="/assets/icons/gift.svg" alt="Icono de celebraciones" width="28" height="28" />
+          <h2>Ideal para</h2>
+          <ul>
+            <li>Cumpleaños, aniversarios y baby showers</li>
+            <li>Mesas dulces para reuniones y eventos</li>
+            <li>Pedidos especiales con referencias o temática</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact-form-shell">
+      <div class="section-heading">
+        <p class="section-kicker">Solicitud de cotización</p>
+        <h2>Déjanos los detalles y te respondemos con una propuesta</h2>
+        <p>
+          Completa este formulario con la idea general del pedido. Después afinamos
+          tamaño, decoración, sabores, entrega y presupuesto.
+        </p>
+      </div>
+
+      <form class="quotation-form" id="quotation-form">
+        <div class="form-grid">
+          <label>
+            Nombre completo
+            <input type="text" name="fullName" required maxlength="160" placeholder="Ej. María López" />
+          </label>
+          <label>
+            Teléfono
+            <input type="text" name="phone" maxlength="30" placeholder="Ej. 0990000000" />
+          </label>
+          <label>
+            Correo electrónico
+            <input type="email" name="email" maxlength="120" placeholder="Ej. maria@email.com" />
+          </label>
+          <label>
+            Tipo de celebración
+            <input type="text" name="celebrationType" required maxlength="1000" placeholder="Cumpleaños, baby shower, aniversario..." />
+          </label>
+          <label class="wide">
+            ¿Qué deseas cotizar?
+            <textarea name="requestedProduct" rows="4" required maxlength="1000" placeholder="Cuéntanos si buscas una torta, postres, mesa dulce o algo especial."></textarea>
+          </label>
+          <label>
+            Porciones estimadas
+            <input type="number" name="estimatedServings" min="1" required value="20" />
+          </label>
+          <label>
+            Presupuesto estimado
+            <input type="number" name="estimatedBudget" min="0" step="0.01" required value="35.00" />
+          </label>
+          <label class="wide">
+            Detalles adicionales
+            <textarea name="notes" rows="4" maxlength="1000" placeholder="Sabores, colores, fecha tentativa, referencias visuales u observaciones importantes."></textarea>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button-primary">Enviar solicitud</button>
+          <p class="form-copy">Te contactaremos para afinar el pedido y confirmar disponibilidad.</p>
+        </div>
+
+        <p id="quotation-feedback" class="contact-note" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script is:inline define:vars={{ publicQuotationUrl }}>
+    const form = document.getElementById("quotation-form");
+    const feedback = document.getElementById("quotation-feedback");
+
+    if (form && feedback) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Enviando solicitud...";
+        }
+
+        feedback.textContent = "";
+
+        const formData = new FormData(form);
+        const payload = {
+          fullName: String(formData.get("fullName") ?? ""),
+          phone: String(formData.get("phone") ?? "") || null,
+          email: String(formData.get("email") ?? "") || null,
+          celebrationType: String(formData.get("celebrationType") ?? ""),
+          requestedProduct: String(formData.get("requestedProduct") ?? ""),
+          estimatedServings: Number(formData.get("estimatedServings") ?? 1),
+          estimatedBudget: Number(formData.get("estimatedBudget") ?? 0),
+          notes: String(formData.get("notes") ?? "") || null
+        };
+
+        try {
+          const response = await fetch(publicQuotationUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Request-Id": crypto.randomUUID()
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message ?? "No pudimos recibir tu solicitud en este momento.");
+          }
+
+          feedback.textContent = "Recibimos tu solicitud. Muy pronto te contactaremos para continuar con la cotización.";
+          feedback.classList.add("contact-note--success");
+          feedback.classList.remove("contact-note--error");
+          form.reset();
+        } catch (error) {
+          feedback.textContent = error instanceof Error
+            ? error.message
+            : "No pudimos recibir tu solicitud. Inténtalo de nuevo o escríbenos por WhatsApp.";
+          feedback.classList.add("contact-note--error");
+          feedback.classList.remove("contact-note--success");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Enviar solicitud";
+          }
+        }
+      });
+    }
+  </script>
+</BaseLayout>

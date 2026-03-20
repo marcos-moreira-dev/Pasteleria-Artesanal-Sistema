@@ -1,0 +1,68 @@
+---
+import { buildPublicAssetUrl, type ProductSummary } from "../../lib/api";
+
+interface Props {
+  title: string;
+  products: ProductSummary[];
+  kicker?: string;
+  fallbackDescription?: string;
+  availableLabel?: string;
+  quoteLabel?: string;
+  variant?: "default" | "catalog";
+  emptyTitle?: string;
+  emptyCopy?: string;
+}
+
+const {
+  title,
+  products,
+  kicker = "Catálogo",
+  fallbackDescription = "Producto artesanal disponible para pedido y coordinación.",
+  availableLabel = "Disponible",
+  quoteLabel = "Cotización",
+  variant = "default",
+  emptyTitle = "Catálogo no disponible por ahora",
+  emptyCopy = "Todavía no pudimos cargar los productos publicados. Vuelve a intentarlo cuando el sistema local esté arriba."
+} = Astro.props;
+---
+<section class="section-shell">
+  <div class:list={["section-heading", { "section-heading--compact": variant === "catalog" }]}>
+    <p class="section-kicker">{kicker}</p>
+    <h2>{title}</h2>
+  </div>
+
+  {
+    products.length > 0 ? (
+      <div class:list={["product-grid", { "product-grid--catalog": variant === "catalog" }]}>
+        {products.map((product) => (
+          <article class:list={["product-card", { "product-card--catalog": variant === "catalog" }]}>
+            <div class="product-card__media">
+              <img
+                class="product-card__image"
+                src={buildPublicAssetUrl(product.imagePath)}
+                alt={product.imageAlt}
+                loading="lazy"
+              />
+            </div>
+            <header class="product-card__header">
+              <span class="product-card__tag">{product.categoryName}</span>
+              <span class="product-card__code">{product.code}</span>
+            </header>
+            <h3>{product.name}</h3>
+            <p>{product.description ?? fallbackDescription}</p>
+            <footer>
+              <strong>${product.basePrice.toFixed(2)}</strong>
+              <span>{product.quotationRequired ? quoteLabel : availableLabel}</span>
+            </footer>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <article class="product-grid-empty">
+        <p class="section-kicker">Sin datos publicados</p>
+        <h3>{emptyTitle}</h3>
+        <p>{emptyCopy}</p>
+      </article>
+    )
+  }
+</section>
