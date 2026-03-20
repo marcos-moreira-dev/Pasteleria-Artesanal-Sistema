@@ -6,43 +6,87 @@ const publicQuotationUrl = buildPublicApiUrl("/public/cotizaciones");
 ---
 <BaseLayout title="Pastelería | Contacto">
   <main class="page-shell">
+
     <section class="contact-shell">
-      <div>
-        <p class="section-kicker">Contacto comercial</p>
-        <h1 class="contact-hero-title">Cuéntanos qué celebración tienes en mente</h1>
+
+      <div class="contact-shell__intro">
+        <div>
+          <p class="section-kicker">Contacto comercial</p>
+          <h1 class="contact-hero-title">Cuéntanos qué celebración tienes en mente</h1>
+        </div>
+
         <p>
           Si necesitas una torta especial, una mesa dulce o un pedido para evento,
           aquí empieza la conversación para afinar sabores, cantidades y acabados.
         </p>
 
         <div class="contact-promises">
-          <span><img src="/assets/icons/quote.svg" alt="Icono de propuesta comercial" width="22" height="22" /> Propuesta clara según porciones, estilo y presupuesto</span>
-          <span><img src="/assets/icons/whisk.svg" alt="Icono de producción" width="22" height="22" /> Producción artesanal coordinada por pedido</span>
-          <span><img src="/assets/icons/delivery.svg" alt="Icono de entrega" width="22" height="22" /> Entrega organizada con horario y observaciones</span>
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/quote.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Propuesta clara</strong>
+              <span>Según porciones, estilo y presupuesto disponible.</span>
+            </div>
+          </article>
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/whisk.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Producción artesanal</strong>
+              <span>Coordinada por pedido, con atención al detalle.</span>
+            </div>
+          </article>
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/delivery.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Entrega organizada</strong>
+              <span>Con horario confirmado y observaciones de recibido.</span>
+            </div>
+          </article>
         </div>
       </div>
 
-      <div class="contact-channel-grid">
-        <article class="contact-channel-card">
-          <img src="/assets/icons/quote.svg" alt="Icono de canal comercial" width="28" height="28" />
-          <h2>Canales actuales</h2>
-          <ul>
-            <li>WhatsApp comercial: +593 99 000 0000</li>
+      <div class="contact-channels">
+        <article class="contact-channel-card contact-channel-card--accent">
+          <div class="contact-channel-card__header">
+            <div class="contact-channel-card__icon">
+              <img src="/assets/icons/quote.svg" alt="" width="22" height="22" />
+            </div>
+            <div>
+              <p class="contact-channel-card__label">Atención directa</p>
+              <h2 class="contact-channel-card__title">Canales de contacto</h2>
+            </div>
+          </div>
+          <ul class="contact-channel-list">
+            <li>WhatsApp: +593 99 000 0000</li>
             <li>Correo: pedidos@pasteleria.local</li>
-            <li>Horario de atención: lunes a sábado, 09:00 a 18:00</li>
+            <li>Lun a sáb · 09:00 a 18:00</li>
           </ul>
         </article>
 
         <article class="contact-channel-card">
-          <img src="/assets/icons/gift.svg" alt="Icono de celebraciones" width="28" height="28" />
-          <h2>Ideal para</h2>
-          <ul>
+          <div class="contact-channel-card__header">
+            <div class="contact-channel-card__icon">
+              <img src="/assets/icons/gift.svg" alt="" width="22" height="22" />
+            </div>
+            <div>
+              <p class="contact-channel-card__label">Ocasiones</p>
+              <h2 class="contact-channel-card__title">Ideal para</h2>
+            </div>
+          </div>
+          <ul class="contact-channel-list">
             <li>Cumpleaños, aniversarios y baby showers</li>
             <li>Mesas dulces para reuniones y eventos</li>
-            <li>Pedidos especiales con referencias o temática</li>
+            <li>Pedidos especiales con temática o referencia</li>
           </ul>
         </article>
       </div>
+
     </section>
 
     <section class="contact-form-shell">
@@ -99,6 +143,7 @@ const publicQuotationUrl = buildPublicApiUrl("/public/cotizaciones");
         <p id="quotation-feedback" class="contact-note" aria-live="polite"></p>
       </form>
     </section>
+
   </main>
 
   <script is:inline define:vars={{ publicQuotationUrl }}>
