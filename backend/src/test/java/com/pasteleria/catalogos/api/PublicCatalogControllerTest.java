@@ -13,6 +13,7 @@ import com.pasteleria.catalogos.application.CatalogQueryService;
 import com.pasteleria.catalogos.application.ProductCategorySummary;
 import com.pasteleria.common.assets.StaticCatalogAssetService;
 import com.pasteleria.productos.application.ProductSummary;
+import com.pasteleria.productos.application.RecetaJsonDto;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,15 @@ class PublicCatalogControllerTest {
 
   @Test
   void shouldReturnPublishedProducts() throws Exception {
+    RecetaJsonDto receta = new RecetaJsonDto(
+        "Torta de Chocolate",
+        "Ingredientes",
+        "• 500g harina\n• 300g azúcar",
+        "Preparación",
+        "1. Mezclar ingredientes\n2. Hornear",
+        "Notas",
+        "Hornear a 180°C"
+    );
     given(catalogQueryService.listPublishedProducts())
         .willReturn(List.of(
             new ProductSummary(
@@ -47,6 +57,7 @@ class PublicCatalogControllerTest {
                 "torta-chocolate-mediana",
                 "Torta de chocolate mediana",
                 "Descripcion",
+                receta,
                 new BigDecimal("28.50"),
                 false,
                 "TORTAS",

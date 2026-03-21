@@ -114,11 +114,32 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[21,22)</version>
-                  <message>Pasteleria backend debe compilarse y ejecutarse con Eclipse Temurin 21.</message>
+                  <version>[21,)</version>
+                  <message>Pasteleria backend requiere Java 21 o superior.</message>
                 </requireJavaVersion>
               </rules>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Toolchain plugin: Usa JDK 21 configurado en toolchains.xml -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>21</version>
+              <vendor>temurin</vendor>
+            </jdk>
+          </toolchains>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>toolchain</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

@@ -40,6 +40,9 @@ public class ProductEntity extends AuditableEntity {
   @Column(name = "descripcion")
   private String description;
 
+  @Column(name = "receta_json", columnDefinition = "TEXT")
+  private String recetaJson;
+
   @Column(name = "precio_base", nullable = false, precision = 10, scale = 2)
   private BigDecimal basePrice;
 
@@ -98,6 +101,14 @@ public class ProductEntity extends AuditableEntity {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getRecetaJson() {
+    return recetaJson;
+  }
+
+  public void setRecetaJson(String recetaJson) {
+    this.recetaJson = recetaJson;
   }
 
   public BigDecimal getBasePrice() {

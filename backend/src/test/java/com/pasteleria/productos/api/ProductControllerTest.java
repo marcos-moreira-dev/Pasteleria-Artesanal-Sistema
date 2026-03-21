@@ -20,6 +20,7 @@ import com.pasteleria.productos.application.CreateProductRequest;
 import com.pasteleria.productos.application.ProductCommandService;
 import com.pasteleria.productos.application.ProductQueryService;
 import com.pasteleria.productos.application.ProductSummary;
+import com.pasteleria.productos.application.RecetaJsonDto;
 import com.pasteleria.productos.application.UpdateProductRequest;
 
 import org.junit.jupiter.api.Test;
@@ -63,11 +64,20 @@ class ProductControllerTest {
     given(productCommandService.createProduct(any(CreateProductRequest.class), any()))
         .willReturn(sampleProductSummary());
 
+    RecetaJsonDto receta = new RecetaJsonDto(
+        "Torta de Chocolate",
+        "Ingredientes",
+        "• 500g harina\n• 300g azúcar",
+        "Preparación",
+        "1. Mezclar ingredientes\n2. Hornear",
+        "Notas",
+        "Hornear a 180°C"
+    );
     mockMvc.perform(post("/api/v1/productos")
             .header("X-Request-Id", "req-product-002")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(
-                new CreateProductRequest(1L, "TORTA-CHOCO", "Torta de chocolate", "Clasica", new BigDecimal("28.50"), false, true, true)
+                new CreateProductRequest(1L, "TORTA-CHOCO", "Torta de chocolate", "Clasica", receta, new BigDecimal("28.50"), false, true, true)
             )))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.success").value(true))
@@ -79,11 +89,20 @@ class ProductControllerTest {
     given(productCommandService.updateProduct(eq(1L), any(UpdateProductRequest.class), any()))
         .willReturn(sampleProductSummary());
 
+    RecetaJsonDto recetaUpdate = new RecetaJsonDto(
+        "Torta de Chocolate",
+        "Ingredientes",
+        "• 500g harina\n• 300g azúcar",
+        "Preparación",
+        "1. Mezclar ingredientes\n2. Hornear",
+        "Notas",
+        "Hornear a 180°C"
+    );
     mockMvc.perform(put("/api/v1/productos/1")
             .header("X-Request-Id", "req-product-003")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(
-                new UpdateProductRequest(1L, "TORTA-CHOCO", "Torta de chocolate", "Clasica", new BigDecimal("28.50"), false, true, true)
+                new UpdateProductRequest(1L, "TORTA-CHOCO", "Torta de chocolate", "Clasica", recetaUpdate, new BigDecimal("28.50"), false, true, true)
             )))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -100,12 +119,22 @@ class ProductControllerTest {
   }
 
   private ProductSummary sampleProductSummary() {
+    RecetaJsonDto receta = new RecetaJsonDto(
+        "Torta de Chocolate",
+        "Ingredientes",
+        "• 500g harina\n• 300g azúcar",
+        "Preparación",
+        "1. Mezclar ingredientes\n2. Hornear",
+        "Notas",
+        "Hornear a 180°C"
+    );
     return new ProductSummary(
         1L,
         "TORTA-CHOCO",
         "torta-de-chocolate",
         "Torta de chocolate",
         "Clasica",
+        receta,
         new BigDecimal("28.50"),
         false,
         "TORTAS",

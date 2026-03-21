@@ -1,0 +1,33 @@
+# Configuración para Docker Compose - Hibernate crea el esquema
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/pasteleria
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  sql:
+    init:
+      mode: always
+  
+  servlet:
+    multipart:
+      # Configuración para imágenes de productos
+      # Límite: 25MB para soportar fotos de alta calidad
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:pasteleria-super-secret-key-2024-for-jwt-tokens}
+    expiration-seconds: 7200
+    issuer: pasteleria-backend

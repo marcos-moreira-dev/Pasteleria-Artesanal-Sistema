@@ -1,0 +1,7 @@
+AVISO DE LICENCIA — Base de datos Pasteleria
+
+El esquema SQL, scripts de migracion, seeds y demas archivos contenidos en
+esta carpeta db/ son parte del proyecto Pasteleria y estan sujetos a los
+mismos terminos de licencia del proyecto principal.
+
+Consulte el archivo LICENSE en la raiz del proyecto para mas informacion.

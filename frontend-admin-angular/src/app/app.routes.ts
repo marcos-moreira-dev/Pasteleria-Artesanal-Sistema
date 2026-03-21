@@ -9,6 +9,12 @@ import { QuotationsPageComponent } from "./features/cotizaciones/quotations-page
 import { OrdersPageComponent } from "./features/pedidos/orders-page.component";
 import { ProductionPageComponent } from "./features/produccion/production-page.component";
 import { ReportsPageComponent } from "./features/reportes/reports-page.component";
+import { AbastecimientoShellComponent } from "./features/abastecimiento/pages/abastecimiento-shell.component";
+import { AbastecimientoDashboardComponent } from "./features/abastecimiento/pages/abastecimiento-dashboard.component";
+import { AbastecimientoInventarioComponent } from "./features/abastecimiento/pages/abastecimiento-inventario.component";
+import { AbastecimientoComprasComponent } from "./features/abastecimiento/pages/abastecimiento-compras.component";
+import { AbastecimientoProveedoresComponent } from "./features/abastecimiento/pages/abastecimiento-proveedores.component";
+import { AbastecimientoMovimientosComponent } from "./features/abastecimiento/pages/abastecimiento-movimientos.component";
 
 export const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -23,8 +29,29 @@ export const routes: Routes = [
       { path: "cotizaciones", component: QuotationsPageComponent },
       { path: "reportes", component: ReportsPageComponent },
       { path: "pedidos", component: OrdersPageComponent },
-      { path: "produccion", component: ProductionPageComponent }
-    ]
+      { path: "produccion", component: ProductionPageComponent },
+      {
+        path: "abastecimiento",
+        children: [
+          {
+            path: "",
+            pathMatch: "full",
+            redirectTo: "/abastecimiento/dashboard",
+          },
+          { path: "dashboard", component: AbastecimientoDashboardComponent },
+          { path: "inventario", component: AbastecimientoInventarioComponent },
+          { path: "compras", component: AbastecimientoComprasComponent },
+          {
+            path: "proveedores",
+            component: AbastecimientoProveedoresComponent,
+          },
+          {
+            path: "movimientos",
+            component: AbastecimientoMovimientosComponent,
+          },
+        ],
+      },
+    ],
   },
-  { path: "**", redirectTo: "" }
+  { path: "**", redirectTo: "" },
 ];

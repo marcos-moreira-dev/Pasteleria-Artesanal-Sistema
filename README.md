@@ -20,6 +20,7 @@ La base documental está prácticamente cerrada y el código ya tiene una primer
 - frontend público con landing bilingüe `es/en`, catálogo, contacto y solicitud pública de cotización
 - pruebas web iniciales del backend
 - seed enriquecido de demo con datos de operación, reportes, notificaciones y auditoría para estudiar escenarios más reales
+- **módulo de Abastecimiento** diseñado e implementado: inventario de ingredientes e insumos, recetas vinculadas a productos, órdenes de compra, órdenes de producción y movimientos de inventario
 
 ## Stack congelado
 
@@ -99,7 +100,8 @@ El seed enriquecido deja listo un entorno de estudio con categorías adicionales
 6. `docs/backend/`
 7. `docs/frontend-publico-astro/`
 8. `docs/frontend-admin-angular/`
-9. `docs/operacion/`
+9. `docs/modulo-abastecimiento/`
+10. `docs/operacion/`
 
 ## Referencia inteligente
 

@@ -120,12 +120,13 @@ public class ProductionCommandService {
       return;
     }
 
+    // Validar transiciones permitidas (avance y retroceso)
     boolean valid = switch (currentStatus) {
       case PENDIENTE -> targetStatus == ProductionStatus.PREPARACION;
-      case PREPARACION -> targetStatus == ProductionStatus.DECORACION;
-      case DECORACION -> targetStatus == ProductionStatus.EMPAQUE;
-      case EMPAQUE -> targetStatus == ProductionStatus.FINALIZADO;
-      case FINALIZADO -> false;
+      case PREPARACION -> targetStatus == ProductionStatus.PENDIENTE || targetStatus == ProductionStatus.DECORACION;
+      case DECORACION -> targetStatus == ProductionStatus.PREPARACION || targetStatus == ProductionStatus.EMPAQUE;
+      case EMPAQUE -> targetStatus == ProductionStatus.DECORACION || targetStatus == ProductionStatus.FINALIZADO;
+      case FINALIZADO -> targetStatus == ProductionStatus.EMPAQUE;
     };
 
     if (!valid) {

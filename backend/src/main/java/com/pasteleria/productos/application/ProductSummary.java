@@ -8,6 +8,7 @@ public record ProductSummary(
     String slug,
     String name,
     String description,
+    RecetaJsonDto receta,
     BigDecimal basePrice,
     boolean quotationRequired,
     String categoryCode,
