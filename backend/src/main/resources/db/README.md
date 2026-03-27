@@ -1,24 +1,18 @@
 # Base de datos de Pasteleria
 
-Este backend usa PostgreSQL 17 y Flyway como fuente oficial de evolucion del esquema.
+Este backend conserva migraciones Flyway en `db/migration/`, pero la carga manual
+canónica del proyecto quedó consolidada fuera del backend en:
 
-## Ruta oficial
+- `db/V1/DATABASE_SCHEMA_CANONICO.sql`
+- `db/V1/DATABASE_SEED_CANONICO.sql`
 
-- `db/migration/V1__init_schema.sql`: esquema base y tablas del dominio.
-- `db/migration/V2__seed_base.sql`: catalogos y usuarios operativos minimos.
-- `db/migration/V3__seed_demo.sql`: datos demostrativos para desarrollo local.
-- `db/migration/V4__seed_enterprise_demo.sql`: seed enriquecido con pedidos, produccion, reportes, notificaciones y auditoria.
+## Criterio operativo
 
-## Criterios aplicados
+- usa la ruta canónica para recrear una base manualmente o para un reset limpio
+- usa las migraciones Flyway como historial técnico del backend y referencia de evolución
+- no uses `V3__seed_demo.sql` ni `V4__seed_enterprise_demo.sql` como bootstrap manual, porque pertenecen a una línea demo legacy
 
-- Modelo moderado y realista: clientes, catalogo, cotizaciones, pedidos y produccion.
-- Infraestructura minima integrada desde V1: archivos, jobs de reportes, notificaciones y auditoria.
-- Convencion de claves: `*_id` bigint autoincremental.
-- Estados de negocio restringidos con `CHECK`.
-- Integridad referencial e indices para consultas operativas frecuentes.
+## Nota de implementación
 
-## Nota de implementacion
-
-La base ya tiene un primer mapeo JPA en `com.pasteleria.*` para que el backend no quede desconectado del esquema fisico mientras avanza la implementacion por modulos.
-
-Para bases ya existentes que nacieron antes de `V4`, el proyecto incluye `scripts/apply-demo-delta.ps1` como ruta segura para sumar el seed enriquecido sin reset completo.
+El mapeo JPA vigente valida el esquema al arrancar. Si la base fue cargada con los
+SQL canónicos, el backend debe correr contra ese estado, no contra seeds legacy.

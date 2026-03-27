@@ -166,6 +166,31 @@ public class ProveedorCommandService {
   }
 
   @Transactional
+  public ProveedorSummary toggleActivo(Long id, HttpServletRequest httpRequest) {
+    ProveedorEntity entity = repository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado."));
+
+    ProveedorSummary previous = mapper.toSummary(entity);
+    entity.setActive(!entity.isActive());
+    entity.setUpdatedAt(OffsetDateTime.now());
+    ProveedorSummary current = mapper.toSummary(repository.save(entity));
+
+    auditTrailService.recordChange(
+        "PROVEEDOR_ESTADO_ACTUALIZADO",
+        "ABASTECIMIENTO",
+        "proveedor",
+        entity.getId().toString(),
+        "TOGGLE_ACTIVO_PROVEEDOR",
+        previous,
+        current,
+        "Cambio de estado activo/inactivo de proveedor.",
+        httpRequest
+    );
+
+    return current;
+  }
+
+  @Transactional
   public void deleteProveedor(Long id, HttpServletRequest httpRequest) {
     ProveedorEntity entity = repository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Proveedor no encontrado."));

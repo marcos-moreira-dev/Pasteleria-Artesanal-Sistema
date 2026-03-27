@@ -185,6 +185,10 @@ app/features/abastecimiento/
 
 ## Flujo de Datos
 
+Nota de lectura: los diagramas de esta seccion preservan el flujo de negocio ideal.
+El estado implementado real del backend actual se aclara debajo de cada bloque para
+evitar prometer endpoints que hoy no existen.
+
 ### 1. Flujo de Compra (Purchase Flow)
 
 ```
@@ -201,12 +205,21 @@ app/features/abastecimiento/
                                                └──────────┘
 ```
 
-**API Calls**:
+**Estado implementado hoy**:
 
-1. `GET /api/v1/abastecimiento/dashboard` - Ver alertas
-2. `POST /api/v1/abastecimiento/ordenes-compra` - Crear OC
-3. `PATCH /api/v1/abastecimiento/ordenes-compra/{id}/estado` - Cambiar estado
-4. `POST /api/v1/abastecimiento/inventario/movimientos` - Registrar entrada
+1. `GET /api/v1/abastecimiento/dashboard` - Ver metricas y alertas
+2. `GET /api/v1/abastecimiento/ordenes-compra/paginado` - Listar ordenes de compra
+3. `GET /api/v1/abastecimiento/ordenes-compra/{id}` - Ver detalle de una orden
+4. `GET /api/v1/abastecimiento/ordenes-compra/por-proveedor/{proveedorId}` - Filtrar por proveedor
+5. `POST /api/v1/abastecimiento/ordenes-compra` - Crear orden en borrador
+6. `PUT /api/v1/abastecimiento/ordenes-compra/{id}` - Editar orden en borrador
+7. `PATCH /api/v1/abastecimiento/ordenes-compra/{id}/estado` - Enviar o cancelar orden
+8. `POST /api/v1/abastecimiento/ordenes-compra/{id}/recibir` - Registrar recepcion parcial o total
+9. `POST /api/v1/abastecimiento/inventario` - Registrar movimiento manual de inventario
+
+**Nota de coherencia**: la recepcion de una orden de compra ya genera
+movimientos `ENTRADA_COMPRA` y recalcula el estado de la OC a
+`RECIBIDA_PARCIAL` o `RECIBIDA` segun las cantidades realmente procesadas.
 
 ### 2. Flujo de Producción (Production Flow)
 
@@ -217,11 +230,18 @@ app/features/abastecimiento/
 └──────────┘    └──────────┘    └──────────┘    └──────────┘
 ```
 
-**API Calls**:
+**Estado implementado hoy**:
 
-1. `POST /api/v1/abastecimiento/ordenes-produccion` - Crear OP
-2. `POST /api/v1/abastecimiento/consumos` - Registrar consumo
-3. `PATCH /api/v1/abastecimiento/ordenes-produccion/{id}/estado` - Finalizar
+1. `GET /api/v1/produccion` - Ver cola operativa
+2. `GET /api/v1/produccion/paginado` - Ver tablero paginado
+3. `PATCH /api/v1/produccion/{productionId}/estado` - Mover una produccion de etapa
+
+**Nota de coherencia**: el backend actual no expone
+`POST /api/v1/abastecimiento/ordenes-produccion`,
+`PUT /api/v1/abastecimiento/ordenes-produccion/{id}`,
+`PATCH /api/v1/abastecimiento/ordenes-produccion/{id}/estado` ni rutas de
+consumos bajo `/api/v1/abastecimiento/consumos`. Esa nomenclatura no debe
+presentarse como implementada en esta V1.
 
 ### 3. Flujo de Ajuste de Inventario
 
@@ -597,6 +617,7 @@ GET    /api/v1/abastecimiento/proveedores/paginado?page=0&size=8&query=
 GET    /api/v1/abastecimiento/proveedores/{id}
 POST   /api/v1/abastecimiento/proveedores
 PUT    /api/v1/abastecimiento/proveedores/{id}
+PATCH  /api/v1/abastecimiento/proveedores/{id}/toggle-activo
 DELETE /api/v1/abastecimiento/proveedores/{id}
 ```
 
@@ -612,8 +633,10 @@ PUT    /api/v1/abastecimiento/ingredientes/{id}
 ### Movimientos
 
 ```
+GET    /api/v1/abastecimiento/inventario
 GET    /api/v1/abastecimiento/inventario/{itemTipo}/{itemId}
 GET    /api/v1/abastecimiento/inventario/{itemTipo}/{itemId}/paginado
+GET    /api/v1/abastecimiento/inventario/referencia/{referenciaTipo}/{referenciaId}
 POST   /api/v1/abastecimiento/inventario              # Crear movimiento
 ```
 

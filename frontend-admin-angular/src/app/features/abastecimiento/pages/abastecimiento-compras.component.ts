@@ -8,14 +8,28 @@ import {
   Validators,
 } from "@angular/forms";
 import { FormsModule } from "@angular/forms";
+import { ActivatedRoute } from "@angular/router";
 import { BackofficeStoreService } from "../../../core/store/backoffice-store.service";
 import { ADMIN_SURFACE_STYLES } from "../../../shared/ui/admin-surface.styles";
-import type { OrdenCompraDetailSummary } from "../models/abastecimiento.models";
+import type {
+  CreateOrdenCompraRequest,
+  EstadoOrdenCompra,
+  IngredienteSummary,
+  InsumoSummary,
+  ItemTipo,
+  OrdenCompraDetalleSummary,
+  OrdenCompraDetailSummary,
+  OrdenCompraSummary,
+  RecibirOrdenCompraRequest,
+  UpdateOrdenCompraRequest,
+} from "../models/abastecimiento.models";
+
+type AbastecimientoItem = IngredienteSummary | InsumoSummary;
 
 interface ReceiveItem {
   detalleId: number;
   itemNombre: string;
-  itemTipo: string;
+  itemTipo: ItemTipo;
   solicitado: number;
   recibido: number;
   precioUnitario: number;
@@ -79,7 +93,7 @@ interface ReceiveItem {
             </button>
           </div>
 
-          <div class="surface-row surface-row--2" style="max-width: 320px;">
+          <div class="surface-row surface-row--2 surface-row--date-range">
             <label>
               <span class="surface-meta">Desde</span>
               <input
@@ -294,7 +308,7 @@ interface ReceiveItem {
                 class="line-item"
               >
                 <div class="surface-row surface-row--5">
-                  <label style="grid-column: span 2;"
+                  <label class="line-item__selector"
                     >Item
                     <select formControlName="itemId" (change)="onItemChange(i)">
                       <option value="">Seleccionar...</option>
@@ -354,7 +368,7 @@ interface ReceiveItem {
               type="button"
               class="mini-button"
               (click)="addLinea()"
-              style="width: 100%; margin-top: 0.5rem;"
+              class="mini-button line-item__add"
             >
               + Agregar línea
             </button>
@@ -365,7 +379,7 @@ interface ReceiveItem {
             <strong>{{ getTotalEstimado() | number: "1.2-2" }}</strong>
           </div>
 
-          <div class="action-row" style="justify-content: flex-end;">
+          <div class="action-row action-row--end">
             <button type="button" class="mini-button" (click)="backToList()">
               Cancelar
             </button>
@@ -487,7 +501,7 @@ interface ReceiveItem {
           </div>
           <div class="info-item">
             <span class="surface-meta">Creado por</span>
-            <strong>{{ detailOrden()!.createdByNombre }}</strong>
+            <strong>{{ detailOrden()!.createdByNombre || "No disponible" }}</strong>
           </div>
         </div>
 
@@ -594,7 +608,7 @@ interface ReceiveItem {
 
           <div
             class="action-row"
-            style="justify-content: flex-end; margin-top: 1rem;"
+            class="action-row action-row--end receive-actions"
           >
             <button class="mini-button" (click)="showReceiveSection.set(false)">
               Cancelar
@@ -692,6 +706,27 @@ interface ReceiveItem {
 
       .action-row--centered {
         justify-content: center;
+      }
+
+      .action-row--end {
+        justify-content: flex-end;
+      }
+
+      .surface-row--date-range {
+        max-width: 320px;
+      }
+
+      .line-item__selector {
+        grid-column: span 2;
+      }
+
+      .line-item__add {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .receive-actions {
+        margin-top: 1rem;
       }
 
       .info-grid {
@@ -870,6 +905,7 @@ interface ReceiveItem {
 export class AbastecimientoComprasComponent implements OnInit {
   store = inject(BackofficeStoreService);
   fb = inject(FormBuilder);
+  route = inject(ActivatedRoute);
 
   view = signal<"list" | "create" | "detail">("list");
   editingOrdenId = signal<number | null>(null);
@@ -879,6 +915,7 @@ export class AbastecimientoComprasComponent implements OnInit {
   showReceiveSection = signal(false);
   searchQuery = signal("");
   estadoFilter = signal<string[]>([]);
+  proveedorFilterId = signal<number | null>(null);
   fechaDesde = signal("");
   fechaHasta = signal("");
 
@@ -892,7 +929,7 @@ export class AbastecimientoComprasComponent implements OnInit {
   fechaDesdeValue = "";
   fechaHastaValue = "";
 
-  allEstados = [
+  allEstados: EstadoOrdenCompra[] = [
     "BORRADOR",
     "ENVIADA",
     "RECIBIDA_PARCIAL",
@@ -904,6 +941,10 @@ export class AbastecimientoComprasComponent implements OnInit {
 
   filteredOrdenes = computed(() => {
     let ordenes = [...this.store.ordenesCompraPage().content];
+    const proveedorId = this.proveedorFilterId();
+    if (proveedorId) {
+      ordenes = ordenes.filter((o) => o.proveedorId === proveedorId);
+    }
     const q = this.searchQuery().toLowerCase().trim();
     if (q) {
       ordenes = ordenes.filter(
@@ -943,6 +984,9 @@ export class AbastecimientoComprasComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadData();
+    this.route.queryParamMap.subscribe((params) => {
+      this.applyRouteContext(params);
+    });
   }
 
   initForm(): void {
@@ -957,9 +1001,77 @@ export class AbastecimientoComprasComponent implements OnInit {
 
   loadData(): void {
     this.loading.set(true);
-    this.store.loadOrdenesCompraPage(0, 100, "", "");
-    this.store.loadProveedores();
-    this.loading.set(false);
+    let pendingLoads = 4;
+    const finishLoad = () => {
+      pendingLoads -= 1;
+      if (pendingLoads <= 0) {
+        this.loading.set(false);
+      }
+    };
+
+    this.store.loadOrdenesCompraPageTracked(0, 100, "", "", finishLoad);
+    this.store.loadProveedores(finishLoad);
+    this.store.loadIngredientesPage(0, 100, "", "", finishLoad);
+    this.store.loadInsumosPage(0, 100, "", "", finishLoad);
+  }
+
+  applyRouteContext(params: { get(name: string): string | null }): void {
+    const estadoParam = (params.get("estado") || "").trim();
+    this.proveedorFilterId.set(
+      this.toPositiveNumber(params.get("proveedorFiltro")),
+    );
+    this.estadoFilter.set(
+      estadoParam
+        ? estadoParam
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean)
+        : [],
+    );
+    this.currentPage.set(1);
+
+    const proveedorId = this.toPositiveNumber(params.get("proveedorId"));
+    const itemId = this.toPositiveNumber(params.get("itemId") || params.get("item"));
+    const itemTipo = (params.get("itemTipo") || "").trim().toUpperCase();
+
+    if (!proveedorId && !itemId) {
+      return;
+    }
+
+    this.editingOrdenId.set(null);
+    this.initForm();
+    this.ordenForm.patchValue({
+      codigo: this.generateCodigo(),
+      proveedorId: proveedorId ? String(proveedorId) : "",
+    });
+
+    if (itemId) {
+      const tipo = itemTipo === "INSUMO" ? "INSUMO" : "INGREDIENTE";
+      this.addLinea();
+      const linea = this.lineasArray.at(0);
+      const item = this.findItem(tipo, itemId);
+      linea.patchValue({
+        itemTipo: tipo,
+        itemId: String(itemId),
+        cantidad: 1,
+        precioUnitario: item?.costoReferencial || 0,
+      });
+    }
+
+    this.view.set("create");
+  }
+
+  toPositiveNumber(value: string | null): number | null {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+  }
+
+  findItem(tipo: ItemTipo, itemId: number): AbastecimientoItem | undefined {
+    const items =
+      tipo === "INSUMO"
+        ? this.store.insumosPage().content
+        : this.store.ingredientesPage().content;
+    return items.find((item) => item.id === itemId);
   }
 
   onSearchChange(value: string): void {
@@ -1004,7 +1116,7 @@ export class AbastecimientoComprasComponent implements OnInit {
     this.lineasArray.removeAt(index);
   }
 
-  getFilteredItems(tipo: string): any[] {
+  getFilteredItems(tipo: ItemTipo): AbastecimientoItem[] {
     if (tipo === "INGREDIENTE") {
       return this.store.ingredientesPage().content;
     }
@@ -1020,8 +1132,8 @@ export class AbastecimientoComprasComponent implements OnInit {
   onItemChange(index: number): void {
     const linea = this.lineasArray.at(index);
     const itemId = linea.get("itemId")?.value;
-    const tipo = linea.get("itemTipo")?.value;
-    let items: any[] = [];
+    const tipo = linea.get("itemTipo")?.value as ItemTipo;
+    let items: AbastecimientoItem[] = [];
     if (tipo === "INGREDIENTE") {
       items = this.store.ingredientesPage().content;
     } else {
@@ -1060,7 +1172,7 @@ export class AbastecimientoComprasComponent implements OnInit {
       codigo: formValue.codigo,
       fechaEntregaEstimada: formValue.fechaEntregaEstimada || null,
       observaciones: formValue.observaciones || "",
-      detalles: formValue.lineas.map((l: any) => ({
+      detalles: formValue.lineas.map((l: CreateOrdenCompraRequest["detalles"][number]) => ({
         itemId: Number(l.itemId),
         itemTipo: l.itemTipo,
         cantidad: Number(l.cantidad),
@@ -1068,19 +1180,21 @@ export class AbastecimientoComprasComponent implements OnInit {
       })),
     };
     if (this.editingOrdenId()) {
-      this.store.updateOrdenCompra(this.editingOrdenId()!, ordenData, () => {
+      const updatePayload: UpdateOrdenCompraRequest = ordenData;
+      this.store.updateOrdenCompra(this.editingOrdenId()!, updatePayload, () => {
         this.saving.set(false);
         this.backToList();
       });
     } else {
-      this.store.createOrdenCompra(ordenData, () => {
+      const createPayload: CreateOrdenCompraRequest = ordenData;
+      this.store.createOrdenCompra(createPayload, () => {
         this.saving.set(false);
         this.backToList();
       });
     }
   }
 
-  editOrden(orden: any): void {
+  editOrden(orden: OrdenCompraSummary): void {
     this.store.loadOrdenCompraDetail(orden.id).subscribe({
       next: (detalle) => {
         this.editingOrdenId.set(orden.id);
@@ -1092,7 +1206,7 @@ export class AbastecimientoComprasComponent implements OnInit {
           observaciones: detalle.observaciones || "",
         });
         this.lineasArray.clear();
-        detalle.detalles.forEach((linea: any) => {
+        detalle.detalles.forEach((linea: OrdenCompraDetalleSummary) => {
           const group = this.fb.group({
             itemTipo: [linea.itemTipo, Validators.required],
             itemId: [linea.itemId, Validators.required],
@@ -1124,7 +1238,7 @@ export class AbastecimientoComprasComponent implements OnInit {
         observaciones: orden.observaciones || "",
       });
       this.lineasArray.clear();
-      orden.detalles.forEach((linea: any) => {
+      orden.detalles.forEach((linea: OrdenCompraDetalleSummary) => {
         const group = this.fb.group({
           itemTipo: [linea.itemTipo, Validators.required],
           itemId: [linea.itemId, Validators.required],
@@ -1143,7 +1257,7 @@ export class AbastecimientoComprasComponent implements OnInit {
     }
   }
 
-  openDetail(orden: any): void {
+  openDetail(orden: OrdenCompraSummary): void {
     this.store.loadOrdenCompraDetail(orden.id).subscribe({
       next: (detalle) => {
         this.detailOrden.set(detalle);
@@ -1153,12 +1267,12 @@ export class AbastecimientoComprasComponent implements OnInit {
     });
   }
 
-  startReceiving(orden: any): void {
+  startReceiving(orden: OrdenCompraSummary): void {
     this.store.loadOrdenCompraDetail(orden.id).subscribe({
       next: (detalle) => {
         this.detailOrden.set(detalle);
         this.receivingOrdenId.set(orden.id);
-        const items: ReceiveItem[] = detalle.detalles.map((l: any) => ({
+        const items: ReceiveItem[] = detalle.detalles.map((l: OrdenCompraDetalleSummary) => ({
           detalleId: l.id,
           itemNombre: l.itemNombre,
           itemTipo: l.itemTipo,
@@ -1179,7 +1293,7 @@ export class AbastecimientoComprasComponent implements OnInit {
     this.saving.set(true);
     const ordenId = this.receivingOrdenId();
     if (!ordenId) return;
-    const items = this.receiveItems().map((item) => ({
+    const items: RecibirOrdenCompraRequest["items"] = this.receiveItems().map((item) => ({
       detalleId: item.detalleId,
       cantidadRecibida: item.cantidadRecibir,
     }));
@@ -1227,7 +1341,7 @@ export class AbastecimientoComprasComponent implements OnInit {
     this.loadData();
   }
 
-  toggleEstadoFilter(estado: string): void {
+  toggleEstadoFilter(estado: EstadoOrdenCompra): void {
     const current = this.estadoFilter();
     if (current.includes(estado)) {
       this.estadoFilter.set(current.filter((e) => e !== estado));
@@ -1264,18 +1378,18 @@ export class AbastecimientoComprasComponent implements OnInit {
     return delivery < today;
   }
 
-  formatEstado(estado: string): string {
-    const map: Record<string, string> = {
+  formatEstado(estado: EstadoOrdenCompra | string): string {
+    const map: Record<EstadoOrdenCompra, string> = {
       BORRADOR: "Borrador",
       ENVIADA: "Enviada",
       RECIBIDA_PARCIAL: "Parcial",
       RECIBIDA: "Recibida",
       CANCELADA: "Cancelada",
     };
-    return map[estado] || estado;
+    return estado in map ? map[estado as EstadoOrdenCompra] : estado;
   }
 
-  getEstadoClass(estado: string): string {
+  getEstadoClass(estado: EstadoOrdenCompra | string): string {
     return estado;
   }
 }

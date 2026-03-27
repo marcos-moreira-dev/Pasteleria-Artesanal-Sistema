@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.pasteleria.abastecimiento.application.AbastecimientoDashboardDto.AlertaDto;
 import com.pasteleria.abastecimiento.application.AbastecimientoDashboardDto.MovimientoRecienteDto;
@@ -17,11 +18,9 @@ import com.pasteleria.abastecimiento.application.AbastecimientoDashboardDto.Suge
 import com.pasteleria.abastecimiento.infrastructure.persistence.entity.IngredienteEntity;
 import com.pasteleria.abastecimiento.infrastructure.persistence.entity.InsumoEntity;
 import com.pasteleria.abastecimiento.infrastructure.persistence.entity.InventarioMovimientoEntity;
-import com.pasteleria.abastecimiento.infrastructure.persistence.entity.ProveedorEntity;
 import com.pasteleria.abastecimiento.infrastructure.persistence.repository.IngredienteRepository;
 import com.pasteleria.abastecimiento.infrastructure.persistence.repository.InsumoRepository;
 import com.pasteleria.abastecimiento.infrastructure.persistence.repository.InventarioMovimientoRepository;
-import com.pasteleria.abastecimiento.infrastructure.persistence.repository.ProveedorRepository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -34,44 +33,43 @@ public class AbastecimientoDashboardQueryService {
   private final IngredienteRepository ingredienteRepository;
   private final InsumoRepository insumoRepository;
   private final InventarioMovimientoRepository movimientoRepository;
-  private final ProveedorRepository proveedorRepository;
   private final JdbcTemplate jdbcTemplate;
 
   public AbastecimientoDashboardQueryService(
       IngredienteRepository ingredienteRepository,
       InsumoRepository insumoRepository,
       InventarioMovimientoRepository movimientoRepository,
-      ProveedorRepository proveedorRepository,
       JdbcTemplate jdbcTemplate) {
     this.ingredienteRepository = ingredienteRepository;
     this.insumoRepository = insumoRepository;
     this.movimientoRepository = movimientoRepository;
-    this.proveedorRepository = proveedorRepository;
     this.jdbcTemplate = jdbcTemplate;
   }
 
   public AbastecimientoDashboardDto buildDashboard() {
-    var ingredientes = ingredienteRepository.findAll();
-    var insumos = insumoRepository.findAll();
-    
+    List<IngredienteEntity> ingredientes = ingredienteRepository.findAll();
+    List<InsumoEntity> insumos = insumoRepository.findAll();
+
     int itemsCriticos = 0;
     int itemsBajoMinimo = 0;
     BigDecimal costoReposicion = BigDecimal.ZERO;
     List<AlertaDto> alertas = new ArrayList<>();
     List<SugerenciaReposicionDto> sugerencias = new ArrayList<>();
 
-    // Procesar ingredientes
     for (IngredienteEntity ing : ingredientes) {
       if (ing.getStockActual().compareTo(ing.getStockMinimo()) < 0) {
         itemsBajoMinimo++;
-        
-        var stockMin = ing.getStockMinimo();
-        var stockAct = ing.getStockActual();
-        var deficit = stockMin.subtract(stockAct);
-        
-        // Calcular cobertura aproximada (simplificado)
-        int coberturaDias = stockAct.compareTo(BigDecimal.ZERO) > 0 
-            ? stockAct.divide(stockMin.divide(BigDecimal.valueOf(30), 2, RoundingMode.HALF_UP), 0, RoundingMode.HALF_UP).intValue()
+
+        BigDecimal stockMin = ing.getStockMinimo();
+        BigDecimal stockAct = ing.getStockActual();
+        BigDecimal deficit = stockMin.subtract(stockAct);
+
+        int coberturaDias = stockAct.compareTo(BigDecimal.ZERO) > 0
+            ? stockAct.divide(
+                stockMin.divide(BigDecimal.valueOf(30), 2, RoundingMode.HALF_UP),
+                0,
+                RoundingMode.HALF_UP)
+                .intValue()
             : 0;
 
         if (stockAct.compareTo(stockMin.multiply(BigDecimal.valueOf(0.5))) < 0) {
@@ -84,13 +82,12 @@ public class AbastecimientoDashboardQueryService {
             ing.getId(),
             ing.getName(),
             ing.getCode(),
-            stockAct.compareTo(BigDecimal.ZERO) == 0 
-                ? "Stock agotado - requiere reposición urgente" 
-                : "Stock por debajo del mínimo establecido",
+            stockAct.compareTo(BigDecimal.ZERO) == 0
+                ? "Stock agotado - requiere reposicion urgente"
+                : "Stock por debajo del minimo establecido",
             stockAct,
             stockMin,
-            coberturaDias
-        ));
+            coberturaDias));
 
         costoReposicion = costoReposicion.add(deficit.multiply(ing.getCostoReferencial()));
 
@@ -101,21 +98,19 @@ public class AbastecimientoDashboardQueryService {
             ing.getCode(),
             stockAct,
             stockMin,
-            deficit.multiply(BigDecimal.valueOf(1.5)), // Sugerir 50% más del déficit
-            null, // Proveedor principal - podría buscarse
-            ing.getCostoReferencial()
-        ));
+            deficit.multiply(BigDecimal.valueOf(1.5)),
+            null,
+            ing.getCostoReferencial()));
       }
     }
 
-    // Procesar insumos
     for (InsumoEntity ins : insumos) {
       if (ins.getStockActual().compareTo(ins.getStockMinimo()) < 0) {
         itemsBajoMinimo++;
-        
-        var stockMin = ins.getStockMinimo();
-        var stockAct = ins.getStockActual();
-        var deficit = stockMin.subtract(stockAct);
+
+        BigDecimal stockMin = ins.getStockMinimo();
+        BigDecimal stockAct = ins.getStockActual();
+        BigDecimal deficit = stockMin.subtract(stockAct);
 
         if (stockAct.compareTo(stockMin.multiply(BigDecimal.valueOf(0.5))) < 0) {
           itemsCriticos++;
@@ -127,13 +122,12 @@ public class AbastecimientoDashboardQueryService {
             ins.getId(),
             ins.getName(),
             ins.getCode(),
-            stockAct.compareTo(BigDecimal.ZERO) == 0 
-                ? "Stock agotado - requiere reposición urgente" 
-                : "Stock por debajo del mínimo establecido",
+            stockAct.compareTo(BigDecimal.ZERO) == 0
+                ? "Stock agotado - requiere reposicion urgente"
+                : "Stock por debajo del minimo establecido",
             stockAct,
             stockMin,
-            null
-        ));
+            null));
 
         costoReposicion = costoReposicion.add(deficit.multiply(ins.getCostoReferencial()));
 
@@ -146,22 +140,19 @@ public class AbastecimientoDashboardQueryService {
             stockMin,
             deficit.multiply(BigDecimal.valueOf(1.5)),
             null,
-            ins.getCostoReferencial()
-        ));
+            ins.getCostoReferencial()));
       }
     }
 
-    // Órdenes de compra - contar pendientes usando JDBC
-    int ordenesPendientesCount = jdbcTemplate.queryForObject(
-        "SELECT COUNT(*) FROM orden_compra WHERE estado IN ('BORRADOR', 'ENVIADA', 'RECIBIDA_PARCIAL')", 
+    Integer ordenesPendientesCount = jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM orden_compra WHERE estado IN ('BORRADOR', 'ENVIADA', 'RECIBIDA_PARCIAL')",
         Integer.class);
-    
-    // Obtener proveedores con órdenes activas
+
     List<ProveedorConOCDto> proveedoresDto = jdbcTemplate.query(
         """
-        SELECT p.proveedor_id, p.nombre, p.telefono, 
-               COUNT(oc.orden_compra_id) as ordenes_count,
-               MAX(oc.created_at) as ultima_fecha
+        SELECT p.proveedor_id, p.nombre, p.telefono,
+               COUNT(oc.orden_compra_id) AS ordenes_count,
+               MAX(oc.created_at) AS ultima_fecha
         FROM proveedor p
         INNER JOIN orden_compra oc ON p.proveedor_id = oc.proveedor_id
         WHERE oc.estado IN ('BORRADOR', 'ENVIADA', 'RECIBIDA_PARCIAL')
@@ -172,64 +163,51 @@ public class AbastecimientoDashboardQueryService {
             rs.getString("nombre"),
             rs.getString("telefono"),
             rs.getInt("ordenes_count"),
-            rs.getTimestamp("ultima_fecha") != null 
+            rs.getTimestamp("ultima_fecha") != null
                 ? rs.getTimestamp("ultima_fecha").toLocalDateTime().toString()
-                : null
-        ));
+                : null));
 
-    // Obtener movimientos recientes (últimos 8) - usar findAll y ordenar manualmente
-    var todosMovimientos = movimientoRepository.findAll();
-    List<MovimientoRecienteDto> movimientosDto = todosMovimientos.stream()
-        .sorted(Comparator.comparing(InventarioMovimientoEntity::getFechaMovimiento).reversed())
-        .limit(8)
-        .map(m -> toMovimientoDto(m, ingredientes, insumos))
+    Map<Long, String> nombresIngredientes = ingredientes.stream()
+        .collect(Collectors.toMap(IngredienteEntity::getId, IngredienteEntity::getName));
+    Map<Long, String> nombresInsumos = insumos.stream()
+        .collect(Collectors.toMap(InsumoEntity::getId, InsumoEntity::getName));
+
+    List<MovimientoRecienteDto> movimientosDto = movimientoRepository.findTop8ByOrderByFechaMovimientoDesc()
+        .stream()
+        .map(movimiento -> toMovimientoDto(movimiento, nombresIngredientes, nombresInsumos))
         .toList();
 
-    // Contar recepciones de hoy (movimientos de entrada hoy)
-    LocalDate hoy = LocalDate.now();
-    long recepcionesHoy = todosMovimientos.stream()
-        .filter(m -> m.getTipoMovimiento() != null && m.getTipoMovimiento().startsWith("ENTRADA"))
-        .filter(m -> m.getFechaMovimiento() != null && m.getFechaMovimiento().toLocalDate().equals(hoy))
-        .count();
+    OffsetDateTime inicioDelDia = LocalDate.now()
+        .atStartOfDay()
+        .atOffset(ZoneId.systemDefault().getRules().getOffset(OffsetDateTime.now().toInstant()));
+    OffsetDateTime finDelDia = inicioDelDia.plusDays(1).minusNanos(1);
+    long recepcionesHoy = movimientoRepository.countByTipoMovimientoStartingWithAndFechaMovimientoBetween(
+        "ENTRADA",
+        inicioDelDia,
+        finDelDia);
 
     return new AbastecimientoDashboardDto(
         itemsCriticos,
         itemsBajoMinimo,
-        ordenesPendientesCount,
+        ordenesPendientesCount != null ? ordenesPendientesCount : 0,
         (int) recepcionesHoy,
         costoReposicion,
         alertas.stream().limit(10).toList(),
         sugerencias.stream().limit(8).toList(),
         movimientosDto,
-        proveedoresDto
-    );
+        proveedoresDto);
   }
 
-  private MovimientoRecienteDto toMovimientoDto(InventarioMovimientoEntity mov, 
-      List<IngredienteEntity> ingredientes, List<InsumoEntity> insumos) {
-    // Buscar el nombre del item basado en tipo e id
-    String itemNombre = "Desconocido";
-    if ("INGREDIENTE".equals(mov.getItemTipo())) {
-      itemNombre = ingredientes.stream()
-          .filter(i -> i.getId().equals(mov.getItemId()))
-          .findFirst()
-          .map(IngredienteEntity::getName)
-          .orElse("Ingrediente #" + mov.getItemId());
-    } else if ("INSUMO".equals(mov.getItemTipo())) {
-      itemNombre = insumos.stream()
-          .filter(i -> i.getId().equals(mov.getItemId()))
-          .findFirst()
-          .map(InsumoEntity::getName)
-          .orElse("Insumo #" + mov.getItemId());
-    }
-
-    // Obtener nombre completo del usuario
+  private MovimientoRecienteDto toMovimientoDto(
+      InventarioMovimientoEntity mov,
+      Map<Long, String> nombresIngredientes,
+      Map<Long, String> nombresInsumos) {
     String registradoPor = "Sistema";
     if (mov.getRegistradoPor() != null) {
       String firstName = mov.getRegistradoPor().getFirstName();
       String lastName = mov.getRegistradoPor().getLastName();
-      registradoPor = (firstName != null ? firstName : "") + 
-                     (lastName != null ? " " + lastName : "");
+      registradoPor = (firstName != null ? firstName : "")
+          + (lastName != null ? " " + lastName : "");
       registradoPor = registradoPor.trim();
       if (registradoPor.isEmpty()) {
         registradoPor = "Sistema";
@@ -240,12 +218,30 @@ public class AbastecimientoDashboardQueryService {
         mov.getId(),
         mov.getItemTipo(),
         mov.getItemId(),
-        itemNombre,
+        resolveItemNombre(mov, nombresIngredientes, nombresInsumos),
         mov.getTipoMovimiento(),
         mov.getCantidad(),
         mov.getSaldoPosterior(),
-        mov.getFechaMovimiento() != null ? mov.getFechaMovimiento().format(DateTimeFormatter.ISO_DATE_TIME) : null,
-        registradoPor
-    );
+        mov.getFechaMovimiento() != null
+            ? mov.getFechaMovimiento().format(DateTimeFormatter.ISO_DATE_TIME)
+            : null,
+        registradoPor);
+  }
+
+  private String resolveItemNombre(
+      InventarioMovimientoEntity mov,
+      Map<Long, String> nombresIngredientes,
+      Map<Long, String> nombresInsumos) {
+    if ("INGREDIENTE".equals(mov.getItemTipo())) {
+      return nombresIngredientes.getOrDefault(
+          mov.getItemId(),
+          "Ingrediente #" + mov.getItemId());
+    }
+    if ("INSUMO".equals(mov.getItemTipo())) {
+      return nombresInsumos.getOrDefault(
+          mov.getItemId(),
+          "Insumo #" + mov.getItemId());
+    }
+    return "Desconocido";
   }
 }

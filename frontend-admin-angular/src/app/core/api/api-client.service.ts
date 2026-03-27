@@ -295,7 +295,7 @@ export class ApiClientService {
 
   // Unidades de medida
   getUmedidas(): Observable<UmedidaSummary[]> {
-    return this.get<UmedidaSummary[]>("/abastecimiento/umedidas");
+    return this.get<UmedidaSummary[]>("/abastecimiento/unidades-medida");
   }
 
   // Ingredientes
@@ -386,7 +386,7 @@ export class ApiClientService {
     itemId: number,
   ): Observable<ItemProveedorSummary[]> {
     return this.get<ItemProveedorSummary[]>(
-      `/abastecimiento/items-proveedor/por-item?tipo=${encodeURIComponent(itemTipo)}&itemId=${itemId}`,
+      `/abastecimiento/items-proveedor?itemTipo=${encodeURIComponent(itemTipo)}&itemId=${itemId}`,
     );
   }
 
@@ -394,7 +394,7 @@ export class ApiClientService {
     proveedorId: number,
   ): Observable<ItemProveedorSummary[]> {
     return this.get<ItemProveedorSummary[]>(
-      `/abastecimiento/items-proveedor/por-proveedor/${proveedorId}`,
+      `/abastecimiento/items-proveedor/proveedor/${proveedorId}`,
     );
   }
 
@@ -437,7 +437,7 @@ export class ApiClientService {
     if (fechaHasta) params.append("fechaHasta", fechaHasta);
     const query = params.toString();
     return this.get<InventarioMovimientoSummary[]>(
-      `/abastecimiento/inventario/movimientos${query ? `?${query}` : ""}`,
+      `/abastecimiento/inventario${query ? `?${query}` : ""}`,
     );
   }
 
@@ -446,7 +446,7 @@ export class ApiClientService {
     referenciaId: string,
   ): Observable<InventarioMovimientoSummary[]> {
     return this.get<InventarioMovimientoSummary[]>(
-      `/abastecimiento/inventario/movimientos/por-referencia?tipo=${encodeURIComponent(referenciaTipo)}&referenciaId=${encodeURIComponent(referenciaId)}`,
+      `/abastecimiento/inventario/referencia/${encodeURIComponent(referenciaTipo)}/${encodeURIComponent(referenciaId)}`,
     );
   }
 
@@ -454,7 +454,7 @@ export class ApiClientService {
     payload: CreateInventarioMovimientoRequest,
   ): Observable<InventarioMovimientoSummary> {
     return this.post<InventarioMovimientoSummary>(
-      "/abastecimiento/inventario/movimientos",
+      "/abastecimiento/inventario",
       payload,
     );
   }
@@ -482,7 +482,7 @@ export class ApiClientService {
 
   getRecetasPorProducto(productoId: number): Observable<RecetaSummary[]> {
     return this.get<RecetaSummary[]>(
-      `/abastecimiento/recetas/por-producto/${productoId}`,
+      `/abastecimiento/recetas/producto/${productoId}`,
     );
   }
 

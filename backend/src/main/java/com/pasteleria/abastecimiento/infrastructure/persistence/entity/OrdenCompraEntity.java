@@ -51,7 +51,7 @@ public class OrdenCompraEntity {
   @Version
   private Long version;
 
-  @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<OrdenCompraDetalleEntity> detalles = new ArrayList<>();
 
   // Getters and Setters

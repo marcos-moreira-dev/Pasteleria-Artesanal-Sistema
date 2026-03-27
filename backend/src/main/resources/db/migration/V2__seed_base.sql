@@ -6,7 +6,7 @@ VALUES
 
 INSERT INTO usuario_sistema (rol_id, nombre_usuario, password_hash, nombres, apellidos, correo)
 VALUES
-  ((SELECT rol_id FROM rol_usuario WHERE codigo = 'ADMIN'), 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjXd.JYTGjS4mTPKxwqDzXcxzJ9hX4e', 'Admin', 'Pasteleria', 'admin@pasteleria.local'),
+  ((SELECT rol_id FROM rol_usuario WHERE codigo = 'ADMIN'), 'admin', '$2a$10$FD9cVwV0RU1adR/UbFsdH.eXX/ko0nb8is1UIf7DjPwnc4gl7hTA6', 'Admin', 'Pasteleria', 'admin@pasteleria.local'),
   ((SELECT rol_id FROM rol_usuario WHERE codigo = 'ATENCION'), 'atencion1', '$2a$10$bzIr6m.x1zKTWPC5EsiFye0SDV.kU8ZWzpodr5lfHr9shBZ/UelEC', 'Ana', 'Atencion', 'atencion1@pasteleria.local'),
   ((SELECT rol_id FROM rol_usuario WHERE codigo = 'PRODUCCION'), 'produccion1', '$2a$10$jVVgAGAti/qofTb5LFB5kOaT/.h3Bt8tIdhpcjj.hPY4flDHVjdrq', 'Pedro', 'Produccion', 'produccion1@pasteleria.local');
 

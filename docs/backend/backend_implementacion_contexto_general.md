@@ -2,20 +2,22 @@
 
 ## 1. Proposito
 
-Este documento sirve como guia maestra para leer e implementar el bloque `docs/backend` de Pasteleria.
+Este documento sirve como puerta de entrada a la documentacion del backend.
 
-Su objetivo es que otra IA o una persona pueda tomar esta carpeta y convertirla en backend real con poca ambiguedad.
+Su trabajo es fijar el contexto real del proyecto para que nadie implemente una
+API distinta a la que el sistema necesita hoy.
 
 ---
 
 ## 2. Naturaleza del backend
 
-Este backend pertenece a un sistema para una pasteleria mediana con estas superficies:
+Este backend pertenece a un sistema que ya tiene varias superficies reales:
 
 1. frontend publico en Astro
-2. cotizador publico
+2. formulario publico de cotizacion dentro de contacto
 3. frontend administrativo en Angular
-4. panel interno de produccion
+4. panel de produccion dentro del admin
+5. vertical de abastecimiento dentro del admin
 
 Aunque existan varias superficies, tecnicamente hay:
 
@@ -36,33 +38,35 @@ La carpeta backend debe asumirse con esta base:
 - Spring Security
 - monolito modular
 - `ApiResponse<T>` uniforme
-- SSE ligero para panel operativo cuando aporte valor
+- jobs y procesos async locales cuando corresponda
 
 ---
 
-## 4. Lo que el backend si debe resolver
+## 4. Lo que el backend debe resolver hoy
 
-- administrar clientes
-- administrar productos y categorias
-- registrar cotizaciones
-- convertir cotizaciones en pedidos
-- registrar pedidos
-- controlar estados de pedido
-- alimentar panel de produccion
-- exponer catalogo publico
-- soportar reportes async
+- login y seguridad
+- catalogo publico y branding
+- activos publicos de producto
+- clientes
+- productos
+- cotizaciones publicas e internas
+- conversion de cotizacion a pedido
+- pedidos y cambios de estado
+- produccion
+- reportes async
+- notificaciones internas
+- abastecimiento: inventario, proveedores, recetas, compras y movimientos
 
 ---
 
-## 5. Lo que el backend no debe asumir de inicio
+## 5. Lo que el backend no debe prometer en esta fase
 
 - ecommerce completo
 - pagos en linea
 - carrito complejo
 - microservicios
-- integraciones externas duras
 - broker distribuido
-- delivery complejo
+- integraciones externas duras
 
 ---
 
@@ -79,47 +83,25 @@ Orden recomendado:
 
 ---
 
-## 7. Funcion de cada documento
+## 7. Regla de implementacion
 
-### `backend_00_vision_backend_y_modulos.md`
-
-Define arquitectura, modulos, capas y reglas de acoplamiento.
-
-### `backend_01_modelo_de_dominios_y_agregados.md`
-
-Define agregados, casos de uso, invariantes y puntos transaccionales.
-
-### `backend_02_diseno_de_api_rest.md`
-
-Define versionado, rutas, `ApiResponse`, paginacion y errores HTTP.
-
-### `backend_03_dtos_y_contratos_api.md`
-
-Define DTOs, filtros, mapeo y reglas de exposicion de datos.
-
-### `backend_04_seguridad_testing_y_operacion.md`
-
-Define seguridad, manejo de errores, auditoria, reportes async, testing y operacion.
-
----
-
-## 8. Regla de implementacion
-
-Cuando haya una duda, se aplica esta prioridad:
+Cuando haya duda, se aplica esta prioridad:
 
 1. manda el dominio y el alcance de Pasteleria
 2. manda la DB como fuente de verdad relacional
-3. manda el backend como fuente de verdad de reglas tecnicas
-4. el frontend consume contratos; no redefine negocio
+3. manda el backend como fuente de verdad tecnica
+4. los frontends consumen contratos; no redefinen negocio
 
 ---
 
-## 9. Referencia inteligente permitida
+## 8. Resultado esperado
 
-Si hace falta reforzar el backend con ideas de ingenieria, documentacion o fragmentos puntuales, se puede consultar:
+El backend no debe sentirse como una suma de CRUDs.
 
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Java\Sistema UE Niñitos Soñadores`
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Proyecto tienda Electronica promedio`
+Debe sentirse como la autoridad central de:
 
-La referencia sirve, pero no reemplaza el dominio de Pasteleria.
-
+- reglas
+- estados
+- trazabilidad
+- contratos
+- y coherencia operativa

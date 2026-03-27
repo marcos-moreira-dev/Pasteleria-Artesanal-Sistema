@@ -2,22 +2,50 @@
 
 ## 1. Proposito
 
-Este documento fija la linea canonica de la base de datos de Pasteleria para que:
+Este documento fija la linea canonica de la base de datos de Pasteleria para
+que sea:
 
-- sea realista,
-- sea moderada,
-- no se quede corta,
-- y no se infle artificialmente.
+- realista
+- moderada
+- coherente con el codigo
+- y util para estudio serio
 
 ---
 
-## 2. Criterio de moderacion
+## 2. Cobertura funcional actual de la DB
 
-La DB de Pasteleria debe sentirse como una base de datos comun de negocio real.
+La DB canonica no cubre solo ventas. Hoy soporta estas areas:
+
+- acceso y usuarios
+- clientes
+- catalogo de productos y categorias
+- cotizaciones
+- pedidos
+- produccion
+- ingredientes e insumos
+- recetas
+- proveedores
+- ordenes de compra
+- movimientos de inventario
+- archivos
+- jobs de reporte
+- notificaciones
+- auditoria
+
+La referencia manual oficial para bootstrap completo es:
+
+- `db/V1/DATABASE_SCHEMA_CANONICO.sql`
+- `db/V1/DATABASE_SEED_CANONICO.sql`
+
+---
+
+## 3. Criterio de moderacion
+
+La DB de Pasteleria debe sentirse como una base de datos de negocio real.
 
 Eso significa:
 
-- suficientes entidades para soportar clientes, productos, pedidos, cotizaciones, produccion, usuarios y reportes
+- suficientes entidades para soportar operacion comercial, produccion y abastecimiento
 - relaciones naturales de negocio
 - catalogos utiles
 - constraints reales
@@ -25,18 +53,18 @@ Eso significa:
 No significa:
 
 - multiplicar tablas sin valor operativo
-- o convertir cada atributo secundario en una entidad nueva solo por academicismo
+- convertir cada atributo secundario en entidad por academicismo
 
 ---
 
-## 3. Secuencia documental obligatoria
+## 4. Secuencia documental obligatoria
 
 La capa DB debe leerse en este orden:
 
 1. modelo conceptual del dominio
 2. modelo conceptual para persistencia
-3. segunda forma normal (2FN)
-4. tercera forma normal (3FN)
+3. segunda forma normal
+4. tercera forma normal
 5. modelo logico relacional oficial
 6. diccionario de datos
 7. reglas de integridad y constraints
@@ -47,30 +75,9 @@ La capa DB debe leerse en este orden:
 
 ---
 
-## 4. Entidades base que justifican una DB realista
-
-Como linea general, las entidades nucleares de Pasteleria deben gravitar alrededor de:
-
-- cliente
-- producto
-- categoria
-- pedido
-- detalle de pedido
-- cotizacion
-- detalle de cotizacion
-- produccion
-- usuario
-- rol o control de acceso
-- catalogos de estado
-- reportes o solicitudes de reporte si aplica
-
-Ese rango es lo bastante comun para parecerse a sistemas reales y lo bastante controlado para una V1 seria.
-
----
-
 ## 5. Integridad minima obligatoria
 
-La documentacion DB debe dejar claramente definidos:
+La documentacion DB debe dejar definidos:
 
 - PK
 - FK
@@ -79,47 +86,41 @@ La documentacion DB debe dejar claramente definidos:
 - nulabilidad coherente
 - auditoria minima
 
-Ejemplos de integridad relevantes:
+Ejemplos relevantes:
 
 - categoria valida para producto
 - producto activo para nuevas operaciones
+- cotizacion convertible una sola vez
 - pedido con detalle coherente
-- cotizacion convertible solo una vez
-- transiciones de estado controladas por backend y sostenidas documentalmente en DB
+- orden de compra y recepcion coherentes
+- movimientos de inventario referenciables
 
 ---
 
-## 6. Pruebas minimas de consistencia recomendadas
+## 6. Temas computacionales que debes dominar aqui
 
-Aunque por ahora sean superficiales, deben anticiparse pruebas como:
+Si quieres estudiar esta capa como profesional, los temas mas importantes son:
+
+- modelado relacional
+- normalizacion con criterio
+- claves, constraints e integridad referencial
+- indices y consultas operativas
+- seeds coherentes con el codigo
+- migraciones y versionado de schema
+- modelado de catalogos y estados
+- relacion entre dominio, JPA y PostgreSQL
+
+---
+
+## 7. Pruebas minimas de consistencia recomendadas
+
+Deben anticiparse pruebas como:
 
 - insercion valida de cliente
 - insercion de pedido con detalle
 - violacion de unicidad
 - relacion inexistente
 - cotizacion ya convertida
-- consulta de pedidos pendientes
+- recepcion de orden de compra
 - consulta de produccion pendiente
-
-Esas pruebas luego pueden codificarse como `TC-xx`.
-
----
-
-## 7. Regla de referencia inteligente
-
-La capa DB puede apoyarse en:
-
-- `C:\Users\MARCOS MOREIRA\Downloads\estandar_modelado_db_moderado_y_codigos_documentales.md`
-
-Y como referencia inteligente:
-
-- `D:\Carrera Profesional\Práctica de habilidades profesionales\Programación\Java\Sistema UE Niñitos Soñadores`
-- `D:\Carrera Profesional\Práctica de habilidades profesionales\Programación\Proyecto tienda Electronica promedio`
-
-Eso puede ayudar con:
-
-- diccionario
-- constraints
-- seeds
-- naming
-- y checklist de consistencia
+- consulta de inventario y movimientos

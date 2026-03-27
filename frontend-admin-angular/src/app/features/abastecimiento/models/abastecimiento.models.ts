@@ -397,8 +397,8 @@ export interface OrdenCompraSummary {
   observaciones?: string;
   fechaEntregaEstimada?: string;
   createdAt: string;
-  createdById: number;
-  createdByNombre: string;
+  createdById?: number;
+  createdByNombre?: string;
 }
 
 export interface OrdenCompraDetalleSummary {
@@ -434,6 +434,7 @@ export interface CreateOrdenCompraRequest {
 
 export interface UpdateOrdenCompraRequest {
   proveedorId?: number;
+  codigo?: string;
   observaciones?: string;
   fechaEntregaEstimada?: string | null;
   detalles?: OrdenCompraDetalleItem[];

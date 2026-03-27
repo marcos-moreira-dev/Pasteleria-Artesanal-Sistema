@@ -43,8 +43,8 @@ const ESTADO_LABELS: Record<string, string> = {
         <p class="surface-copy">Seguimiento de preparación, decoración, empaque y salida final de cada pedido.</p>
         
         <!-- FILTROS -->
-        <div class="filter-toolbar" style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-          <label class="search-box" style="flex: 1; min-width: 200px;">
+        <div class="filter-toolbar">
+          <label class="search-box filter-toolbar__search">
             <span>Buscar pedido</span>
             <input 
               type="search" 
@@ -54,7 +54,7 @@ const ESTADO_LABELS: Record<string, string> = {
             />
           </label>
           
-          <div class="chip-row" style="flex-wrap: nowrap;">
+          <div class="chip-row chip-row--nowrap">
             <span class="surface-meta">Estado:</span>
             <button
               *ngFor="let estado of estadosFiltro"
@@ -74,11 +74,11 @@ const ESTADO_LABELS: Record<string, string> = {
           Mostrando {{ (currentPage() * pageSize()) + 1 }} - 
           {{ Math.min((currentPage() + 1) * pageSize(), allFilteredProductionsList().length) }} 
           de {{ allFilteredProductionsList().length }} trabajos
-          <span *ngIf="searchQuery() || estadoFilter() !== 'TODOS'" style="color: #8a5c46; font-weight: 600;">
+          <span *ngIf="searchQuery() || estadoFilter() !== 'TODOS'" class="pager__meta pager__meta--accent">
             (filtrado)
           </span>
         </p>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <div class="pager-inline">
           <button 
             class="mini-button" 
             [disabled]="currentPage() === 0"
@@ -86,7 +86,7 @@ const ESTADO_LABELS: Record<string, string> = {
           >
             ← Anterior
           </button>
-          <span style="padding: 0.4rem 0.8rem; background: #f3e0d6; border-radius: 4px; font-weight: 600; color: #5f3929;">
+          <span class="page-chip">
             {{ currentPage() + 1 }} / {{ totalPages() }}
           </span>
           <button 
@@ -441,7 +441,39 @@ const ESTADO_LABELS: Record<string, string> = {
       font-weight: 600;
     }
 
+    .chip-row--nowrap {
+      flex-wrap: nowrap;
+    }
+
+    .filter-toolbar__search {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .pager-inline {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .page-chip {
+      padding: 0.4rem 0.8rem;
+      background: #f3e0d6;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #5f3929;
+    }
+
+    .pager__meta--accent {
+      color: #8a5c46;
+      font-weight: 600;
+    }
+
     .filter-toolbar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
       background: linear-gradient(180deg, #fdf9f6, #f9f3ed);
       border: 1px solid #eaddd4;
       border-radius: 6px;

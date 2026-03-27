@@ -81,7 +81,7 @@ Esta revisión comprehensiva cubrió todos los componentes del Módulo de Abaste
 
 ### Base de Datos
 
-- ✅ `04_seed_abastecimiento.sql` - Datos semilla documentados
+- ✅ `DATABASE_SEED_CANONICO.sql` - Datos semilla consolidados y documentados
 
 ### Documentación
 
@@ -279,7 +279,7 @@ Para estudiantes que desean comprender este módulo:
 
 #### Nivel 5: Base de Datos (2-3 horas)
 
-1. Revisar `04_seed_abastecimiento.sql`
+1. Revisar `DATABASE_SEED_CANONICO.sql`
 2. Entender relaciones entre tablas
 3. Analizar consultas del dashboard
 

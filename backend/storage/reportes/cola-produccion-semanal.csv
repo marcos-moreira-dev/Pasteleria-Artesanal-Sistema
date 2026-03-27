@@ -1,0 +1,6 @@
+codigo_pedido,cliente,estado_produccion,prioridad,observaciones
+PED-0202,Hotel Mirador,PENDIENTE,URGENTE,Espera confirmacion final del hotel antes de pasar a cocina.
+PED-0212,Karen Montalvo,PREPARACION,URGENTE,Se inicio mise en place para pedido urgente.
+PED-0201,Corporacion Brisa,DECORACION,URGENTE,Decoracion de galletas de marca y cierre de montaje.
+PED-0203,Universidad Costa,EMPAQUE,URGENTE,Empaque final y armado de zona de entrega para feria.
+PED-0107,Fernanda Solis,PENDIENTE,URGENTE,Reservado para produccion anticipada.

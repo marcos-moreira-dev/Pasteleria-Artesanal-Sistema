@@ -2,7 +2,7 @@
 
 ## 1. Proposito
 
-Este documento fija la politica de configuracion del proyecto de Pasteleria.
+Este documento fija la politica de configuracion del proyecto.
 
 ---
 
@@ -46,10 +46,20 @@ Aplican sobre todo al backend, pero tambien deben reflejarse en Astro y Angular.
 
 ---
 
-## 6. Reglas de secretos
+## 6. Reglas de configuracion
 
 - no hardcodear secretos
-- `.env.example` solo con placeholders
+- `.env.example` solo con valores seguros o placeholders
 - URLs por entorno
 - rutas de storage configurables
+- defaults locales coherentes con los scripts de arranque
 
+---
+
+## 7. Temas computacionales que debes dominar aqui
+
+- configuracion por entorno
+- secretos vs configuracion publica
+- precedence de variables
+- defaults seguros
+- consistencia entre app, docs y scripts

@@ -1,130 +1,122 @@
 # Pastelería
 
-Sistema integral para una pastelería del norte de Guayaquil, pensado para coordinar vitrina pública, atención comercial, cotizaciones, pedidos y producción desde una arquitectura coherente y mantenible.
+Sistema integral para una pastelería artesanal con vitrina pública, operación comercial, producción, abastecimiento y soporte administrativo de punta a punta.
 
-La V1 no se plantea como ecommerce completo. El producto acordado combina:
+![Hero del proyecto](images%20readme/readme-hero.png)
+_Capturas definitivas del README en `images readme/`._
 
-- `PostgreSQL + Flyway` como base transaccional
-- `Spring Boot 4` como backend central
-- `Astro` como superficie pública comercial
-- `Angular` como consola administrativa
-- flujo de producción conectado al pedido
-- canal público de solicitud de cotización
+## Qué demuestra este proyecto
 
-## Estado actual
+- Una superficie pública pensada para vender: marca, catálogo y contacto.
+- Un panel administrativo que recorre clientes, productos, cotizaciones, pedidos, producción, reportes y abastecimiento.
+- Un backend Spring Boot modular con seguridad JWT, auditoría, reportes, notificaciones y persistencia PostgreSQL.
+- Un set canónico de base de datos listo para demo local y revisión técnica.
 
-La base documental está prácticamente cerrada y el código ya tiene una primera implementación funcional:
+## Stack
 
-- backend modular con seguridad JWT, catálogo, clientes, cotizaciones, pedidos, producción y auditoría básica
-- frontend administrativo con login, consulta operativa, formularios base y transiciones de estado
-- frontend público con landing bilingüe `es/en`, catálogo, contacto y solicitud pública de cotización
-- pruebas web iniciales del backend
-- seed enriquecido de demo con datos de operación, reportes, notificaciones y auditoría para estudiar escenarios más reales
-- **módulo de Abastecimiento** diseñado e implementado: inventario de ingredientes e insumos, recetas vinculadas a productos, órdenes de compra, órdenes de producción y movimientos de inventario
+- Java 21 + Spring Boot 4
+- PostgreSQL
+- Angular para el panel administrativo
+- Astro para la experiencia pública
+- JWT, Flyway, Actuator y assets centralizados en backend
 
-## Stack congelado
+## Base de datos canónica
 
-- `Java 21` con `Eclipse Temurin 21`
-- `Spring Boot 4`
-- `PostgreSQL 17`
-- `Flyway`
-- `Node.js 22.12.0+`
-- `Astro 5.x`
-- `Angular 21.x`
-- `TypeScript 5.x` en Astro y `5.9.x` en Angular
-- `RxJS 7.8+`
-- `Monolito modular`
+La ruta oficial de base de datos para levantar el demo completo es:
+
+- Esquema: `db/V1/DATABASE_SCHEMA_CANONICO.sql`
+- Seeds: `db/V1/DATABASE_SEED_CANONICO.sql`
+
+El seed canónico ya cubre el sistema completo: roles, usuarios, catálogo, clientes, cotizaciones, pedidos, producción, ingredientes, insumos, proveedores, órdenes de compra, movimientos, recetas, archivos, jobs de reporte, notificaciones y auditoría.
+
+Para este repositorio, esa es la referencia única. No hace falta mezclar SQL legacy.
 
 ## Arranque local
 
-1. Configura variables base desde [.env.example](C:\Users\MARCOS MOREIRA\Downloads\Pastelería\.env.example).
-2. Inicializa la base del proyecto:
-   `.\scripts\init-db.ps1`
-   Si ya tenías una base previa y solo quieres sumar el seed empresarial sin resetear:
-   `.\scripts\apply-demo-delta.ps1`
-3. Build del backend (una vez, incluye assets):
-   `cd backend`
-   `mvnw.cmd clean package -DskipTests`
-4. Inicia el backend:
-   `.\scripts\start-backend-dev.cmd`
+Atajo recomendado en Windows:
 
-   Si prefieres levantarlo manualmente:
-   `java -jar target\pasteleria-backend-0.0.1-SNAPSHOT.jar`
+- `.\INICIAR_SISTEMA.bat`
 
-   > El backend sirve imágenes desde `backend/storage/assets/`. Ejecuta desde la carpeta `backend/`.
+1. Inicializa la base:
+   - `.\scripts\init-db.ps1`
+2. Inicia el backend:
+   - `cd backend`
+   - `.\scripts\start-backend-dev.cmd`
+3. Inicia el admin:
+   - `cd ..\frontend-admin-angular`
+   - `npm start`
+4. Inicia la vitrina pública:
+   - `cd ..\frontend-publico-astro`
+   - `npm run dev`
 
-5. Build del frontend público (backend debe estar corriendo):
-   `cd ..\frontend-publico-astro`
-   `npm install`
-   `npm run build`
-6. Inicia el frontend administrativo:
-   `cd ..\frontend-admin-angular`
-   `npm install`
-   `npm start`
+## Puertos esperados
 
-Puertos esperados:
+- Backend: `http://localhost:8080`
+- Admin: `http://localhost:4200`
+- Landing pública: `http://localhost:4321`
+- PostgreSQL local nativo: `localhost:5432`
+- PostgreSQL vía Docker Compose: `localhost:5436`
 
-- backend: `http://localhost:8080`
-- Astro público: `http://localhost:4321`
-- Angular admin: `http://localhost:4200`
-- PostgreSQL del proyecto: `localhost:5434`
+## Acceso demo
 
-## Despliegue con Docker
+- Usuario: `admin`
+- Contraseña: `admin12345`
 
-```bash
-docker compose up --build
-```
+## Recorrido visual del frontend público
 
-El volumen de `storage/` se monta automáticamente en el contenedor del backend.
+![Recorrido público](images%20readme/public-home.png)
+_Las capturas públicas finales viven en `images readme/`._
 
-## Demo rápida
+| Ventana | Qué comunica en el demo | Archivo sugerido para la captura |
+| --- | --- | --- |
+| Landing / Home | Presenta la propuesta de valor de la marca, la estética del negocio y el punto de entrada más fuerte para convertir interés en pedido o cotización. | `images readme/public-home.png` |
+| Catálogo | Expone los productos publicados con un recorrido claro para revisar oferta, categorías y productos destacados. | `images readme/public-catalogo.png` |
+| Contacto | Funciona como cierre comercial: canaliza conversaciones, pedidos especiales y oportunidades de seguimiento. | `images readme/public-contacto.png` |
+| Experiencia en inglés | Refuerza la percepción de producto cuidado y exportable al mostrar la misma propuesta pública en versión internacional. | `images readme/public-en.png` |
 
-Si quieres recorrer el sistema como producto funcional, sigue esta guía:
+## Recorrido visual del frontend administrativo
 
-- [Demo local y checklist de presentación](C:\Users\MARCOS MOREIRA\Downloads\Pastelería\docs\operacion\05_demo_local_y_checklist_presentacion.md)
+![Recorrido administrativo](images%20readme/admin-dashboard-general.png)
+_Las capturas administrativas finales viven en `images readme/`._
 
-Acceso administrativo demo:
+| Ventana | Qué comunica en el demo | Archivo sugerido para la captura |
+| --- | --- | --- |
+| Dashboard general | Da una lectura ejecutiva del negocio desde el primer vistazo: actividad, alertas y foco operativo. | `images readme/admin-dashboard-general.png` |
+| Clientes | Muestra control de cartera, historial comercial y capacidad de seguimiento al cliente. | `images readme/admin-clientes.png` |
+| Productos | Enseña cómo se administra el catálogo real que termina alimentando la vitrina pública. | `images readme/admin-productos.png` |
+| Cotizaciones | Demuestra el puente entre interés comercial y venta potencial con estados y detalle de propuestas. | `images readme/admin-cotizaciones.png` |
+| Pedidos | Refleja la operación viva del negocio: registro, seguimiento y priorización de pedidos. | `images readme/admin-pedidos.png` |
+| Producción | Expone el corazón operativo del taller: qué está pendiente, en proceso y finalizado. | `images readme/admin-produccion.png` |
+| Reportes | Sirve como evidencia de control gerencial, trazabilidad y lectura rápida del estado del negocio. | `images readme/admin-reportes.png` |
+| Abastecimiento / Dashboard | Resume inventario, alertas, reposición sugerida, movimientos y proveedores activos. | `images readme/admin-abastecimiento-dashboard.png` |
+| Abastecimiento / Inventario | Muestra gestión de stock, ajustes, movimientos recientes y navegación hacia compra. | `images readme/admin-abastecimiento-inventario.png` |
+| Abastecimiento / Compras | Enseña creación, edición, envío y recepción de órdenes de compra con flujo operativo real. | `images readme/admin-abastecimiento-compras.png` |
+| Abastecimiento / Proveedores | Refuerza la parte de abastecimiento con catálogo de proveedores y relación ítem-proveedor. | `images readme/admin-abastecimiento-proveedores.png` |
+| Abastecimiento / Movimientos | Expone trazabilidad de inventario y evidencia de entradas, salidas y ajustes. | `images readme/admin-abastecimiento-movimientos.png` |
 
-- usuario: `admin`
-- contraseña: `admin12345`
+## Validación mínima antes de publicar
 
-El seed enriquecido deja listo un entorno de estudio con categorías adicionales, más productos, más clientes, cotizaciones, pedidos, producción, archivos de reportes, jobs, notificaciones y eventos de auditoría.
+- Backend: `cd backend && .\mvnw.cmd test`
+- Backend empaquetado: `cd backend && .\mvnw.cmd -DskipTests package`
+- Admin Angular: `cd frontend-admin-angular && npm run build`
+- Landing Astro: `cd frontend-publico-astro && npm run build`
 
-## Ruta canónica de lectura
+## Documentación canónica
 
-1. [Índice canónico](C:\Users\MARCOS MOREIRA\Downloads\Pastelería\docs\00_indice_documentacion_canonica.md)
-2. `docs/negocio/`
-3. `docs/proyecto/`
-4. `docs/ux-ui/`
-5. `docs/base-datos/`
-6. `docs/backend/`
-7. `docs/frontend-publico-astro/`
-8. `docs/frontend-admin-angular/`
-9. `docs/modulo-abastecimiento/`
-10. `docs/operacion/`
+Si algún resumen o README discrepa con la documentación técnica, prevalece la documentación canónica:
 
-## Referencia inteligente
+1. [Índice canónico](docs/00_indice_documentacion_canonica.md)
+2. [Negocio y dominio](docs/negocio/)
+3. [Proyecto](docs/proyecto/)
+4. [Base de datos](docs/base-datos/)
+5. [Backend](docs/backend/)
+6. [Frontend público Astro](docs/frontend-publico-astro/)
+7. [Frontend admin Angular](docs/frontend-admin-angular/)
+8. [Infraestructura](docs/infraestructura/)
+9. [Operación](docs/operacion/)
 
-Si hace falta revisar decisiones de arquitectura, documentación, operación, despliegue o un fragmento puntual de implementación, este proyecto puede apoyarse en:
+## Notas operativas
 
-- `D:\Carrera Profesional\Práctica de habilidades profesionales\Programación\Java\Sistema UE Niñitos Soñadores`
-- `D:\Carrera Profesional\Práctica de habilidades profesionales\Programación\Proyecto tienda Electronica promedio`
-
-La referencia orienta, pero no sustituye el dominio ni el alcance de `Pastelería`.
-
-## Cierre de presentación
-
-Cuando el sistema ya esté más pulido y listo para mostrarse, este repositorio debe evolucionar a un README de producto más propagandístico con:
-
-1. logo del negocio
-2. capturas reales de la landing, catálogo y panel admin
-3. resumen corto del producto
-4. stack y arquitectura
-5. acceso rápido a la documentación
-
-Las capturas deben salir de la app funcionando, no de mockups.
-
-Para organizar esa etapa:
-
-- [Guía de assets y capturas para README](C:\Users\MARCOS MOREIRA\Downloads\Pastelería\docs\presentacion\00_guia_assets_y_capturas_para_readme.md)
-- [Placeholders de logo y capturas](C:\Users\MARCOS MOREIRA\Downloads\Pastelería\assets-readme)
+- El backend sirve branding e imágenes de producto desde `backend/storage/assets/`.
+- Los frontends consumen esas rutas; los assets de catálogo no viven duplicados en cada frontend.
+- Para demo y revisión técnica, usa exclusivamente el esquema y seed canónicos.

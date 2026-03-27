@@ -2,14 +2,15 @@
 
 ## 1. Proposito
 
-Este documento fija el contrato HTTP general del backend de Pasteleria.
+Este documento fija el contrato HTTP general del backend de Pasteleria segun el
+codigo real del proyecto.
 
 La API debe ser:
 
 - consistente
 - versionada
 - clara para Astro y Angular
-- y estable para futura implementacion automatizada
+- y estable para evolucion controlada
 
 ---
 
@@ -22,59 +23,66 @@ La API debe ser:
 - paginacion uniforme
 - errores estructurados
 
-Separacion funcional recomendada:
+La separacion funcional real hoy es:
 
-- `/api/v1/public/**`
-- `/api/v1/admin/**`
-- `/api/v1/internal/**` solo si se justifica para worker o infraestructura
+- `/api/v1/public/**` para catalogo y cotizacion publica
+- `/api/v1/auth/**` para autenticacion
+- `/api/v1/{modulo}` para modulos protegidos del admin
+- `/api/v1/abastecimiento/**` para la vertical de abastecimiento
+
+No se usa un prefijo `/admin` en los endpoints protegidos actuales.
 
 ---
 
 ## 3. Estandar `ApiResponse<T>`
 
-Respuesta exitosa sugerida:
+El contrato comun actual del proyecto es:
 
 ```json
 {
-  "ok": true,
+  "success": true,
+  "message": "Operacion completada",
   "data": {},
-  "meta": {
-    "requestId": "uuid",
-    "timestamp": "2026-03-16T10:15:30Z"
-  }
+  "errorCode": null,
+  "requestId": "uuid",
+  "timestamp": "2026-03-26T10:15:30Z"
 }
 ```
 
-Respuesta con error sugerida:
+Respuesta de error:
 
 ```json
 {
-  "ok": false,
-  "error": {
-    "code": "COTIZACION_NO_CONVERTIBLE",
-    "message": "La cotizacion no puede convertirse",
-    "details": []
-  },
-  "meta": {
-    "requestId": "uuid",
-    "timestamp": "2026-03-16T10:15:30Z"
-  }
+  "success": false,
+  "message": "La cotizacion no puede convertirse",
+  "data": null,
+  "errorCode": "COTIZACION_NO_CONVERTIBLE",
+  "requestId": "uuid",
+  "timestamp": "2026-03-26T10:15:30Z"
 }
 ```
+
+Regla:
+
+- `message` debe sonar operativo
+- `errorCode` debe ser estable
+- `requestId` debe permitir trazabilidad tecnica
 
 ---
 
 ## 4. Paginacion y filtros
 
-Convencion sugerida para listados:
+Convencion base para listados:
 
 - `page`
 - `size`
-- `sort`
 - filtros especificos por modulo
 
-`meta` puede incluir:
+La paginacion viaja dentro de `data` como `PageResponseDto<T>`.
 
+Campos minimos esperados:
+
+- `content`
 - `page`
 - `size`
 - `totalElements`
@@ -82,64 +90,100 @@ Convencion sugerida para listados:
 
 ---
 
-## 5. Endpoints principales
+## 5. Familias de endpoints principales
 
-### Auth y usuarios
+### Auth
 
 - `POST /api/v1/auth/login`
-- `GET /api/v1/admin/usuarios`
-- `POST /api/v1/admin/usuarios`
-- `PATCH /api/v1/admin/usuarios/{id}/estado`
+
+### Catalogo publico
+
+- `GET /api/v1/public/catalogo/categorias`
+- `GET /api/v1/public/catalogo/productos`
+- `GET /api/v1/public/catalogo/branding`
+
+### Cotizacion publica
+
+- `POST /api/v1/public/cotizaciones`
 
 ### Clientes
 
-- `GET /api/v1/admin/clientes`
-- `GET /api/v1/admin/clientes/{id}`
-- `POST /api/v1/admin/clientes`
-- `PUT /api/v1/admin/clientes/{id}`
+- `GET /api/v1/clientes`
+- `GET /api/v1/clientes/paginado`
+- `POST /api/v1/clientes`
+- `PUT /api/v1/clientes/{clientId}`
 
-### Catalogo y productos
+### Productos
 
-- `GET /api/v1/public/productos`
-- `GET /api/v1/public/productos/{id}`
-- `GET /api/v1/admin/productos`
-- `POST /api/v1/admin/productos`
-- `PUT /api/v1/admin/productos/{id}`
-- `PATCH /api/v1/admin/productos/{id}/estado`
+- `GET /api/v1/productos`
+- `GET /api/v1/productos/paginado`
+- `POST /api/v1/productos`
+- `PUT /api/v1/productos/{productId}`
+- `POST /api/v1/productos/{productId}/imagen`
 
-### Cotizaciones
+### Cotizaciones internas
 
-- `POST /api/v1/public/cotizaciones`
-- `GET /api/v1/admin/cotizaciones`
-- `GET /api/v1/admin/cotizaciones/{id}`
-- `PATCH /api/v1/admin/cotizaciones/{id}/estado`
-- `POST /api/v1/admin/cotizaciones/{id}/convertir`
+- `GET /api/v1/cotizaciones`
+- `GET /api/v1/cotizaciones/paginado`
+- `POST /api/v1/cotizaciones`
 
 ### Pedidos
 
-- `GET /api/v1/admin/pedidos`
-- `GET /api/v1/admin/pedidos/{id}`
-- `POST /api/v1/admin/pedidos`
-- `PATCH /api/v1/admin/pedidos/{id}/estado`
-- `POST /api/v1/admin/pedidos/{id}/entrega`
+- `GET /api/v1/pedidos`
+- `GET /api/v1/pedidos/paginado`
+- `POST /api/v1/pedidos`
+- `PATCH /api/v1/pedidos/{orderId}/estado`
 
 ### Produccion
 
-- `GET /api/v1/admin/produccion`
-- `GET /api/v1/admin/produccion/panel`
-- `PATCH /api/v1/admin/produccion/{id}/estado`
-- `GET /api/v1/admin/produccion/stream`
+- `GET /api/v1/produccion`
+- `GET /api/v1/produccion/paginado`
+- `PATCH /api/v1/produccion/{productionId}/estado`
 
 ### Reportes
 
-- `POST /api/v1/admin/reportes`
-- `GET /api/v1/admin/reportes`
-- `GET /api/v1/admin/reportes/{id}`
-- `GET /api/v1/admin/reportes/{id}/descarga`
+- `POST /api/v1/reportes`
+- `GET /api/v1/reportes`
+- `GET /api/v1/reportes/paginado`
+- `GET /api/v1/reportes/{jobId}/descargar`
+
+### Notificaciones
+
+- `GET /api/v1/notificaciones`
+- `GET /api/v1/notificaciones/resumen`
+- `PATCH /api/v1/notificaciones/{notificationId}/leer`
+- `PATCH /api/v1/notificaciones/{notificationId}/archivar`
+
+### Abastecimiento
+
+- `GET /api/v1/abastecimiento/dashboard`
+- `GET|POST /api/v1/abastecimiento/inventario`
+- `GET|POST|PUT|PATCH /api/v1/abastecimiento/proveedores`
+- `GET|POST|PUT /api/v1/abastecimiento/ordenes-compra`
+- `PATCH /api/v1/abastecimiento/ordenes-compra/{id}/estado`
+- `POST /api/v1/abastecimiento/ordenes-compra/{id}/recibir`
+- `GET|POST|PUT|PATCH /api/v1/abastecimiento/recetas`
+- `GET /api/v1/abastecimiento/ingredientes`
+- `GET /api/v1/abastecimiento/insumos`
 
 ---
 
-## 6. Errores de negocio esperados
+## 6. Temas computacionales que debes entender aqui
+
+Los conceptos mas importantes de esta capa son:
+
+- versionado de API
+- contratos estables entre frontend y backend
+- endpoints publicos vs protegidos
+- paginacion y filtros
+- semantica correcta de HTTP
+- diseno de errores de negocio
+- trazabilidad con `requestId`
+- integracion uniforme con `ApiResponse<T>`
+
+---
+
+## 7. Errores de negocio esperados
 
 Ejemplos minimos:
 
@@ -161,4 +205,3 @@ Mapeo HTTP sugerido:
 - `409` conflicto de negocio
 - `422` regla de negocio incumplida
 - `500` error inesperado
-

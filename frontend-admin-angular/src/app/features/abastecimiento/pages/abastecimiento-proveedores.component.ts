@@ -2,6 +2,7 @@ import { CommonModule, DecimalPipe } from "@angular/common";
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
+import { ApiClientService } from "../../../core/api/api-client.service";
 import { BackofficeStoreService } from "../../../core/store/backoffice-store.service";
 import { ADMIN_SURFACE_STYLES } from "../../../shared/ui/admin-surface.styles";
 import type {
@@ -524,6 +525,7 @@ import type {
   ],
 })
 export class AbastecimientoProveedoresComponent implements OnInit {
+  private readonly api = inject(ApiClientService);
   private readonly store = inject(BackofficeStoreService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -644,7 +646,7 @@ export class AbastecimientoProveedoresComponent implements OnInit {
     this.catalogProveedorId.set(proveedor.id);
     this.catalogProveedor.set(proveedor);
     this.loadingCatalog.set(true);
-    this.store["api"].getItemsProveedorPorProveedor(proveedor.id).subscribe({
+    this.api.getItemsProveedorPorProveedor(proveedor.id).subscribe({
       next: (items) => {
         this.providerItems.set(items);
         this.loadingCatalog.set(false);

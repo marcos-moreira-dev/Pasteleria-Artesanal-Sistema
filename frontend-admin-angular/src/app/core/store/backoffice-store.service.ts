@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from "@angular/core";
-import { Observable, catchError, forkJoin, of } from "rxjs";
+import { Observable, catchError, finalize, forkJoin, of } from "rxjs";
 import { ApiClientService } from "../api/api-client.service";
 import type { PageResponseDto } from "../contracts/api-contracts";
 import type {
@@ -35,6 +35,14 @@ import type {
 } from "../../features/produccion/models/production.models";
 import type {
   AbastecimientoDashboard,
+  CreateInventarioMovimientoRequest,
+  CreateItemProveedorRequest,
+  CreateOrdenCompraRequest,
+  CreateOrdenProduccionRequest,
+  CreateProveedorRequest,
+  CreateRecetaRequest,
+  EstadoOrdenCompra,
+  EstadoOrdenProduccion,
   FinalizarProduccionDetalleRequest,
   IniciarProduccionRequest,
   IngredienteSummary,
@@ -45,9 +53,15 @@ import type {
   OrdenProduccionDetailSummary,
   OrdenProduccionSummary,
   ProveedorSummary,
+  RecibirOrdenCompraRequest,
   RecetaSummary,
   RegistrarConsumoRequest,
   TipoMovimiento,
+  UpdateItemProveedorRequest,
+  UpdateOrdenCompraEstadoRequest,
+  UpdateOrdenCompraRequest,
+  UpdateRecetaRequest,
+  UpdateProveedorRequest,
 } from "../../features/abastecimiento/models/abastecimiento.models";
 
 interface BackofficeSnapshot {
@@ -324,32 +338,57 @@ export class BackofficeStoreService {
     size = 8,
     query = "",
     tipo: ItemTipo | "" = "",
+    afterComplete?: () => void,
   ) {
-    return this.api.getIngredientesPage(page, size, query, tipo).subscribe({
-      next: (pageData) =>
-        this.applyPagedResult(
-          pageData,
-          this.ingredientesPage,
-          (nextPage, nextSize) =>
-            this.loadIngredientesPage(nextPage, nextSize, query, tipo),
-        ),
-      error: () =>
-        this.setErrorMessage("No se pudo cargar la tabla de ingredientes."),
-    });
+    return this.api
+      .getIngredientesPage(page, size, query, tipo)
+      .pipe(finalize(() => afterComplete?.()))
+      .subscribe({
+        next: (pageData) =>
+          this.applyPagedResult(
+            pageData,
+            this.ingredientesPage,
+            (nextPage, nextSize) =>
+              this.loadIngredientesPage(
+                nextPage,
+                nextSize,
+                query,
+                tipo,
+                afterComplete,
+              ),
+          ),
+        error: () =>
+          this.setErrorMessage("No se pudo cargar la tabla de ingredientes."),
+      });
   }
 
-  loadInsumosPage(page = 0, size = 8, query = "", tipo: ItemTipo | "" = "") {
-    return this.api.getInsumosPage(page, size, query, tipo).subscribe({
-      next: (pageData) =>
-        this.applyPagedResult(
-          pageData,
-          this.insumosPage,
-          (nextPage, nextSize) =>
-            this.loadInsumosPage(nextPage, nextSize, query, tipo),
-        ),
-      error: () =>
-        this.setErrorMessage("No se pudo cargar la tabla de insumos."),
-    });
+  loadInsumosPage(
+    page = 0,
+    size = 8,
+    query = "",
+    tipo: ItemTipo | "" = "",
+    afterComplete?: () => void,
+  ) {
+    return this.api
+      .getInsumosPage(page, size, query, tipo)
+      .pipe(finalize(() => afterComplete?.()))
+      .subscribe({
+        next: (pageData) =>
+          this.applyPagedResult(
+            pageData,
+            this.insumosPage,
+            (nextPage, nextSize) =>
+              this.loadInsumosPage(
+                nextPage,
+                nextSize,
+                query,
+                tipo,
+                afterComplete,
+              ),
+          ),
+        error: () =>
+          this.setErrorMessage("No se pudo cargar la tabla de insumos."),
+      });
   }
 
   loadProveedoresPage(page = 0, size = 8, query = "") {
@@ -366,12 +405,15 @@ export class BackofficeStoreService {
     });
   }
 
-  loadProveedores() {
-    return this.api.getProveedores().subscribe({
-      next: (data) => this.proveedores.set(data),
-      error: () =>
-        this.setErrorMessage("No se pudo cargar la lista de proveedores."),
-    });
+  loadProveedores(afterComplete?: () => void) {
+    return this.api
+      .getProveedores()
+      .pipe(finalize(() => afterComplete?.()))
+      .subscribe({
+        next: (data) => this.proveedores.set(data),
+        error: () =>
+          this.setErrorMessage("No se pudo cargar la lista de proveedores."),
+      });
   }
 
   loadOrdenesCompraPage(page = 0, size = 8, query = "", estado = "") {
@@ -388,6 +430,37 @@ export class BackofficeStoreService {
           "No se pudo cargar la tabla de órdenes de compra.",
         ),
     });
+  }
+
+  loadOrdenesCompraPageTracked(
+    page = 0,
+    size = 8,
+    query = "",
+    estado = "",
+    afterComplete?: () => void,
+  ) {
+    return this.api
+      .getOrdenesCompraPage(page, size, query, estado)
+      .pipe(finalize(() => afterComplete?.()))
+      .subscribe({
+        next: (pageData) =>
+          this.applyPagedResult(
+            pageData,
+            this.ordenesCompraPage,
+            (nextPage, nextSize) =>
+              this.loadOrdenesCompraPageTracked(
+                nextPage,
+                nextSize,
+                query,
+                estado,
+                afterComplete,
+              ),
+          ),
+        error: () =>
+          this.setErrorMessage(
+            "No se pudo cargar la tabla de Ã³rdenes de compra.",
+          ),
+      });
   }
 
   loadOrdenCompraDetail(ordenId: number) {
@@ -418,8 +491,16 @@ export class BackofficeStoreService {
     itemTipo?: ItemTipo,
     itemId?: number,
     tipoMovimiento?: TipoMovimiento,
+    fechaDesde?: string,
+    fechaHasta?: string,
   ) {
-    return this.api.getMovimientos(itemTipo, itemId, tipoMovimiento).subscribe({
+    return this.api.getMovimientos(
+      itemTipo,
+      itemId,
+      tipoMovimiento,
+      fechaDesde,
+      fechaHasta,
+    ).subscribe({
       next: (data) => this.movimientos.set(data),
       error: () =>
         this.setErrorMessage("No se pudo cargar el historial de movimientos."),
@@ -725,7 +806,7 @@ export class BackofficeStoreService {
     });
   }
 
-  createProveedor(payload: any, afterSuccess?: () => void) {
+  createProveedor(payload: CreateProveedorRequest, afterSuccess?: () => void) {
     return this.runMutation(this.api.createProveedor(payload), {
       successMessage: "Proveedor registrado correctamente.",
       errorMessage: "No se pudo registrar el proveedor.",
@@ -739,7 +820,7 @@ export class BackofficeStoreService {
 
   updateProveedor(
     proveedorId: number,
-    payload: any,
+    payload: UpdateProveedorRequest,
     afterSuccess?: () => void,
   ) {
     return this.runMutation(this.api.updateProveedor(proveedorId, payload), {
@@ -790,7 +871,10 @@ export class BackofficeStoreService {
     });
   }
 
-  createItemProveedor(payload: any, afterSuccess?: () => void) {
+  createItemProveedor(
+    payload: CreateItemProveedorRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.createItemProveedor(payload), {
       successMessage: "Item de proveedor registrado correctamente.",
       errorMessage: "No se pudo registrar el item de proveedor.",
@@ -798,7 +882,11 @@ export class BackofficeStoreService {
     });
   }
 
-  updateItemProveedor(itemId: number, payload: any, afterSuccess?: () => void) {
+  updateItemProveedor(
+    itemId: number,
+    payload: UpdateItemProveedorRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.updateItemProveedor(itemId, payload), {
       successMessage: "Item de proveedor actualizado correctamente.",
       errorMessage: "No se pudo actualizar el item de proveedor.",
@@ -814,7 +902,10 @@ export class BackofficeStoreService {
     });
   }
 
-  createMovimiento(payload: any, afterSuccess?: () => void) {
+  createMovimiento(
+    payload: CreateInventarioMovimientoRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.createMovimiento(payload), {
       successMessage: "Movimiento registrado correctamente.",
       errorMessage: "No se pudo registrar el movimiento.",
@@ -825,7 +916,7 @@ export class BackofficeStoreService {
     });
   }
 
-  createReceta(payload: any, afterSuccess?: () => void) {
+  createReceta(payload: CreateRecetaRequest, afterSuccess?: () => void) {
     return this.runMutation(this.api.createReceta(payload), {
       successMessage: "Receta registrada correctamente.",
       errorMessage: "No se pudo registrar la receta.",
@@ -836,7 +927,11 @@ export class BackofficeStoreService {
     });
   }
 
-  updateReceta(recetaId: number, payload: any, afterSuccess?: () => void) {
+  updateReceta(
+    recetaId: number,
+    payload: UpdateRecetaRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.updateReceta(recetaId, payload), {
       successMessage: "Receta actualizada correctamente.",
       errorMessage: "No se pudo actualizar la receta.",
@@ -867,7 +962,10 @@ export class BackofficeStoreService {
     });
   }
 
-  createOrdenCompra(payload: any, afterSuccess?: () => void) {
+  createOrdenCompra(
+    payload: CreateOrdenCompraRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.createOrdenCompra(payload), {
       successMessage: "Orden de compra registrada correctamente.",
       errorMessage: "No se pudo registrar la orden de compra.",
@@ -879,7 +977,11 @@ export class BackofficeStoreService {
     });
   }
 
-  updateOrdenCompra(ordenId: number, payload: any, afterSuccess?: () => void) {
+  updateOrdenCompra(
+    ordenId: number,
+    payload: UpdateOrdenCompraRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.updateOrdenCompra(ordenId, payload), {
       successMessage: "Orden de compra actualizada correctamente.",
       errorMessage: "No se pudo actualizar la orden de compra.",
@@ -896,11 +998,11 @@ export class BackofficeStoreService {
 
   updateOrdenCompraEstado(
     ordenId: number,
-    estado: string,
+    estado: EstadoOrdenCompra,
     observaciones?: string,
   ) {
-    const payload = {
-      estado: estado as any,
+    const payload: UpdateOrdenCompraEstadoRequest = {
+      estado,
       observaciones,
     };
     return this.runMutation(
@@ -919,7 +1021,11 @@ export class BackofficeStoreService {
     );
   }
 
-  receiveOrdenCompra(ordenId: number, payload: any, afterSuccess?: () => void) {
+  receiveOrdenCompra(
+    ordenId: number,
+    payload: RecibirOrdenCompraRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.receiveOrdenCompra(ordenId, payload), {
       successMessage: "Orden de compra recibida correctamente.",
       errorMessage: "No se pudo recibir la orden de compra.",
@@ -934,7 +1040,10 @@ export class BackofficeStoreService {
     });
   }
 
-  createOrdenProduccion(payload: any, afterSuccess?: () => void) {
+  createOrdenProduccion(
+    payload: CreateOrdenProduccionRequest,
+    afterSuccess?: () => void,
+  ) {
     return this.runMutation(this.api.createOrdenProduccion(payload), {
       successMessage: "Orden de producción registrada correctamente.",
       errorMessage: "No se pudo registrar la orden de producción.",
@@ -947,11 +1056,11 @@ export class BackofficeStoreService {
 
   updateOrdenProduccionEstado(
     ordenId: number,
-    estado: string,
+    estado: EstadoOrdenProduccion,
     observaciones?: string,
   ) {
     const payload = {
-      estado: estado as any,
+      estado,
       observaciones,
     };
     return this.runMutation(

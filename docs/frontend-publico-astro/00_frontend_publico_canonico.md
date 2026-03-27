@@ -2,14 +2,15 @@
 
 ## 1. Proposito
 
-Este documento congela el criterio de ingenieria del frontend publico de Pasteleria.
+Este documento congela el criterio de ingenieria del frontend publico de
+Pasteleria.
 
 Su trabajo no es "hacer una landing bonita". Su trabajo real es:
 
 - presentar la marca
-- mostrar catalogo
-- guiar al cliente hacia contacto y cotizacion
-- y entregar una superficie publica consistente con el backend central
+- mostrar catalogo publicado
+- guiar al cliente hacia contacto
+- registrar una solicitud publica de cotizacion
 
 ---
 
@@ -20,13 +21,7 @@ La linea base documental del frontend publico queda asi:
 - `Node.js 22.12.0+`
 - `Astro 5.x`
 - `TypeScript 5.x`
-- estilos con `CSS` y variables de diseno propias del proyecto
-
-Reglas de alcance tecnico:
-
-- no se congela `Tailwind`, `React`, `Vue` ni otra libreria de UI como parte del baseline
-- si algun dia se adopta una libreria extra, debe registrarse como decision aparte
-- la compatibilidad debe seguir siendo coherente con `Node.js 22.12.0+`
+- estilos con `CSS` y variables propias del proyecto
 
 ---
 
@@ -46,23 +41,22 @@ No existe para:
 
 ---
 
-## 4. Alcance de V1
+## 4. Superficies visibles del producto actual
 
-La V1 del frontend publico debe cubrir:
+La aplicacion publica expone hoy estas rutas:
 
-- home de marca
-- presentacion del negocio
-- catalogo navegable
-- detalle simple de producto o categoria destacada
-- cotizador de tortas
-- contacto y datos del negocio
-- paginas legales minimas si se requieren
+- `/`
+- `/catalogo`
+- `/contacto`
+- `/en`
+- `/en/catalog`
+- `/en/contact`
 
-No debe venderse como:
+Lectura correcta:
 
-- ecommerce completo
-- checkout transaccional
-- portal de seguimiento de pedidos para cliente final
+- la solicitud publica de cotizacion vive hoy en `contacto`
+- no existe aun una pagina dedicada `/cotizador`
+- no existe aun una ficha publica de producto por `slug`
 
 ---
 
@@ -71,67 +65,36 @@ No debe venderse como:
 La opcion canonica es:
 
 - Astro como framework principal
-- renderizado mayormente ligero
-- hidratacion selectiva solo donde haga falta interaccion real
-- consumo de `GET /api/v1/public/**` para catalogo y contenido dinamico
-- consumo de `POST /api/v1/public/cotizaciones` para el cotizador
+- renderizado ligero
+- hidratacion minima
+- consumo de `GET /api/v1/public/**` para datos publicos
+- consumo de `POST /api/v1/public/cotizaciones` para la solicitud publica
 
-Regla importante:
+Regla:
 
 - una isla interactiva solo existe si aporta valor claro
 - no convertir todo el sitio en SPA por comodidad
 
 ---
 
-## 6. Superficies incluidas
-
-Este componente cubre:
-
-- home
-- catalogo
-- detalle de producto destacado o ficha simple
-- cotizador
-- contacto
-- secciones institucionales necesarias
-
-No cubre:
-
-- panel administrativo
-- panel de produccion
-- autenticacion interna
-
----
-
-## 7. Principios de implementacion
-
-1. Contenido claro antes que decoracion.
-2. Jerarquia visual comercial sin exagerar.
-3. Minima logica en cliente.
-4. Formularios con validacion humana y mensajes entendibles.
-5. SEO, accesibilidad y rendimiento tratados como requisitos reales.
-6. `i18n` cerrada a `es` y `en`, sin idiomas extra en V1.
-7. Logos, iconos y tipografias servidos desde assets locales del proyecto.
-
----
-
-## 8. Integracion con backend
+## 6. Integracion con backend
 
 El frontend publico depende del backend central para:
 
 - obtener productos publicables
 - obtener categorias visibles
+- obtener branding oficial
 - registrar solicitudes de cotizacion
-- registrar contacto si se habilita formulario
 
 Regla de contrato:
 
 - el frontend publico consume `ApiResponse<T>`
+- el contrato actual usa `success`, `message`, `data`, `errorCode`, `requestId` y `timestamp`
 - no interpreta entidades internas del backend
-- no conoce detalles de persistencia
 
 ---
 
-## 9. Estructura tecnica recomendada
+## 7. Estructura tecnica recomendada
 
 La estructura base razonable del proyecto es:
 
@@ -141,14 +104,10 @@ frontend-publico-astro/
     components/
     layouts/
     pages/
-    content/
     lib/
     styles/
   public/
     assets/
-      branding/
-      icons/
-      fonts/
   astro.config.mjs
   package.json
   tsconfig.json
@@ -157,66 +116,46 @@ frontend-publico-astro/
 Convencion util:
 
 - `components/` para piezas visuales reutilizables
-- `layouts/` para plantillas de pagina
+- `layouts/` para plantillas base
 - `pages/` para rutas
-- `lib/` para cliente API, utilidades y validaciones livianas
-- `styles/` para tokens, resets y capas visuales globales
-- `public/assets/branding/` para logos, favicons y recursos de marca
-- `public/assets/icons/` para iconos propios o descargados
-- `public/assets/fonts/` para tipografias locales listas para `@font-face`
+- `lib/` para cliente API y utilidades
+- `styles/` para tokens y capas globales
 
 ---
 
-## 10. Calidad minima exigida
+## 8. Temas computacionales que debes dominar aqui
+
+Si quieres estudiar este producto con criterio profesional, los temas mas
+importantes son:
+
+- renderizado y composicion en Astro
+- integracion de datos con `fetch`
+- rutas multilenguaje simples
+- arquitectura por layouts y componentes
+- formularios publicos y manejo de estados
+- accesibilidad, SEO y rendimiento
+- consumo de assets servidos por backend
+
+---
+
+## 9. Calidad minima exigida
 
 Antes de considerar cerrado este componente deben existir al menos:
 
 - `npm run build`
 - `npx astro check`
-- smoke manual de rutas principales
-- smoke manual del cotizador
+- smoke manual de home, catalogo y contacto
+- smoke manual del formulario de cotizacion
 - revision basica de accesibilidad
 
 ---
 
-## 11. Referencia inteligente
+## 10. Cierre
 
-Si hace falta estudiar patrones adicionales de documentacion, shell comercial o operacion, se puede revisar como referencia inteligente:
-
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Proyecto tienda Electronica promedio`
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Java\Sistema UE Ninitos Sonadores`
-
-La referencia ayuda, pero el dominio de Pasteleria sigue mandando.
-
----
-
-## 12. Cierre
-
-El frontend publico de Pasteleria debe sentirse como una superficie comercial seria:
+El frontend publico de Pasteleria debe sentirse como una superficie comercial
+seria:
 
 - limpia
 - clara
 - rapida
-- y conectada con el backend sin sobrecargarse de complejidad innecesaria
-
----
-
-## 13. Regla adicional de assets servidos por backend
-
-La V1 actual ya consolida una regla mas fuerte:
-
-- el backend sirve branding oficial y imagenes de producto
-- Astro consume esas rutas como contrato publico
-- el frontend no decide nombres de archivo de producto
-
-Implementacion esperada:
-
-- `GET /api/v1/public/catalogo/branding` entrega logo y banner
-- `GET /api/v1/public/catalogo/productos` ya entrega `imagePath` e `imageAlt`
-- para agregar una imagen nueva basta con copiar el archivo al backend usando el `slug` del producto como nombre base
-
-Los assets locales del frontend publico quedan reservados para:
-
-- iconos propios
-- tipografias locales
-- decoracion no critica del sitio
+- y conectada con el backend sin complejidad innecesaria

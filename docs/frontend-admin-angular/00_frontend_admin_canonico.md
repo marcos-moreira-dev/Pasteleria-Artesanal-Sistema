@@ -2,9 +2,10 @@
 
 ## 1. Proposito
 
-Este documento congela el criterio de ingenieria del frontend administrativo de Pasteleria.
+Este documento congela el criterio de ingenieria del frontend administrativo de
+Pasteleria.
 
-No es un escaparate visual. Es una consola de operacion para el negocio.
+No es un escaparate visual. Es una consola de operacion.
 
 ---
 
@@ -22,9 +23,7 @@ Reglas de baseline:
 
 - usar APIs modernas de Angular compatibles con la version 21
 - preferir componentes standalone
-- no congelar una libreria de componentes externa como obligatoria en esta fase
-
-Si luego se adopta `Angular Material` u otra libreria, debe registrarse como decision aparte.
+- no congelar una libreria externa de UI como obligatoria
 
 ---
 
@@ -33,12 +32,13 @@ Si luego se adopta `Angular Material` u otra libreria, debe registrarse como dec
 Este frontend existe para:
 
 - operar clientes
-- operar catalogo y categorias
+- operar catalogo
 - registrar y seguir cotizaciones
 - registrar y seguir pedidos
-- consultar panel de produccion
-- ejecutar reportes internos
-- atender notificaciones internas del backoffice
+- consultar y actualizar produccion
+- solicitar y descargar reportes
+- atender notificaciones internas
+- operar abastecimiento
 
 No existe para:
 
@@ -48,55 +48,59 @@ No existe para:
 
 ---
 
-## 4. Alcance de V1
+## 4. Superficies visibles del producto actual
+
+La aplicacion administrativa expone hoy estas ventanas principales:
+
+- login
+- dashboard general
+- clientes
+- productos
+- cotizaciones
+- pedidos
+- produccion
+- reportes
+- abastecimiento / dashboard
+- abastecimiento / inventario
+- abastecimiento / compras
+- abastecimiento / proveedores
+- abastecimiento / movimientos
+
+Lectura correcta:
+
+- categorias se administran dentro de productos, no como ruta separada
+- produccion vive como modulo interno del admin
+- abastecimiento ya es parte real del demo, no una idea futura
+
+---
+
+## 5. Alcance funcional de V1
 
 La V1 debe cubrir:
 
 - login administrativo
-- shell con navegacion por modulos
+- shell con navegacion estable
 - dashboard sobrio
-- clientes
-- productos y categorias
-- cotizaciones
-- pedidos
-- panel de produccion
-- reportes basicos
-- descarga autenticada de reportes generados
-- filtros operativos incrementales para clientes cuando el volumen crece
-- calculo automatico de precios cuando se elige un producto real del catalogo
-- polling corto en reportes y mensajes que desaparecen sin ensuciar el tablero
+- tablas y formularios operativos
+- filtros paginados en modulos pesados
+- feedback claro de carga, error y exito
+- polling corto donde el backend trabaja async
 
 ---
 
-## 5. Estilo arquitectonico recomendado
+## 6. Estilo arquitectonico recomendado
 
 La opcion canonica es:
 
 - Angular SPA para operacion interna
-- rutas lazy por modulo cuando tenga sentido
 - estado local y de pantalla controlado
 - consumo uniforme del backend central
+- facades y modelos por feature
 
 Regla clave:
 
 - el frontend administra experiencia y coordinacion
 - el backend sigue siendo la autoridad del negocio
-
-Decision actual de V1:
-
-- la busqueda de clientes se desacopla en una utilidad propia para no repetir filtros de texto en cada pantalla
-- clientes, cotizaciones, pedidos y reportes ya consumen paginacion y filtros de forma mas limpia
-- el formulario no debe resetearse antes de recibir confirmacion real del backend
-
----
-
-## 6. Principios de implementacion
-
-1. Shell estable y repetible.
-2. Formularios reactivos y predecibles.
-3. Tablas y filtros operativos antes que decoracion.
-4. Mensajes de carga, error y exito claros.
-5. Nada de copiar reglas complejas del backend por comodidad.
 
 ---
 
@@ -105,18 +109,21 @@ Decision actual de V1:
 Este admin consume principalmente:
 
 - `POST /api/v1/auth/login`
-- `GET|POST|PUT /api/v1/admin/clientes`
-- `GET|POST|PUT|PATCH /api/v1/admin/productos`
-- `GET|PATCH|POST /api/v1/admin/cotizaciones`
-- `GET|POST|PATCH /api/v1/admin/pedidos`
-- `GET|PATCH /api/v1/admin/produccion`
-- `POST|GET /api/v1/admin/reportes`
+- `GET|POST|PUT /api/v1/clientes`
+- `GET|POST|PUT /api/v1/productos`
+- `GET|POST /api/v1/cotizaciones`
+- `GET|POST|PATCH /api/v1/pedidos`
+- `GET|PATCH /api/v1/produccion`
+- `POST|GET /api/v1/reportes`
+- `GET|PATCH /api/v1/notificaciones`
+- `GET|POST|PUT|PATCH /api/v1/abastecimiento/**`
 
 Regla de contrato:
 
 - todo se consume como `ApiResponse<T>`
+- el contrato actual usa `success`, `message`, `data`, `errorCode`, `requestId` y `timestamp`
 - el admin no interpreta entidades JPA
-- los errores visibles deben traducirse a lenguaje de operacion
+- los errores visibles deben traducirse a lenguaje operativo
 
 ---
 
@@ -141,27 +148,34 @@ frontend-admin-angular/
 
 Convencion util:
 
-- `core/` para auth, cliente API, interceptores, guards y servicios transversales
-- `core/contracts/` para contratos API verdaderamente transversales como `ApiResponse`, `PageResponseDto` y `AuthResponse`
-- `core/api/` para cliente HTTP y config transversal
-- `core/store/` para estado compartido del backoffice y operaciones coordinadas entre modulos
-- `shared/` para componentes, estilos y utilidades reutilizables
+- `core/` para auth, cliente API, interceptores y guards
+- `core/contracts/` para contratos transversales
+- `core/api/` para cliente HTTP y config
+- `core/store/` para estado coordinado del backoffice
+- `shared/` para piezas reutilizables
 - `features/` para modulos por dominio
-- `layout/` para shell y piezas de navegacion
-
-Dentro de `shared/` conviene mantener un pequeno kit visual o de estilos transversales para que clientes, cotizaciones, pedidos, productos y produccion no terminen con pantallas aisladas entre si.
-
-La implementacion actual ya quedo mas cerca del criterio profesional del proyecto de referencia:
-
-- cada pagina consume un facade por feature en `features/*/state`
-- el shell consume un facade propio
-- y `core` ya no concentra una sola fachada gigante mezclada con HTTP
-- los modelos de TypeScript ya no viven en un solo archivo bolsa
-- cada dominio mantiene sus contratos en `features/*/models`
+- `layout/` para shell y navegacion
 
 ---
 
-## 9. Calidad minima exigida
+## 9. Temas computacionales que debes dominar aqui
+
+Si quieres estudiar este producto con criterio profesional, los temas mas
+importantes son:
+
+- routing y proteccion de rutas
+- componentes standalone
+- formularios reactivos
+- manejo de estado local con signals y RxJS
+- integracion HTTP con contratos tipados
+- tablas, filtros y paginacion
+- feedback de UX operativa
+- autenticacion, expiracion de sesion y guards
+- separacion por features y facades
+
+---
+
+## 10. Calidad minima exigida
 
 Antes de considerar cerrado este componente deben existir al menos:
 
@@ -169,17 +183,6 @@ Antes de considerar cerrado este componente deben existir al menos:
 - smoke de login
 - smoke de navegacion principal
 - smoke de formularios y tablas criticas
-
-Si existe target de pruebas del workspace, tambien debe quedar verde.
-
----
-
-## 10. Referencia inteligente
-
-Si hace falta estudiar patrones adicionales de operacion, desacople de pantallas o UX administrativa, se puede revisar como referencia inteligente:
-
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Proyecto tienda Electronica promedio\docs\04_ADMIN_APP_OPERACION_Y_UX.md`
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Java\Sistema UE Ninitos Sonadores\desktop\docs\18_desktop_arquitectura_paquetes_y_capas_mvvm.md`
 
 ---
 
@@ -191,17 +194,3 @@ El admin de Pasteleria debe sentirse como una herramienta de trabajo real:
 - directa
 - entendible
 - y bien amarrada al backend
-
----
-
-## 12. Regla adicional de imagenes y branding
-
-La consola administrativa no debe duplicar assets del catalogo.
-
-Reglas:
-
-- si el backend expone imagen de producto, el admin la consume
-- si no existe imagen real, el admin usa placeholder oficial del backend
-- el logo del acceso administrativo puede consumirse desde branding central del backend
-
-Esto permite que el equipo agregue o reemplace una imagen en backend y la vea en panel y landing sin tocar Angular.

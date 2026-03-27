@@ -3,6 +3,7 @@ package com.pasteleria.abastecimiento.application;
 import com.pasteleria.abastecimiento.application.OrdenCompraDetailDto.OrdenCompraDetalleDto;
 import com.pasteleria.abastecimiento.infrastructure.persistence.entity.OrdenCompraEntity;
 import com.pasteleria.abastecimiento.infrastructure.persistence.repository.OrdenCompraRepository;
+import com.pasteleria.common.error.ResourceNotFoundException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,7 +42,7 @@ public class OrdenCompraQueryService {
 
   public OrdenCompraDetailDto findOrdenById(Long id) {
     OrdenCompraEntity orden = ordenCompraRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Orden de compra no encontrada: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("Orden de compra no encontrada: " + id));
     
     return toDetailDto(orden);
   }

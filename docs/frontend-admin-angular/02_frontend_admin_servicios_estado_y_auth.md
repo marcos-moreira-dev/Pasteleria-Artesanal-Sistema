@@ -2,7 +2,8 @@
 
 ## 1. Proposito
 
-Este documento fija los servicios transversales del admin y el manejo correcto de sesion, estado y errores.
+Este documento fija los servicios transversales del admin y el manejo correcto
+de sesion, estado y errores.
 
 ---
 
@@ -16,7 +17,8 @@ En `core/` deben existir al menos:
 - `notification.service`
 - `error-mapper.service`
 
-Si se usan facades en flujos complejos, deben vivir cerca del modulo que coordinan.
+Si se usan facades en flujos complejos, deben vivir cerca del modulo que
+coordinan.
 
 ---
 
@@ -40,7 +42,7 @@ Regla:
 Controles recomendados en cliente:
 
 - guard de autenticacion
-- guard o filtro de navegacion por rol
+- filtro de navegacion por rol
 - control de visibilidad de acciones
 
 La autorizacion real la sigue definiendo el backend.
@@ -51,12 +53,14 @@ La autorizacion real la sigue definiendo el backend.
 
 Todo servicio HTTP debe esperar:
 
-- `ok`
+- `success`
+- `message`
 - `data`
-- `meta`
-- `error` cuando corresponda
+- `errorCode`
+- `requestId`
+- `timestamp`
 
-El admin no debe manejar respuestas heterogeneas por cada modulo.
+El admin no debe manejar respuestas heterogeneas por modulo.
 
 ---
 
@@ -122,9 +126,3 @@ Regla:
 3. Rechazo por falta de permisos.
 4. Error controlado cuando el backend no responde.
 5. Consumo correcto de `ApiResponse<T>` en una tabla y en un formulario.
-
----
-
-## 11. Cierre
-
-Si `auth`, `ApiResponse<T>` y estados de pantalla quedan unificados desde ahora, el admin gana mucha estabilidad y la IA comete menos errores estructurales al implementarlo.

@@ -2,7 +2,8 @@
 
 ## 1. Proposito
 
-Este documento fija la estrategia minima de calidad para que Pasteleria no se construya solo con "funciona en mi maquina".
+Este documento fija la estrategia minima de calidad para que Pasteleria no se
+construya solo con "funciona en mi maquina".
 
 ---
 
@@ -11,10 +12,10 @@ Este documento fija la estrategia minima de calidad para que Pasteleria no se co
 La V1 debe cuidar como minimo:
 
 - coherencia funcional
-- estabilidad de contratos API
+- estabilidad de contratos
 - integridad de datos
-- usabilidad operativa basica
-- capacidad de despliegue sin improvisacion
+- usabilidad operativa
+- capacidad de despliegue reproducible
 
 ---
 
@@ -24,7 +25,7 @@ La V1 debe cuidar como minimo:
 
 - pruebas unitarias de logica de backend
 - pruebas de validacion y reglas de negocio
-- pruebas de mapeo y contratos
+- pruebas de contratos y mapeo
 
 ### Capa media
 
@@ -35,7 +36,7 @@ La V1 debe cuidar como minimo:
 ### Capa superior
 
 - smoke tests de frontends
-- pruebas E2E de flujos criticos
+- E2E de flujos criticos
 - pruebas manuales guiadas antes de release
 
 Regla:
@@ -56,16 +57,17 @@ Regla:
 
 ### Backend
 
-- reglas `RN-01` a `RN-22`
-- `ApiResponse<T>`
 - seguridad de login y roles
+- `ApiResponse<T>`
 - conversion de cotizacion en pedido
-- reportes y jobs cuando existan
+- cambios de estado
+- reportes async
+- abastecimiento critico
 
 ### Frontend publico
 
 - catalogo
-- cotizador
+- contacto con solicitud de cotizacion
 - mensajes de error
 - build y accesibilidad base
 
@@ -74,12 +76,13 @@ Regla:
 - login
 - tablas y formularios
 - cambios de estado
-- panel de produccion
+- produccion
 - reportes
+- abastecimiento
 
 ---
 
-## 5. Tipos de prueba minimos a contemplar
+## 5. Tipos de prueba minimos
 
 - `TC-BE` para backend
 - `TC-FE` para frontends
@@ -104,17 +107,27 @@ Antes de considerar cerrada una version candidata:
 ## 7. Antipatrones a evitar
 
 1. Probar solo la UI.
-2. Dar por valida una regla porque "ya esta en la documentacion".
+2. Dar por valida una regla porque esta en la documentacion.
 3. Mezclar datos demo rotos con validacion de negocio real.
-4. Marcar release sin revisar cotizador, pedidos y produccion.
+4. Marcar release sin revisar reportes, produccion y abastecimiento.
 
 ---
 
-## 8. Referencia inteligente
+## 8. Temas computacionales que debes dominar aqui
 
-Para reforzar criterio de calidad y operacion se puede revisar:
+Si quieres estudiar calidad de software desde este proyecto, los temas clave son:
 
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Java\Sistema UE Ninitos Sonadores`
-- `D:\Carrera Profesional\Practica de habilidades profesionales\Programacion\Proyecto tienda Electronica promedio`
+- piramide de testing
+- cobertura util vs cobertura cosmetica
+- pruebas de contrato
+- pruebas de integracion con DB
+- smoke tests y release checks
+- criterio de salida
+- deuda tecnica y riesgo residual
 
-La referencia ayuda a cerrar mejor las pruebas, no a reemplazar la trazabilidad propia.
+---
+
+## 9. Resultado esperado
+
+Pasteleria debe poder salir a demo o GitHub con una calidad argumentable, no
+solo con intuicion.

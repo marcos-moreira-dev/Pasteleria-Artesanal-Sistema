@@ -37,7 +37,7 @@ public class ProductionQueryService {
   }
 
   public List<ProductionSummary> listProductionQueue() {
-    return productionRepository.findAll().stream()
+    return productionRepository.findAllWithOrderAndClient().stream()
         .sorted(buildProductionComparator())
         .map(productionDtoMapper::toSummary)
         .toList();

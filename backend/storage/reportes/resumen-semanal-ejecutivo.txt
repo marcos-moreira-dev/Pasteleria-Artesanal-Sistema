@@ -1,0 +1,9 @@
+Resumen semanal ejecutivo
+
+- Clientes activos: 20
+- Cotizaciones registradas: 20
+- Pedidos activos e historicos: 17
+- Produccion en curso: 8
+- Meta semanal cubierta con pedidos entregados
+
+Observacion: dataset demo ampliado para mostrar flujo comercial, operativo y de abastecimiento.

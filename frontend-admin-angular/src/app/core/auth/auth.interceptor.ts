@@ -1,5 +1,7 @@
-import { HttpInterceptorFn } from "@angular/common/http";
+import { HttpErrorResponse, HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { catchError, throwError } from "rxjs";
 import { AuthService } from "./auth.service";
 
 function buildRequestId(): string {
@@ -13,18 +15,23 @@ function buildRequestId(): string {
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
   const token = authService.token();
+  const request = req.clone({
+    setHeaders: {
+      "X-Request-Id": buildRequestId(),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
 
-  if (!token) {
-    return next(req);
-  }
-
-  return next(
-    req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-        "X-Request-Id": buildRequestId()
+  return next(request).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && !req.url.includes("/auth/login")) {
+        authService.logout();
+        void router.navigateByUrl("/login");
       }
-    })
+
+      return throwError(() => error);
+    }),
   );
 };

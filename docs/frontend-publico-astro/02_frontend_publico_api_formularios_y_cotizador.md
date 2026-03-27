@@ -1,22 +1,20 @@
-# 02 - Frontend publico: API, formularios y cotizador
+# 02 - Frontend publico: API, formularios y cotizacion publica
 
 ## 1. Proposito
 
-Este documento fija la integracion del frontend publico con el backend y el comportamiento esperado de formularios y cotizador.
+Este documento fija la integracion del frontend publico con el backend y el
+comportamiento esperado del formulario publico de cotizacion.
 
 ---
 
 ## 2. Endpoints publicos relevantes
 
-El frontend publico debe trabajar principalmente con:
+El frontend publico trabaja principalmente con:
 
-- `GET /api/v1/public/productos`
-- `GET /api/v1/public/productos/{id}` o equivalente por `slug`
+- `GET /api/v1/public/catalogo/categorias`
+- `GET /api/v1/public/catalogo/productos`
+- `GET /api/v1/public/catalogo/branding`
 - `POST /api/v1/public/cotizaciones`
-
-Si se habilita contacto estructurado, puede existir:
-
-- `POST /api/v1/public/contacto`
 
 ---
 
@@ -33,31 +31,30 @@ Esa capa debe:
 
 No debe:
 
-- filtrar reglas de negocio por su cuenta
 - inventar estados que el backend no conoce
+- duplicar validaciones profundas de negocio
 
 ---
 
-## 4. Cotizador como flujo guiado
+## 4. Solicitud publica de cotizacion
 
-La forma recomendada es un flujo por pasos o bloques con resumen persistente.
+En la V1 actual no existe una pagina dedicada `/cotizador`.
 
-Campos razonables:
+La capacidad publica vive como formulario dentro de `contacto`.
 
-- tipo de torta o categoria
-- tamano
-- sabor
-- relleno
-- decoracion
-- fecha estimada
-- observaciones
-- datos de contacto del cliente
+Campos base del flujo actual:
 
-Reglas UX:
+- nombre completo
+- telefono
+- email
+- tipo de celebracion
+- producto solicitado
+- porciones estimadas
+- presupuesto estimado
+- notas
 
-- cada paso debe tener objetivo claro
-- el usuario debe ver progreso
-- el resumen no debe desaparecer
+Regla UX:
+
 - la confirmacion final debe dejar claro que se genero una solicitud, no una compra pagada
 
 ---
@@ -69,7 +66,7 @@ La validacion del frontend solo debe cubrir:
 - campos requeridos
 - formato de correo o telefono
 - longitudes razonables
-- coherencia basica de fechas
+- coherencia basica de numeros
 
 La validacion fuerte sigue siendo del backend.
 
@@ -89,46 +86,9 @@ Los mensajes deben sonar humanos, no tecnicos.
 
 ---
 
-## 7. Manejo de errores recomendado
+## 7. Pruebas superficiales sugeridas
 
-Casos esperables:
-
-- backend no disponible
-- request invalido
-- cotizacion rechazada por regla de negocio
-
-Regla:
-
-- el frontend muestra mensaje claro
-- el detalle tecnico queda para logs o soporte
-
-Ejemplos de tono correcto:
-
-- "No pudimos enviar tu solicitud. Intenta nuevamente."
-- "Faltan datos obligatorios para continuar."
-
----
-
-## 8. Seguridad basica del componente
-
-Reglas minimas:
-
-- no exponer secretos
-- no dejar URLs privadas en cliente
-- no confiar en validaciones de navegador como unico control
-- evitar logs con datos sensibles del formulario en consola de produccion
-
----
-
-## 9. Pruebas superficiales sugeridas
-
-1. Enviar cotizacion valida.
-2. Intentar enviar cotizacion incompleta.
+1. Enviar una solicitud valida.
+2. Intentar enviar una solicitud incompleta.
 3. Simular backend caido.
 4. Verificar que el mensaje final no prometa compra ni pago.
-
----
-
-## 10. Cierre
-
-El cotizador es la capacidad publica mas importante del proyecto. Si su contrato, mensajes y estados quedan claros desde ahora, la implementacion con IA va a desviarse mucho menos.

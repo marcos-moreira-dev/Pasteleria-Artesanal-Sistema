@@ -2,7 +2,8 @@
 
 ## 1. Proposito
 
-Este documento cierra la capa operativa antes de release, demo seria o arranque disciplinado.
+Este documento cierra la capa operativa antes de release, demo seria o arranque
+disciplinado.
 
 ---
 
@@ -10,13 +11,13 @@ Este documento cierra la capa operativa antes de release, demo seria o arranque 
 
 1. Confirmar variables y secretos.
 2. Confirmar migraciones y seeds.
-3. Validar health check backend.
+3. Validar health check del backend.
 4. Validar login y roles.
 5. Validar catalogo publico.
-6. Validar cotizador.
-7. Validar frontend administrativo y panel de produccion.
+6. Validar contacto con solicitud de cotizacion.
+7. Validar frontend administrativo, produccion y abastecimiento.
 8. Validar reportes async y storage.
-9. Confirmar que el README publico pueda actualizarse con logo y capturas reales cuando la version ya merezca publicacion.
+9. Confirmar que el README publico pueda actualizarse con logo y capturas reales.
 
 ---
 
@@ -39,7 +40,7 @@ Revisar:
 - checksum
 - schema
 
-### OPS-03. Cotizador no registra solicitud
+### OPS-03. Solicitud publica no se registra
 
 Revisar:
 
@@ -48,7 +49,7 @@ Revisar:
 - CORS
 - logs de error
 
-### OPS-04. Angular o panel no consume backend
+### OPS-04. Admin no consume backend
 
 Revisar:
 
@@ -68,8 +69,10 @@ Revisar:
 
 ---
 
-## 4. Regla profesional
+## 4. Temas computacionales que debes dominar aqui
 
-Si el proyecto no tiene checklist ni runbooks, la operacion sigue dependiendo de memoria e intuicion.
-
-Eso no es una base enterprise.
+- runbooks
+- troubleshooting disciplinado
+- checklist de release
+- criterio de publicacion
+- operacion basada en evidencia y no en memoria

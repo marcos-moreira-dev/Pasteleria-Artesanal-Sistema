@@ -38,6 +38,7 @@ pnpm-debug.log*
 .docker/
 tmp/
 temp/
+backend/.backend-smoke.pid
 
 # Generated docs or diagrams
 *.drawio.bak

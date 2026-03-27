@@ -50,3 +50,12 @@ El pipeline debe fallar si:
 
 No conviene tolerar rojo en fases nucleares.
 
+---
+
+## 5. Temas computacionales que debes dominar aqui
+
+- pipeline minimo viable
+- gates de calidad
+- build reproducible
+- criterios de fallo
+- artefactos verificables antes de release

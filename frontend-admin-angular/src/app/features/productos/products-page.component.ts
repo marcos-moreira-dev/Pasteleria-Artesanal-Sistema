@@ -76,7 +76,7 @@ import { buildBackendAssetUrl } from "../../shared/utils/backend-asset.util";
               accept="image/*"
               (change)="onImageSelected($event)"
               #imageInput
-              style="display: none;"
+              class="visually-hidden-file-input"
             />
             <label class="image-upload-label">
               <span>Foto del producto</span>
@@ -539,6 +539,10 @@ import { buildBackendAssetUrl } from "../../shared/utils/backend-asset.util";
         background: #faf7f4;
         border: 1px dashed #c4a77d;
         border-radius: 6px;
+      }
+
+      .visually-hidden-file-input {
+        display: none;
       }
 
       .image-upload-label span {

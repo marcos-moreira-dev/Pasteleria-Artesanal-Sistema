@@ -123,66 +123,15 @@ import { ADMIN_SURFACE_STYLES } from "../../../shared/ui/admin-surface.styles";
  * // En routing
  * {
  *   path: 'abastecimiento',
- *   component: AbastecimientoShellComponent,
  *   children: [
- *     { path: '', component: AbastecimientoDashboardComponent }
+ *     { path: 'dashboard', component: AbastecimientoDashboardComponent }
  *   ]
  * }
  * ```
  *
  * @see BackofficeStoreService
- * @see AbastecimientoShellComponent
  * @author Pastelería Development Team
  */
-interface Alert {
-  id: string;
-  tipo: "CRITICO" | "BAJO" | "RIESGO" | "BLOQUEO";
-  itemId: string;
-  itemNombre: string;
-  itemCodigo: string;
-  mensaje: string;
-  stockActual: number;
-  stockMinimo: number;
-  unidad: string;
-}
-
-interface Suggestion {
-  id: string;
-  itemId: string;
-  itemNombre: string;
-  itemCodigo: string;
-  stockActual: number;
-  cantidadSugerida: number;
-  unidad: string;
-  proveedorId: string;
-  proveedorNombre: string;
-}
-
-interface Movement {
-  id: string;
-  fecha: string;
-  tipo: "ENTRADA" | "SALIDA" | "AJUSTE" | "TRASLADO";
-  itemId: string;
-  itemNombre: string;
-  cantidad: number;
-  saldo: number;
-  unidad: string;
-}
-
-interface Provider {
-  id: string;
-  nombre: string;
-  telefono: string;
-  ordenesActivas: number;
-}
-
-interface Dashboard {
-  alertas: Alert[];
-  sugerenciasReposicion: Suggestion[];
-  movimientosRecientes: Movement[];
-  proveedoresConOC: Provider[];
-}
-
 @Component({
   selector: "app-abastecimiento-dashboard",
   standalone: true,
@@ -252,7 +201,7 @@ interface Dashboard {
             </div>
             
             <!-- FILTROS -->
-            <div class="chip-row" style="margin-top: 0.75rem;">
+            <div class="chip-row chip-row--spaced">
               <button
                 class="chip"
                 [class.chip--active]="alertasFilter() === 'TODAS'"
@@ -261,18 +210,16 @@ interface Dashboard {
                 Todas
               </button>
               <button
-                class="chip"
+                class="chip chip--critical"
                 [class.chip--active]="alertasFilter() === 'CRITICO'"
                 (click)="setAlertasFilter('CRITICO')"
-                style="color: #b71c1c;"
               >
                 Crítico
               </button>
               <button
-                class="chip"
+                class="chip chip--warning"
                 [class.chip--active]="alertasFilter() === 'BAJO'"
                 (click)="setAlertasFilter('BAJO')"
-                style="color: #f57f17;"
               >
                 Bajo
               </button>
@@ -305,17 +252,13 @@ interface Dashboard {
           </div>
 
           <!-- PAGINACIÓN -->
-          <div
-            class="pagination-row"
-            *ngIf="alertasTotalPages() > 1"
-            style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-top: 1px solid #f1e8e2; margin-top: 0.5rem;"
-          >
-            <small style="color: #7a6054;">
+          <div class="pagination-row" *ngIf="alertasTotalPages() > 1">
+            <small class="pagination-summary">
               Mostrando {{ alertasPage() * alertasPageSize() + 1 }} - 
               {{ Math.min((alertasPage() + 1) * alertasPageSize(), alertasFiltradas().length) }} 
               de {{ alertasFiltradas().length }} alertas
             </small>
-            <div class="chip-row" style="gap: 0.5rem;">
+            <div class="chip-row chip-row--compact">
               <button
                 class="mini-button"
                 [disabled]="alertasPage() === 0"
@@ -323,7 +266,7 @@ interface Dashboard {
               >
                 ← Anterior
               </button>
-              <span style="padding: 0.5rem 1rem; background: #f3e0d6; border-radius: 4px; font-size: 0.85rem; color: #5f3929;">
+              <span class="pagination-current">
                 {{ alertasPage() + 1 }} / {{ alertasTotalPages() }}
               </span>
               <button
@@ -398,14 +341,14 @@ interface Dashboard {
             <div
               class="pagination-row"
               *ngIf="sugerenciasTotalPages() > 1"
-              style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-top: 1px solid #f1e8e2; margin-top: 0.5rem;"
-            >
-              <small style="color: #7a6054;">
+            class="pagination-row"
+          >
+            <small class="pagination-summary">
                 {{ sugerenciasPage() * sugerenciasPageSize() + 1 }} - 
                 {{ Math.min((sugerenciasPage() + 1) * sugerenciasPageSize(), sugerenciasFiltradas().length) }} 
                 de {{ sugerenciasFiltradas().length }}
               </small>
-              <div class="chip-row" style="gap: 0.5rem;">
+            <div class="chip-row chip-row--compact">
                 <button
                   class="mini-button"
                   [disabled]="sugerenciasPage() === 0"
@@ -413,7 +356,7 @@ interface Dashboard {
                 >
                   ←
                 </button>
-                <span style="padding: 0.5rem 1rem; background: #f3e0d6; border-radius: 4px; font-size: 0.85rem; color: #5f3929;">
+              <span class="pagination-current">
                   {{ sugerenciasPage() + 1 }} / {{ sugerenciasTotalPages() }}
                 </span>
                 <button
@@ -806,6 +749,44 @@ interface Dashboard {
         color: #4d2a1d;
         font-weight: 600;
       }
+
+      .chip-row--spaced {
+        margin-top: 0.75rem;
+      }
+
+      .chip-row--compact {
+        gap: 0.5rem;
+      }
+
+      .chip--critical {
+        color: #b71c1c;
+      }
+
+      .chip--warning {
+        color: #f57f17;
+      }
+
+      .pagination-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-top: 1px solid #f1e8e2;
+        margin-top: 0.5rem;
+        gap: 0.75rem;
+      }
+
+      .pagination-summary {
+        color: #7a6054;
+      }
+
+      .pagination-current {
+        padding: 0.5rem 1rem;
+        background: #f3e0d6;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        color: #5f3929;
+      }
     `,
   ],
 })
@@ -834,7 +815,6 @@ export class AbastecimientoDashboardComponent implements OnInit {
    * Inicialmente true, se establece a false después de 500ms.
    * Usado para mostrar estados de carga (spinners, skeletons).
    */
-  readonly loading = signal(true);
 
   // PAGINACIÓN Y FILTROS DE ALERTAS
   readonly alertasPage = signal(0);
@@ -890,12 +870,8 @@ export class AbastecimientoDashboardComponent implements OnInit {
    *
    * @implements OnInit
    */
-  ngOnInit() {
-    // Dispara la carga de datos del dashboard
+  ngOnInit(): void {
     this.store.loadAbastecimientoDashboard();
-
-    // Simula tiempo de carga para evitar parpadeo en UI
-    setTimeout(() => this.loading.set(false), 500);
   }
 
   /**
@@ -1024,14 +1000,16 @@ export class AbastecimientoDashboardComponent implements OnInit {
    * Navega a la lista de órdenes de compra.
    */
   navigateToOrders(): void {
-    this.router.navigate(["/abastecimiento/ordenes"]);
+    this.router.navigate(["/abastecimiento/compras"]);
   }
 
   /**
    * Navega a la pantalla de recepciones.
    */
   navigateToReceptions(): void {
-    this.router.navigate(["/abastecimiento/recepciones"]);
+    this.router.navigate(["/abastecimiento/compras"], {
+      queryParams: { estado: "ENVIADA,RECIBIDA_PARCIAL" },
+    });
   }
 
   /**
@@ -1045,8 +1023,8 @@ export class AbastecimientoDashboardComponent implements OnInit {
    * ```
    */
   createOrder(itemId: string): void {
-    this.router.navigate(["/abastecimiento/ordenes/nueva"], {
-      queryParams: { item: itemId },
+    this.router.navigate(["/abastecimiento/compras"], {
+      queryParams: { itemId },
     });
   }
 
@@ -1061,8 +1039,8 @@ export class AbastecimientoDashboardComponent implements OnInit {
    * ```
    */
   viewProviderOrders(providerId: string): void {
-    this.router.navigate(["/abastecimiento/ordenes"], {
-      queryParams: { proveedor: providerId },
+    this.router.navigate(["/abastecimiento/compras"], {
+      queryParams: { proveedorFiltro: providerId },
     });
   }
 }

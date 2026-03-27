@@ -499,11 +499,10 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
       }
 
       .header-actions {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
+        display: grid;
+        grid-template-columns: repeat(2, 15rem);
         align-items: stretch;
-        justify-content: flex-end;
+        justify-content: end;
         gap: 0.8rem;
         position: relative;
       }
@@ -530,7 +529,7 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
         justify-content: space-between;
         gap: 0.7rem;
         min-height: 4.2rem;
-        width: 100%;
+        width: 15rem;
         margin-top: 0;
         padding: 0.8rem 1rem;
         cursor: pointer;
@@ -544,7 +543,6 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
 
       .refresh-button {
         width: 15rem;
-        flex: 0 0 15rem;
       }
 
       .refresh-button__icon {
@@ -565,7 +563,6 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
       .notification-shell {
         position: relative;
         width: 15rem;
-        flex: 0 0 15rem;
       }
 
       .notification-badge {

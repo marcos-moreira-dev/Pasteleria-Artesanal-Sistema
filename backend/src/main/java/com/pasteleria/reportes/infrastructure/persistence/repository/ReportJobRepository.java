@@ -35,7 +35,7 @@ public interface ReportJobRepository extends JpaRepository<ReportJobEntity, Long
   @Query("""
       select job
         from ReportJobEntity job
-        left join fetch job.requestedByUser
+        join fetch job.requestedByUser
        where job.id = :jobId
       """)
   Optional<ReportJobEntity> findByIdForUpdate(@Param("jobId") Long jobId);

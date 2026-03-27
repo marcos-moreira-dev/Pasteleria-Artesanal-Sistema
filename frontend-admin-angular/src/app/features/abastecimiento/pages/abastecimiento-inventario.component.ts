@@ -1,14 +1,17 @@
 import { CommonModule, DecimalPipe, DatePipe } from "@angular/common";
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ApiClientService } from "../../../core/api/api-client.service";
 import { BackofficeStoreService } from "../../../core/store/backoffice-store.service";
 import { ADMIN_SURFACE_STYLES } from "../../../shared/ui/admin-surface.styles";
 import type {
+  CreateInventarioMovimientoRequest,
   IngredienteSummary,
   InsumoSummary,
   ItemProveedorSummary,
   InventarioMovimientoSummary,
+  TipoMovimiento,
 } from "../models/abastecimiento.models";
 
 @Component({
@@ -376,14 +379,14 @@ import type {
       </div>
 
       <div class="action-row panel-actions">
-        <button class="mini-button" (click)="editItem()">
+        <button class="mini-button" (click)="openAjusteFromPanel()">
           <img
-            src="assets/icons/abastecimiento/edit.svg"
+            src="assets/icons/abastecimiento/scale.svg"
             alt=""
             width="14"
             height="14"
           />
-          Editar
+          Ajustar stock
         </button>
         <button class="surface-button" (click)="createOrdenCompra()">
           <img
@@ -674,9 +677,12 @@ import type {
   ],
 })
 export class AbastecimientoInventarioComponent implements OnInit {
+  private readonly api = inject(ApiClientService);
   private readonly store = inject(BackofficeStoreService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private searchDebounceTimer: number | null = null;
 
   activeTab = signal<"ingredientes" | "insumos">("ingredientes");
   searchQuery = signal("");
@@ -691,7 +697,6 @@ export class AbastecimientoInventarioComponent implements OnInit {
 
   currentPage = signal(0);
   pageSize = signal(20);
-  totalItems = signal(0);
   isLoading = signal(false);
   isSubmitting = signal(false);
 
@@ -716,14 +721,39 @@ export class AbastecimientoInventarioComponent implements OnInit {
   });
 
   currentItems = computed(() => {
-    if (this.activeTab() === "ingredientes") {
-      return this.store.ingredientesPage()?.content || [];
+    const source =
+      this.activeTab() === "ingredientes"
+        ? this.store.ingredientesPage()?.content || []
+        : this.store.insumosPage()?.content || [];
+
+    if (this.estadoFilter().length === 0) {
+      return source;
     }
-    return this.store.insumosPage()?.content || [];
+
+    return source.filter((item) =>
+      this.estadoFilter().includes(this.getEstadoFilterValue(item)),
+    );
+  });
+
+  readonly totalItems = computed(() => {
+    if (this.estadoFilter().length > 0) {
+      return this.currentItems().length;
+    }
+
+    if (this.activeTab() === "ingredientes") {
+      return this.store.ingredientesPage()?.totalElements || 0;
+    }
+
+    return this.store.insumosPage()?.totalElements || 0;
   });
 
   ngOnInit(): void {
-    this.loadData();
+    this.route.queryParamMap.subscribe((params) => {
+      const estado = (params.get("estado") || "").trim().toUpperCase();
+      this.estadoFilter.set(estado ? [estado] : []);
+      this.currentPage.set(0);
+      this.loadData();
+    });
   }
 
   switchTab(tab: "ingredientes" | "insumos"): void {
@@ -735,10 +765,14 @@ export class AbastecimientoInventarioComponent implements OnInit {
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
-    setTimeout(() => {
+    if (this.searchDebounceTimer !== null) {
+      window.clearTimeout(this.searchDebounceTimer);
+    }
+    this.searchDebounceTimer = window.setTimeout(() => {
       this.currentPage.set(0);
       this.loadData();
-    }, 300);
+      this.searchDebounceTimer = null;
+    }, 250);
   }
 
   isEstadoSelected(estado: string): boolean {
@@ -766,25 +800,25 @@ export class AbastecimientoInventarioComponent implements OnInit {
     this.isLoading.set(true);
     const tipo = this.activeTab() === "ingredientes" ? "INGREDIENTE" : "INSUMO";
     const query = this.searchQuery() || "";
+    const finishLoad = () => this.isLoading.set(false);
 
     if (this.activeTab() === "ingredientes") {
-      this.totalItems.set(this.store.ingredientesPage()?.totalElements || 0);
       this.store.loadIngredientesPage(
         this.currentPage(),
         this.pageSize(),
         query,
         tipo,
+        finishLoad,
       );
     } else {
-      this.totalItems.set(this.store.insumosPage()?.totalElements || 0);
       this.store.loadInsumosPage(
         this.currentPage(),
         this.pageSize(),
         query,
         tipo,
+        finishLoad,
       );
     }
-    this.isLoading.set(false);
   }
 
   getStockClass(item: IngredienteSummary | InsumoSummary): string {
@@ -809,6 +843,16 @@ export class AbastecimientoInventarioComponent implements OnInit {
 
     if (stockActual <= 0) return "AGOTADO";
     if (stockActual <= stockMinimo * 0.5) return "CRÍTICO";
+    if (stockActual <= stockMinimo) return "BAJO";
+    return "NORMAL";
+  }
+
+  getEstadoFilterValue(item: IngredienteSummary | InsumoSummary): string {
+    const stockActual = item.stockActual;
+    const stockMinimo = item.stockMinimo;
+
+    if (stockActual <= 0) return "AGOTADO";
+    if (stockActual <= stockMinimo * 0.5) return "CRITICO";
     if (stockActual <= stockMinimo) return "BAJO";
     return "NORMAL";
   }
@@ -845,17 +889,21 @@ export class AbastecimientoInventarioComponent implements OnInit {
 
   loadPanelData(item: IngredienteSummary | InsumoSummary): void {
     const tipo = this.activeTab() === "ingredientes" ? "INGREDIENTE" : "INSUMO";
-    this.store["api"].getMovimientos(tipo, item.id).subscribe({
+    this.api.getMovimientos(tipo, item.id).subscribe({
       next: (movs) => this.panelMovimientos.set(movs.slice(0, 5)),
+      error: () => this.panelMovimientos.set([]),
     });
-    this.store["api"].getItemsProveedorPorItem(tipo, item.id).subscribe({
+    this.api.getItemsProveedorPorItem(tipo, item.id).subscribe({
       next: (provs) => this.panelProveedores.set(provs),
+      error: () => this.panelProveedores.set([]),
     });
   }
 
   closeItemPanel(): void {
     this.showItemPanel.set(false);
     this.selectedItemId.set(null);
+    this.panelMovimientos.set([]);
+    this.panelProveedores.set([]);
   }
 
   getSelectedItem(): IngredienteSummary | InsumoSummary | null {
@@ -908,16 +956,17 @@ export class AbastecimientoInventarioComponent implements OnInit {
 
     this.isSubmitting.set(true);
     const formValue = this.ajusteForm.getRawValue();
+    const payload: CreateInventarioMovimientoRequest = {
+      itemTipo: this.selectedItemTipo(),
+      itemId: this.selectedItemId()!,
+      tipoMovimiento: formValue.tipoMovimiento as TipoMovimiento,
+      cantidad: formValue.cantidad!,
+      motivoSalida: formValue.motivoSalida,
+      observaciones: formValue.observaciones,
+    };
 
     this.store.createMovimiento(
-      {
-        itemTipo: this.selectedItemTipo(),
-        itemId: this.selectedItemId()!,
-        tipoMovimiento: formValue.tipoMovimiento as any,
-        cantidad: formValue.cantidad!,
-        motivoSalida: formValue.motivoSalida,
-        observaciones: formValue.observaciones,
-      },
+      payload,
       () => {
         this.isSubmitting.set(false);
         this.hideAjusteForm();
@@ -960,19 +1009,26 @@ export class AbastecimientoInventarioComponent implements OnInit {
     });
   }
 
-  editItem(): void {
-    const id = this.selectedItemId();
-    const tipo = this.selectedItemTipo();
-    if (id) {
-      this.router.navigate(["/abastecimiento/editar", tipo.toLowerCase(), id]);
+  openAjusteFromPanel(): void {
+    const item = this.getSelectedItem();
+    if (!item) {
+      return;
     }
+    this.closeItemPanel();
+    this.selectedItemId.set(item.id);
+    this.selectedItemTipo.set(
+      this.activeTab() === "ingredientes" ? "INGREDIENTE" : "INSUMO",
+    );
+    this.selectedItemForAjuste.set(item);
+    this.showAjusteForm.set(true);
+    this.ajusteForm.reset({ tipoMovimiento: "SALIDA_AJUSTE" });
   }
 
   createOrdenCompra(): void {
     const id = this.selectedItemId();
     const tipo = this.selectedItemTipo();
     if (id) {
-      this.router.navigate(["/abastecimiento/compras/nueva"], {
+      this.router.navigate(["/abastecimiento/compras"], {
         queryParams: { itemId: id, itemTipo: tipo },
       });
     }
@@ -981,7 +1037,7 @@ export class AbastecimientoInventarioComponent implements OnInit {
   createOCForProveedor(proveedor: ItemProveedorSummary): void {
     const id = this.selectedItemId();
     if (id) {
-      this.router.navigate(["/abastecimiento/compras/nueva"], {
+      this.router.navigate(["/abastecimiento/compras"], {
         queryParams: {
           itemId: id,
           itemTipo: this.selectedItemTipo(),

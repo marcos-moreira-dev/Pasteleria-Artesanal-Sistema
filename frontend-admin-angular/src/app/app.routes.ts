@@ -9,7 +9,6 @@ import { QuotationsPageComponent } from "./features/cotizaciones/quotations-page
 import { OrdersPageComponent } from "./features/pedidos/orders-page.component";
 import { ProductionPageComponent } from "./features/produccion/production-page.component";
 import { ReportsPageComponent } from "./features/reportes/reports-page.component";
-import { AbastecimientoShellComponent } from "./features/abastecimiento/pages/abastecimiento-shell.component";
 import { AbastecimientoDashboardComponent } from "./features/abastecimiento/pages/abastecimiento-dashboard.component";
 import { AbastecimientoInventarioComponent } from "./features/abastecimiento/pages/abastecimiento-inventario.component";
 import { AbastecimientoComprasComponent } from "./features/abastecimiento/pages/abastecimiento-compras.component";

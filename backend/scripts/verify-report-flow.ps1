@@ -3,6 +3,7 @@ $backendRoot = Split-Path -Parent $PSScriptRoot
 $jarPath = Join-Path $backendRoot "target\pasteleria-backend-0.0.1-SNAPSHOT.jar"
 $pdfPath = Join-Path $backendRoot "temp-report-check.pdf"
 $logPath = Join-Path $backendRoot "temp-report-runtime.log"
+$dbPort = if ($env:DB_PORT) { $env:DB_PORT } else { "5436" }
 
 if (Test-Path $pdfPath) {
   Remove-Item $pdfPath -Force
@@ -13,16 +14,16 @@ if (Test-Path $logPath) {
 }
 
 $job = Start-Job -ScriptBlock {
-  param($jh, $jp, $workdir, $runtimeLogPath)
+  param($jh, $jp, $workdir, $runtimeLogPath, $runtimeDbPort)
 
   $env:JAVA_HOME = $jh
   $env:PATH = "$jh\bin;$env:PATH"
-  $env:DB_PORT = "5434"
+  $env:DB_PORT = $runtimeDbPort
   $env:JWT_SECRET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
   Set-Location $workdir
   & "$jh\bin\java.exe" -jar $jp *> $runtimeLogPath
-} -ArgumentList $javaHome, $jarPath, $backendRoot, $logPath
+} -ArgumentList $javaHome, $jarPath, $backendRoot, $logPath, $dbPort
 
 try {
   $healthy = $false

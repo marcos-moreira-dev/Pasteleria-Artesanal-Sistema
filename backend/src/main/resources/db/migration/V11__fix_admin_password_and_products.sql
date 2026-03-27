@@ -3,7 +3,7 @@
 
 -- Update admin password to 'admin12345'
 UPDATE usuario_sistema 
-SET password_hash = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjXd.JYTGjS4mTPKxwqDzXcxzJ9hX4e'
+SET password_hash = '$2a$10$FD9cVwV0RU1adR/UbFsdH.eXX/ko0nb8is1UIf7DjPwnc4gl7hTA6'
 WHERE nombre_usuario = 'admin';
 
 -- Insert missing product categories

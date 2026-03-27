@@ -83,6 +83,7 @@ Orden recomendado:
 11. `docs/proyecto/10_convenciones_de_codificacion_y_trazabilidad.md`
 12. `docs/proyecto/11_matriz_trazabilidad_final_por_componente.md`
 13. `docs/proyecto/12_registro_minimo_de_adrs.md`
+14. `docs/proyecto/13_mapa_conceptos_computacionales_y_de_ingenieria.md`
 
 ### 4.3. Capa UX/UI y sistema visual
 
@@ -176,6 +177,26 @@ Orden recomendado:
 3. `docs/calidad/00_calidad_y_pruebas_canonicas.md`
 4. `docs/calidad/01_checklist_qa_por_componente.md`
 5. `docs/calidad/02_checklist_release_enterprise.md`
+
+### 4.11. Documentos auxiliares consolidados
+
+Estos documentos no reemplazan la ruta canonica, pero pueden servir como
+atajos de operacion, presentacion o auditoria:
+
+1. `docs/operacion/06_inicio_rapido.md`
+2. `docs/operacion/07_ejecucion_local_rapida.md`
+3. `docs/operacion/08_ejecucion_con_docker.md`
+4. `docs/calidad/03_auditoria_tecnica_v1.md`
+5. `docs/ux-ui/02_guia_configuracion_imagenes.md`
+6. `docs/presentacion/01_resumen_entrega_final.md`
+7. `docs/presentacion/02_readme_propagandistico_github.md`
+
+Nota de orden:
+
+- los `.md` que siguen en la raiz de `docs/` funcionan como dossiers de apoyo,
+  auditoria puntual o levantamiento preservado
+- la ruta oficial para estudiar arquitectura e implementacion sigue siendo la
+  de las capas canonicas listadas arriba
 
 ---
 

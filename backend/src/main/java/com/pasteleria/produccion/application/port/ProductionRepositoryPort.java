@@ -9,6 +9,8 @@ public interface ProductionRepositoryPort {
 
   List<ProductionEntity> findAllByOrderByPriorityAscCreatedAtDesc();
 
+  List<ProductionEntity> findAllWithOrderAndClient();
+
   Optional<ProductionEntity> findById(Long productionId);
 
   ProductionEntity save(ProductionEntity production);

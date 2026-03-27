@@ -1,5 +1,6 @@
 package com.pasteleria.abastecimiento.application;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,24 @@ public class InventarioMovimientoQueryService {
         .toList();
   }
 
+  public List<InventarioMovimientoSummary> listMovimientos(
+      String itemTipo,
+      Long itemId,
+      String tipoMovimiento,
+      OffsetDateTime fechaDesde,
+      OffsetDateTime fechaHasta
+  ) {
+    return movimientoRepository.findByFilters(
+            normalize(itemTipo),
+            itemId,
+            normalize(tipoMovimiento),
+            fechaDesde,
+            fechaHasta
+        ).stream()
+        .map(m -> mapper.toSummary(m, getItemNombre(m.getItemTipo(), m.getItemId())))
+        .toList();
+  }
+
   public PageResponseDto<InventarioMovimientoSummary> listByItemPage(String itemTipo, Long itemId, int page, int size) {
     var pageable = pageRequestFactory.create(page, size, Sort.by(Sort.Direction.DESC, "fechaMovimiento"));
     return pageMapper.toPageResponseDto(
@@ -101,6 +120,13 @@ public class InventarioMovimientoQueryService {
   public InventarioMovimientoSummary getById(Long id) {
     return findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Movimiento de inventario no encontrado."));
+  }
+
+  private String normalize(String value) {
+    if (value == null || value.isBlank()) {
+      return null;
+    }
+    return value.trim();
   }
 
   private String getItemNombre(String itemTipo, Long itemId) {

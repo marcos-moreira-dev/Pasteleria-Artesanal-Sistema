@@ -2,7 +2,8 @@
 
 ## 1. Proposito
 
-Este documento fija la forma de navegar y dividir el admin de Pasteleria.
+Este documento fija la forma correcta de navegar y dividir el admin de
+Pasteleria segun la aplicacion actual.
 
 ---
 
@@ -13,8 +14,7 @@ El shell administrativo debe incluir:
 - barra superior sobria
 - menu lateral
 - area central de contenido
-- breadcrumb simple si aporta
-- zona de acciones contextuales por modulo
+- acciones contextuales por modulo
 
 Regla:
 
@@ -22,21 +22,25 @@ Regla:
 
 ---
 
-## 3. Mapa de rutas sugerido
+## 3. Mapa de rutas real de la V1
 
-Rutas base razonables:
+Las rutas visibles hoy son:
 
 - `/login`
-- `/app`
-- `/app/dashboard`
-- `/app/clientes`
-- `/app/productos`
-- `/app/categorias`
-- `/app/cotizaciones`
-- `/app/pedidos`
-- `/app/produccion`
-- `/app/reportes`
-- `/app/configuracion` solo si el alcance lo justifica
+- `/`
+- `/clientes`
+- `/productos`
+- `/cotizaciones`
+- `/pedidos`
+- `/produccion`
+- `/reportes`
+- `/abastecimiento/dashboard`
+- `/abastecimiento/inventario`
+- `/abastecimiento/compras`
+- `/abastecimiento/proveedores`
+- `/abastecimiento/movimientos`
+
+No existe hoy un prefijo `/app` en el routing real del admin.
 
 ---
 
@@ -44,23 +48,23 @@ Rutas base razonables:
 
 ### Dashboard
 
-Resumen ligero de estado operativo.
+Resumen ligero del estado operativo.
 
 ### Clientes
 
 Listado, alta, edicion y consulta.
 
-### Productos y categorias
+### Productos
 
-Mantenimiento de catalogo operativo.
+Mantenimiento del catalogo operativo y sus imagenes.
 
 ### Cotizaciones
 
-Seguimiento, cambio de estado y posible conversion a pedido.
+Seguimiento y posible conversion a pedido.
 
 ### Pedidos
 
-Registro, consulta, detalle y cambio de estado.
+Registro, consulta y cambio de estado.
 
 ### Produccion
 
@@ -70,22 +74,19 @@ Vista operativa de pedidos por atender y prioridad.
 
 Solicitud, seguimiento y descarga de reportes internos.
 
----
+### Abastecimiento
 
-## 5. Lazy loading y modularidad
+Submodulo con varias superficies:
 
-Conviene aplicar lazy loading en:
-
-- cotizaciones
-- pedidos
-- produccion
-- reportes
-
-En modulos pequenos, la prioridad sigue siendo claridad antes que micro-optimizar.
+- dashboard
+- inventario
+- compras
+- proveedores
+- movimientos
 
 ---
 
-## 6. Navegacion por rol
+## 5. Navegacion por rol
 
 La V1 puede empezar con un modelo moderado:
 
@@ -100,6 +101,7 @@ Regla:
 
 ---
 
-## 7. Cierre
+## 6. Cierre
 
-Si el shell y las rutas se congelan bien desde ahora, toda la implementacion del admin se vuelve mas predecible y menos propensa a crecer de forma caotica.
+Si el shell y las rutas se documentan con fidelidad al codigo real, el admin se
+vuelve mas legible, mas mantenible y mas facil de explicar en demos.

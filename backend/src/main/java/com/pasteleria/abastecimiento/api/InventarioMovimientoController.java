@@ -1,5 +1,8 @@
 package com.pasteleria.abastecimiento.api;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import com.pasteleria.abastecimiento.application.CreateInventarioMovimientoRequest;
@@ -20,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +49,29 @@ public class InventarioMovimientoController {
   ) {
     this.queryService = queryService;
     this.commandService = commandService;
+  }
+
+  @Operation(summary = "Listar movimientos de inventario con filtros opcionales.")
+  @GetMapping
+  public ResponseEntity<ApiResponse<List<InventarioMovimientoSummary>>> listMovimientos(
+      @RequestParam(required = false) String itemTipo,
+      @RequestParam(required = false) Long itemId,
+      @RequestParam(required = false) String tipoMovimiento,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
+      HttpServletRequest request
+  ) {
+    return ResponseEntity.ok(ResponseFactory.ok(
+        "Movimientos de inventario obtenidos correctamente.",
+        queryService.listMovimientos(
+            itemTipo,
+            itemId,
+            tipoMovimiento,
+            toStartOfDay(fechaDesde),
+            toEndOfDay(fechaHasta)
+        ),
+        request
+    ));
   }
 
   @Operation(summary = "Listar movimientos de inventario por item.")
@@ -132,5 +159,22 @@ public class InventarioMovimientoController {
         commandService.createMovimiento(body, null, request),
         request
     ));
+  }
+
+  private OffsetDateTime toStartOfDay(LocalDate date) {
+    if (date == null) {
+      return null;
+    }
+    return date.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+  }
+
+  private OffsetDateTime toEndOfDay(LocalDate date) {
+    if (date == null) {
+      return null;
+    }
+    return date.plusDays(1)
+        .atStartOfDay(ZoneId.systemDefault())
+        .minusNanos(1)
+        .toOffsetDateTime();
   }
 }

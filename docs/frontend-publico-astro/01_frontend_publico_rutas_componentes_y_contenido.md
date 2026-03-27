@@ -2,25 +2,30 @@
 
 ## 1. Proposito
 
-Este documento fija la estructura navegable del frontend publico y la forma correcta de repartir componentes y contenido.
+Este documento fija la estructura navegable real del frontend publico y la forma
+correcta de repartir componentes y contenido.
 
 ---
 
-## 2. Mapa de rutas recomendado
+## 2. Mapa de rutas de la V1 actual
 
-Rutas base sugeridas para V1:
+Rutas visibles hoy:
 
 - `/`
 - `/catalogo`
-- `/catalogo/[slug]` o `/productos/[slug]`
-- `/cotizador`
 - `/contacto`
-- `/nosotros` si el relato de marca lo justifica
-- `/politica-privacidad` y equivalentes si se requieren
+- `/en`
+- `/en/catalog`
+- `/en/contact`
 
 Regla:
 
 - el mapa final debe ser pequeno, claro y facil de mantener
+
+Nota:
+
+- una ficha publica por `slug` puede existir despues, pero no es parte del producto actual
+- la cotizacion publica vive dentro de `contacto`
 
 ---
 
@@ -31,43 +36,33 @@ Regla:
 Debe resolver:
 
 - propuesta de valor
-- productos o categorias destacadas
-- confianza
-- CTA hacia cotizador y contacto
+- categorias destacadas
+- productos destacados
+- CTA hacia catalogo y contacto
 
 ### Catalogo
 
 Debe resolver:
 
 - exploracion simple
-- filtros ligeros si hacen falta
-- visualizacion de categorias o productos destacados
-
-### Detalle
-
-Debe resolver:
-
-- descripcion corta
-- imagenes
-- atributos basicos
-- CTA hacia cotizador o contacto
-
-### Cotizador
-
-Debe resolver:
-
-- captura guiada de requerimientos
-- resumen claro de seleccion
-- envio confiable
+- lectura clara de la carta publica
+- evidencia de productos publicados desde el backend
 
 ### Contacto
 
 Debe resolver:
 
 - canales oficiales
-- horario
-- ubicacion si aplica
-- formulario corto o CTA de WhatsApp
+- confianza comercial
+- formulario de solicitud de cotizacion
+
+### Variantes en ingles
+
+Deben resolver:
+
+- consistencia internacional de la marca
+- misma navegacion base
+- misma idea comercial, sin duplicar logica
 
 ---
 
@@ -75,16 +70,12 @@ Debe resolver:
 
 Piezas base recomendadas:
 
-- `SiteHeader`
-- `SiteFooter`
+- `BaseLayout`
 - `HeroSection`
-- `CategoryGrid`
-- `ProductCard`
-- `FeaturedCakeSection`
-- `TestimonialsSection` solo si existe contenido real
-- `ContactBlock`
-- `QuoteWizard` o `QuoteForm`
-- `FormStatusMessage`
+- `CategoryStrip`
+- `ProductGrid`
+- `MarketingBand`
+- `QuoteForm` o formulario equivalente en contacto
 
 Regla:
 
@@ -93,59 +84,24 @@ Regla:
 
 ---
 
-## 5. Layouts sugeridos
-
-Layouts utiles:
-
-- `PublicLayout`
-- `CatalogLayout` si el catalogo necesita estructura propia
-- `LegalLayout` si las paginas legales comparten patron
+## 5. Layouts y ownership
 
 El layout debe centralizar:
 
 - header
 - footer
-- metadata basica
+- metadata base
 - enlaces globales
-
----
-
-## 6. Contenido y ownership
 
 Separacion recomendada:
 
-- contenido institucional estable en archivos locales o content collections
-- datos catalogo desde backend
-- mensajes de flujo desde componentes o capa de UI
-- assets visuales previstos con placeholder estable y prompt documentado
-
-Esto evita que:
-
-- el equipo duplique textos en varios sitios
-- el catalogo se vuelva hardcoded
-- y los cambios de copy rompan la estructura tecnica
+- copy institucional y comercial en la capa publica
+- catalogo y branding desde backend
+- mensajes de flujo desde la UI
 
 ---
 
-## 7. Convenciones de nombres
-
-Ejemplos correctos:
-
-- `ProductCard.astro`
-- `QuoteWizard.astro`
-- `public-api.ts`
-- `catalogo.astro`
-- `contacto.astro`
-
-Evitar nombres vagos como:
-
-- `Section1`
-- `Utils2`
-- `NewComponent`
-
----
-
-## 8. SEO y contenido minimo
+## 6. SEO y contenido minimo
 
 Cada ruta publica debe definir como minimo:
 
@@ -154,14 +110,4 @@ Cada ruta publica debe definir como minimo:
 - encabezado principal claro
 - estructura semantica razonable
 
-En `home`, `catalogo` y `cotizador` esto es obligatorio.
-
----
-
-## 9. Cierre
-
-Si se respeta esta estructura, el frontend publico queda lo bastante profesional para crecer sin convertirse en una coleccion desordenada de paginas sueltas.
-
-La politica visual complementaria vive en:
-
-- `docs/ux-ui/01_assets_placeholders_y_prompts_ia.md`
+En `home`, `catalogo` y `contacto` esto es obligatorio.

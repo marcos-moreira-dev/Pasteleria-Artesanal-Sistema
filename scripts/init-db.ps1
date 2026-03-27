@@ -10,12 +10,10 @@ $composeFile = Join-Path $projectRoot "docker-compose.yml"
 $containerName = "pasteleria-postgres"
 $dbUser = "postgres"
 $dbPassword = "postgres"
+$schemaFile = Join-Path $projectRoot "db\V1\DATABASE_SCHEMA_CANONICO.sql"
+$seedFile = Join-Path $projectRoot "db\V1\DATABASE_SEED_CANONICO.sql"
 
-$migrationFiles = Get-ChildItem (Join-Path $projectRoot "backend\src\main\resources\db\migration") -Filter "V*.sql" |
-  Sort-Object Name |
-  Select-Object -ExpandProperty FullName
-
-Write-Host "Levantando PostgreSQL del proyecto en localhost:5434..."
+Write-Host "Levantando PostgreSQL del proyecto en localhost:5436 (Docker)..."
 docker compose -f $composeFile up -d postgres | Out-Null
 
 Write-Host "Esperando disponibilidad de PostgreSQL..."
@@ -33,75 +31,33 @@ if ($ForceReset) {
   "create database $DatabaseName;" | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d postgres" | Out-Null
 }
 
+$databaseExistsQuery = "select exists (select 1 from pg_database where datname = '$DatabaseName');"
+$databaseExists = $databaseExistsQuery | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d postgres -tA"
+
+if ($databaseExists -ne "t") {
+  Write-Host "Creando base $DatabaseName..."
+  "create database $DatabaseName;" | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d postgres" | Out-Null
+}
+
 $tableExistsQuery = "select exists (select 1 from information_schema.tables where table_schema = 'public' and table_name = 'rol_usuario');"
 $tableExists = $tableExistsQuery | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d $DatabaseName -tA"
 
 if ($tableExists -eq "t") {
-  Write-Host "La base $DatabaseName ya tiene esquema. Verificando deltas estructurales pendientes..."
-
-  $productionConstraintQuery = @"
-select exists (
-  select 1
-  from pg_constraint c
-  join pg_class t on t.oid = c.conrelid
-  where t.relname = 'produccion'
-    and c.conname = 'ck_produccion_estado'
-    and pg_get_constraintdef(c.oid) like '%PREPARACION%'
-);
-"@
-  $productionWorkflowReady = $productionConstraintQuery |
-    docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d $DatabaseName -tA"
-
-  if ($productionWorkflowReady -ne "t") {
-    $v5File = Join-Path $projectRoot "backend\src\main\resources\db\migration\V5__expand_production_workflow.sql"
-    Write-Host "Aplicando delta V5__expand_production_workflow.sql..."
-    Get-Content -Raw $v5File | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
-  }
-
-  $versionColumnQuery = @"
-select exists (
-  select 1
-  from information_schema.columns
-  where table_schema = 'public'
-    and table_name = 'categoria_producto'
-    and column_name = 'version'
-);
-"@
-  $optimisticLockingReady = $versionColumnQuery |
-    docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d $DatabaseName -tA"
-
-  if ($optimisticLockingReady -ne "t") {
-    $v6File = Join-Path $projectRoot "backend\src\main\resources\db\migration\V6__optimistic_locking_core_tables.sql"
-    Write-Host "Aplicando delta V6__optimistic_locking_core_tables.sql..."
-    Get-Content -Raw $v6File | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
-  }
-
-  $legacyReportTypeQuery = @"
-select exists (
-  select 1
-  from job_reporte
-  where tipo_reporte not in ('RESUMEN_NEGOCIO', 'COLA_PRODUCCION')
-);
-"@
-  $legacyReportTypes = $legacyReportTypeQuery |
-    docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -h localhost -U $dbUser -d $DatabaseName -tA"
-
-  if ($legacyReportTypes -eq "t") {
-    $v7File = Join-Path $projectRoot "backend\src\main\resources\db\migration\V7__normalize_legacy_report_types.sql"
-    Write-Host "Aplicando delta V7__normalize_legacy_report_types.sql..."
-    Get-Content -Raw $v7File | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
-  }
-
-  Write-Host "Verificacion de base existente completada."
+  Write-Host "La base $DatabaseName ya tiene esquema."
+  Write-Host "Usa -ForceReset para recrearla con el SQL canónico."
   exit 0
 }
 
-foreach ($file in $migrationFiles) {
-  Write-Host "Aplicando $(Split-Path -Leaf $file)..."
-  Get-Content -Raw $file | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
-  if ($LASTEXITCODE -ne 0) {
-    throw "Fallo aplicando $(Split-Path -Leaf $file)."
-  }
+Write-Host "Aplicando DATABASE_SCHEMA_CANONICO.sql..."
+Get-Content -Raw $schemaFile | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
+if ($LASTEXITCODE -ne 0) {
+  throw "Fallo aplicando DATABASE_SCHEMA_CANONICO.sql."
 }
 
-Write-Host "Base $DatabaseName inicializada correctamente."
+Write-Host "Aplicando DATABASE_SEED_CANONICO.sql..."
+Get-Content -Raw $seedFile | docker exec -i $containerName sh -lc "PGPASSWORD=$dbPassword psql -v ON_ERROR_STOP=1 -h localhost -U $dbUser -d $DatabaseName" | Out-Null
+if ($LASTEXITCODE -ne 0) {
+  throw "Fallo aplicando DATABASE_SEED_CANONICO.sql."
+}
+
+Write-Host "Base $DatabaseName inicializada correctamente con SQL canónico."

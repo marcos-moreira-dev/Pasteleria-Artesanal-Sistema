@@ -1,178 +1,234 @@
-# 00 — Mapa de productos de software y alcance global
+# 00 - Mapa de productos de software y alcance global
 
-## 1. Propósito del documento
+## 1. Proposito del documento
 
-Este documento describe el conjunto de productos de software que forman parte del proyecto y define el alcance general del sistema.
+Este documento responde una pregunta practica:
 
-El objetivo es tener una visión clara de **qué componentes de software existen**, **cómo se relacionan entre sí** y **qué responsabilidades tiene cada uno** dentro del sistema.
+**que productos de software existen en Pasteleria y que hace realmente cada uno.**
 
-Este documento no entra en detalles técnicos de implementación. Su función es ofrecer una vista de alto nivel del sistema completo.
-
----
-
-## 2. Contexto general del proyecto
-
-El proyecto consiste en el diseño de un sistema de software para apoyar la operación de una pastelería ubicada en el norte de Guayaquil.
-
-El sistema busca mejorar la organización del negocio mediante herramientas que permitan:
-
-- registrar pedidos
-- organizar producción
-- gestionar clientes
-- visualizar información operativa
-
-Para cumplir estos objetivos, el sistema se divide en varios productos de software con responsabilidades distintas.
+Su objetivo es que una persona nueva no tenga que deducir el sistema leyendo
+casos de uso, backend y frontends por separado.
 
 ---
 
-## 3. Componentes principales del sistema
+## 2. Problema que resuelve el sistema
 
-El proyecto contempla los siguientes componentes principales.
+Pasteleria no es solo una landing con catalogo ni solo un panel CRUD.
 
-### 3.1 Base de datos
+El sistema completo busca cubrir el ciclo operativo de una pasteleria artesanal:
 
-La base de datos es el componente encargado de almacenar toda la información estructurada del sistema.
+- atraer interes comercial desde una vitrina publica
+- registrar solicitudes de cotizacion
+- administrar clientes y catalogo
+- convertir interes comercial en pedidos
+- dar seguimiento a produccion
+- controlar abastecimiento e inventario
+- generar reportes y trazabilidad operativa
 
-Entre los tipos de información que gestionará se incluyen:
+---
+
+## 3. Productos de software del sistema
+
+### 3.1 Base de datos PostgreSQL
+
+Es la fuente de verdad transaccional.
+
+Guarda:
+
+- usuarios y roles
+- clientes
+- categorias y productos
+- cotizaciones y pedidos
+- produccion
+- ingredientes, insumos y recetas
+- proveedores, ordenes de compra y movimientos
+- archivos, reportes, notificaciones y auditoria
+
+### 3.2 Backend Spring Boot
+
+Es el nucleo tecnico del sistema.
+
+Se encarga de:
+
+- seguridad y login
+- validaciones de negocio
+- contratos REST
+- transiciones de estado
+- persistencia y trazabilidad
+- reportes, notificaciones y assets publicos
+
+### 3.3 Frontend publico en Astro
+
+Es la vitrina comercial del negocio.
+
+Su funcion es:
+
+- presentar marca
+- mostrar catalogo publicado
+- guiar al cliente hacia contacto
+- registrar una solicitud publica de cotizacion
+
+### 3.4 Frontend administrativo en Angular
+
+Es la consola de trabajo interna.
+
+Permite operar:
 
 - clientes
 - productos
-- categorías de productos
-- pedidos
-- detalles de pedido
 - cotizaciones
-- planificación de producción
-- usuarios del sistema
+- pedidos
+- produccion
+- reportes
+- abastecimiento
 
-La base de datos representa la fuente central de información del sistema.
+### 3.5 Panel de produccion
 
----
+No es un producto separado en esta V1.
 
-### 3.2 Backend del sistema
+Es una superficie operativa dentro del admin para:
 
-El backend es el núcleo lógico del sistema. Se encarga de procesar las reglas del negocio y ofrecer servicios a los diferentes frontends.
+- ver cola de trabajo
+- actualizar estados
+- priorizar pendientes
 
-Responsabilidades principales del backend:
+### 3.6 Vertical de abastecimiento
 
-- aplicar reglas de negocio
-- registrar y consultar información
-- gestionar pedidos
-- gestionar clientes
-- organizar la información para los frontends
+Tampoco es un producto aislado.
 
-El backend actúa como intermediario entre la base de datos y las aplicaciones que utilizan el sistema.
+Es una capacidad transversal entre DB, backend y admin para:
 
----
-
-### 3.3 Frontend público
-
-El frontend público corresponde al sitio web orientado a los clientes de la pastelería.
-
-Su propósito es presentar información del negocio y permitir interacciones básicas con los clientes.
-
-Funciones principales:
-
-- mostrar información del negocio
-- presentar el catálogo de productos
-- permitir solicitudes de cotización
-- mostrar información de contacto
-
-Este componente tiene principalmente un rol informativo y de captación de clientes.
+- controlar inventario
+- administrar proveedores
+- mantener recetas
+- emitir y recibir ordenes de compra
+- trazar movimientos de stock
 
 ---
 
-### 3.4 Frontend administrativo
+## 4. Que hace el sistema hoy
 
-El frontend administrativo es la aplicación utilizada por el personal del negocio para operar el sistema.
+La foto honesta del producto actual es esta:
 
-Funciones principales:
-
-- gestión de clientes
-- gestión de productos
-- registro de pedidos
-- seguimiento de pedidos
-- visualización de información operativa
-
-Este componente es utilizado exclusivamente por usuarios internos del negocio.
-
----
-
-### 3.5 Panel de producción
-
-El panel de producción es una vista operativa del sistema orientada al personal encargado de preparar los pedidos.
-
-Su objetivo es facilitar la organización del trabajo en la cocina o área de producción.
-
-Funciones principales:
-
-- visualizar pedidos pendientes
-- identificar pedidos próximos a entregar
-- consultar observaciones de producción
-
-Este panel puede integrarse dentro del frontend administrativo como un módulo especializado.
+1. Publica branding y catalogo desde el backend para la vitrina web.
+2. Permite enviar solicitudes publicas de cotizacion desde la pagina de contacto.
+3. Administra clientes internos con busqueda, altas y edicion.
+4. Administra productos del catalogo y sus imagenes.
+5. Gestiona cotizaciones internas y su conversion a pedido.
+6. Registra pedidos y cambios de estado.
+7. Muestra y actualiza la cola de produccion.
+8. Solicita, lista y descarga reportes.
+9. Gestiona notificaciones internas.
+10. Opera abastecimiento con dashboard, inventario, compras, proveedores y movimientos.
 
 ---
 
-### 3.6 Cotizador de tortas
+## 5. Superficies visibles por producto
 
-El cotizador de tortas es una funcionalidad orientada a facilitar solicitudes de pedidos personalizados.
+### 5.1 Frontend publico
 
-Permite registrar características de una torta personalizada, como:
+Rutas visibles hoy:
 
-- tamaño
-- sabor
-- relleno
-- tipo de decoración
-- mensaje personalizado
+- `/`
+- `/catalogo`
+- `/contacto`
+- `/en`
+- `/en/catalog`
+- `/en/contact`
 
-El resultado del cotizador puede generar una cotización preliminar que posteriormente puede convertirse en un pedido formal dentro del sistema.
+Lectura correcta:
 
----
+- la cotizacion publica vive hoy en la pagina de contacto
+- no existe aun una ruta dedicada `/cotizador`
+- no existe aun una ficha publica de producto por `slug`
 
-## 4. Relación entre los componentes
+### 5.2 Frontend administrativo
 
-Los componentes del sistema se relacionan de la siguiente manera:
+Rutas visibles hoy:
 
-- la base de datos almacena toda la información del sistema
-- el backend gestiona la lógica del negocio y el acceso a los datos
-- el frontend público se comunica con el backend para obtener información o registrar solicitudes
-- el frontend administrativo utiliza el backend para operar el sistema
-- el panel de producción utiliza la misma información del backend para visualizar pedidos
+- `/login`
+- `/`
+- `/clientes`
+- `/productos`
+- `/cotizaciones`
+- `/pedidos`
+- `/produccion`
+- `/reportes`
+- `/abastecimiento/dashboard`
+- `/abastecimiento/inventario`
+- `/abastecimiento/compras`
+- `/abastecimiento/proveedores`
+- `/abastecimiento/movimientos`
 
-Todos los componentes comparten el mismo núcleo de negocio.
+### 5.3 Backend
 
----
+Areas funcionales visibles hoy:
 
-## 5. Alcance funcional inicial
-
-En la primera etapa del proyecto se priorizarán las siguientes capacidades:
-
-- registrar clientes
-- registrar productos
-- registrar pedidos
-- visualizar pedidos pendientes
-- organizar la producción
-- consultar información operativa
-
-El sistema se enfocará principalmente en mejorar la organización interna del negocio.
-
----
-
-## 6. Funcionalidades fuera del alcance inicial
-
-Para mantener el proyecto manejable, algunas funcionalidades no se incluirán en la primera etapa:
-
-- comercio electrónico completo
-- pagos en línea
-- integración directa con plataformas externas
-- aplicaciones móviles dedicadas
-
-Estas funcionalidades podrían evaluarse en etapas posteriores del proyecto.
+- auth
+- catalogo publico
+- cotizaciones publicas
+- clientes
+- productos
+- cotizaciones internas
+- pedidos
+- produccion
+- reportes
+- notificaciones
+- abastecimiento
+- health publico
 
 ---
 
-## 7. Conclusión
+## 6. Relacion entre componentes
 
-El mapa de productos de software permite comprender cómo se estructura el sistema en diferentes componentes y qué rol cumple cada uno.
+La relacion base del sistema es:
 
-Este documento servirá como referencia general para la documentación posterior de base de datos, backend y frontends.
+- Astro consume catalogo y branding del backend
+- Astro envia cotizaciones publicas al backend
+- Angular consume contratos protegidos del backend
+- el backend concentra reglas y persiste en PostgreSQL
+- la DB sostiene trazabilidad para negocio, operacion y soporte
+
+No hay varios backends ni varias bases.
+
+La arquitectura real es:
+
+- un backend central
+- una DB central
+- dos frontends con responsabilidades distintas
+
+---
+
+## 7. Lo que el sistema no promete en esta V1
+
+Para no sobredimensionar el producto, esta V1 no debe venderse como:
+
+- ecommerce completo
+- checkout transaccional
+- pagos en linea
+- app movil nativa
+- integracion dura con plataformas externas
+
+---
+
+## 8. Como conviene leer el producto
+
+Si quieres entenderlo rapido y bien:
+
+1. lee este mapa
+2. pasa a `docs/negocio/` para entender el dominio
+3. pasa a `docs/backend/`, `docs/frontend-publico-astro/` y `docs/frontend-admin-angular/`
+4. termina en `docs/base-datos/`, `docs/infraestructura/` y `docs/calidad/`
+
+---
+
+## 9. Conclusion
+
+Pasteleria es un sistema integral de operacion comercial y productiva.
+
+No solo vende una marca.
+No solo registra pedidos.
+No solo hace CRUD.
+
+Combina vitrina publica, operacion administrativa, produccion, abastecimiento
+y control tecnico sobre una misma base de negocio.

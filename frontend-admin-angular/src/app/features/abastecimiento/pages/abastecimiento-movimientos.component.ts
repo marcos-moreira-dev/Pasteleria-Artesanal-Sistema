@@ -1,7 +1,7 @@
 import { CommonModule, DecimalPipe, DatePipe } from "@angular/common";
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormControl } from "@angular/forms";
-import { BackofficeStoreService } from "../../../core/store/backoffice-store.service";
+import { ApiClientService } from "../../../core/api/api-client.service";
 import { ADMIN_SURFACE_STYLES } from "../../../shared/ui/admin-surface.styles";
 import type {
   InventarioMovimientoSummary,
@@ -77,7 +77,7 @@ import type {
               </button>
             </div>
           </div>
-          <p class="pager__meta" style="margin-top: 0.75rem;">
+          <p class="pager__meta filters-panel__meta">
             {{ movimientos().length }} movimientos encontrados
           </p>
         </div>
@@ -211,6 +211,10 @@ import type {
         gap: 0.5rem;
       }
 
+      .filters-panel__meta {
+        margin-top: 0.75rem;
+      }
+
       .mono {
         font-family: "JetBrains Mono", monospace;
         font-size: 0.8rem;
@@ -288,7 +292,7 @@ import type {
   ],
 })
 export class AbastecimientoMovimientosComponent implements OnInit {
-  private readonly store = inject(BackofficeStoreService);
+  private readonly api = inject(ApiClientService);
 
   readonly PAGE_SIZE = 20;
   readonly loading = signal(false);
@@ -361,15 +365,24 @@ export class AbastecimientoMovimientosComponent implements OnInit {
     this.loading.set(true);
     this.currentPage.set(1);
     const f = this.filtros();
-    this.store.loadMovimientos(
-      undefined,
-      undefined,
-      f.tipoMovimiento || undefined,
-    );
-    setTimeout(() => {
-      this.movimientos.set([...this.store.movimientos()]);
-      this.loading.set(false);
-    }, 500);
+    this.api
+      .getMovimientos(
+        undefined,
+        undefined,
+        f.tipoMovimiento || undefined,
+        f.fechaDesde || undefined,
+        f.fechaHasta || undefined,
+      )
+      .subscribe({
+        next: (movimientos) => {
+          this.movimientos.set(movimientos);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.movimientos.set([]);
+          this.loading.set(false);
+        },
+      });
   }
 
   onApplyFilters(): void {

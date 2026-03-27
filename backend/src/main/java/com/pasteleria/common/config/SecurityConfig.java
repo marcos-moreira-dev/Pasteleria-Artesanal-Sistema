@@ -3,6 +3,7 @@ package com.pasteleria.common.config;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import com.pasteleria.auth.infrastructure.JwtAuthenticationFilter;
+import com.pasteleria.common.logging.RequestCorrelationLoggingFilter;
 
 import java.util.List;
 
@@ -12,8 +13,9 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,9 +27,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final RequestCorrelationLoggingFilter requestCorrelationLoggingFilter;
 
-  public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+  public SecurityConfig(
+      JwtAuthenticationFilter jwtAuthenticationFilter,
+      RequestCorrelationLoggingFilter requestCorrelationLoggingFilter
+  ) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.requestCorrelationLoggingFilter = requestCorrelationLoggingFilter;
   }
 
   @Bean
@@ -58,7 +65,8 @@ public class SecurityConfig {
             ).permitAll()
             .anyRequest().authenticated()
         )
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(requestCorrelationLoggingFilter, SecurityContextHolderFilter.class)
+        .addFilterBefore(jwtAuthenticationFilter, AnonymousAuthenticationFilter.class)
         .build();
   }
 

@@ -2,7 +2,8 @@
 
 ## 1. Proposito
 
-Este documento congela la politica de internacionalizacion y ownership de assets del frontend publico de Pasteleria.
+Este documento congela la politica de internacionalizacion y ownership de assets
+del frontend publico de Pasteleria.
 
 ---
 
@@ -25,31 +26,27 @@ El idioma por defecto del proyecto es:
 
 Motivo:
 
-- el negocio y su operacion principal estan orientados primero al contexto hispano
-- el ingles existe como capacidad comercial complementaria, no como idioma dominante
+- el negocio opera primero en contexto hispano
+- el ingles existe como capacidad comercial complementaria
 
 ---
 
-## 4. Estrategia de rutas recomendada
+## 4. Estrategia de rutas
 
-La estrategia mas sobria es:
+La estrategia real y sobria hoy es:
 
 - `/` para espanol
-- `/en/` para ingles
+- `/catalogo`
+- `/contacto`
+- `/en`
+- `/en/catalog`
+- `/en/contact`
 
 Regla:
 
-- no crear `/es/` en V1 salvo que una decision futura lo exija
-- si se agregan versiones localizadas de pagina, deben mantener equivalencia clara entre `es` y `en`
-
-Ejemplos:
-
-- `/`
-- `/catalogo`
-- `/cotizador`
-- `/en/`
-- `/en/catalog`
-- `/en/quote`
+- no crear `/es/` en V1 salvo decision futura
+- si se agregan versiones localizadas de pagina, deben mantener equivalencia clara
+- no documentar rutas publicas que el producto todavia no tiene
 
 ---
 
@@ -59,15 +56,9 @@ Los textos visibles no deben quedar dispersos en componentes sin criterio.
 
 La recomendacion canonica es:
 
-- diccionarios o archivos de mensajes por locale
-- contenido institucional editable o localizable con ownership claro
-- y claves semanticas, no textos sueltos desordenados
-
-Ejemplos de ownership:
-
-- `src/content/` o `src/i18n/`
-- `messages.es.ts`
-- `messages.en.ts`
+- archivos o diccionarios por locale
+- contenido institucional con ownership claro
+- claves semanticas, no textos sueltos desordenados
 
 ---
 
@@ -76,93 +67,23 @@ Ejemplos de ownership:
 1. No mezclar idiomas en la misma pantalla salvo nombres propios.
 2. Los `alt`, `title` y metadata deben respetar el locale.
 3. Los formularios deben mostrar validaciones en el idioma de la vista.
-4. La navegacion debe poder cambiar entre `es` y `en` sin romper rutas equivalentes.
-5. El idioma por defecto no debe depender del navegador de forma obligatoria en V1.
+4. La navegacion debe poder cambiar entre `es` y `en` sin romper equivalencias.
+5. El idioma por defecto no debe depender del navegador en V1.
 
 ---
 
-## 7. SEO e i18n
+## 7. Ownership de branding y assets locales
 
-Si existen dos versiones de una misma pagina, debe contemplarse:
+Los recursos visuales principales del frontend publico se consumen del backend
+cuando son branding o imagen de producto.
 
-- `canonical` correcto
-- equivalencias por locale
-- `hreflang` cuando aplique
-- metadata localizada
+Los assets locales del proyecto quedan para:
 
-Esto es parte del cierre profesional de la landing, no un extra opcional.
-
----
-
-## 8. Ownership de branding y assets locales
-
-Los recursos visuales principales deben vivir dentro del proyecto.
-
-Estructura sugerida:
-
-```text
-public/
-  assets/
-    branding/
-      logo-primary.svg
-      logo-mark.svg
-      favicon.ico
-      apple-touch-icon.png
-      site.webmanifest
-    icons/
-      whatsapp.svg
-      instagram.svg
-      location.svg
-    fonts/
-      fraunces/
-      inter/
-```
-
----
-
-## 9. Reglas para logos, iconos y tipografias
-
-### Logos
-
-- usar versiones locales
-- preferir `SVG` cuando sea posible
-- separar `logo principal`, `isotipo` y `favicon`
-
-### Iconos
-
-- preferir `SVG`
-- descargar y guardar localmente los iconos de uso real
-- no depender de librerias remotas si con assets propios basta
-
-### Tipografias
-
-- almacenar `woff2` o formatos adecuados en carpeta local
-- declarar con `@font-face`
-- no depender de Google Fonts por CDN como base obligatoria
-
----
-
-## 10. Registro minimo de origen
-
-Cuando se descargue o incorpore un asset conviene registrar como minimo:
-
-- nombre del asset
-- origen
-- licencia o nota de uso si aplica
-- fecha de incorporacion
-
-Esto puede resolverse con un `README.md` corto dentro de la carpeta del recurso.
-
----
-
-## 11. Regla profesional
-
-La landing no debe depender de que "internet cargue la fuente" o "ya luego bajamos el icono".
-
-Debe nacer lista con:
-
-- `i18n` cerrada
-- branding local
-- iconografia local
+- iconos propios
 - tipografias locales
-- y placeholders cuando falten imagenes finales
+- decoracion no critica
+
+Regla:
+
+- el frontend no inventa nombres de archivo de producto
+- el backend sigue siendo la fuente de verdad visual para branding y catalogo

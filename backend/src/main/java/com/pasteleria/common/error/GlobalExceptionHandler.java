@@ -1,5 +1,6 @@
 package com.pasteleria.common.error;
 
+import com.pasteleria.common.api.RequestIdSupport;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.OffsetDateTime;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
             false,
             "La solicitud no cumple las validaciones requeridas.",
             "VALIDACION_INVALIDA",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler {
             false,
             ex.getMessage(),
             "RECURSO_NO_ENCONTRADO",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -59,7 +60,7 @@ public class GlobalExceptionHandler {
             false,
             ex.getMessage(),
             "AUTENTICACION_INVALIDA",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -75,7 +76,7 @@ public class GlobalExceptionHandler {
             false,
             "La operacion viola una restriccion de integridad del sistema.",
             "CONFLICTO_INTEGRIDAD",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -91,7 +92,7 @@ public class GlobalExceptionHandler {
             false,
             "Otro usuario actualizó el registro antes de que se pudiera guardar este cambio.",
             "CONCURRENCIA_OPTIMISTA",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -107,7 +108,7 @@ public class GlobalExceptionHandler {
             false,
             ex.getMessage(),
             "TRANSICION_INVALIDA",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -123,7 +124,7 @@ public class GlobalExceptionHandler {
             false,
             ex.getMessage(),
             "REGLA_DE_NEGOCIO",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );
@@ -134,13 +135,13 @@ public class GlobalExceptionHandler {
       Exception ex,
       HttpServletRequest request
   ) {
-    LOGGER.error("Error no controlado para requestId={}", request.getHeader("X-Request-Id"), ex);
+    LOGGER.error("Error no controlado para requestId={}", RequestIdSupport.resolve(request), ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
         new ApiErrorResponse(
             false,
             "Se produjo un error interno no controlado.",
             "ERROR_INTERNO",
-            request.getHeader("X-Request-Id"),
+            RequestIdSupport.resolve(request),
             OffsetDateTime.now()
         )
     );

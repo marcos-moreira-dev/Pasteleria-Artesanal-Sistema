@@ -1,6 +1,6 @@
-# Configuración local para usar el contenedor Docker de PostgreSQL en puerto 5434
+# Configuración local para usar el contenedor Docker de PostgreSQL en puerto 5436
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5434/pasteleria
+    url: jdbc:postgresql://localhost:5436/pasteleria
     username: postgres
     password: postgres

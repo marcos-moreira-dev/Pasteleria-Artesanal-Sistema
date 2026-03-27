@@ -88,18 +88,20 @@ public class ReportWorkerService {
 
   @Transactional
   public void processOne(Long jobId) {
-    ReportJobEntity job = reportJobRepository.findByIdForUpdate(jobId).orElse(null);
-    if (job == null || job.getStatus() != ReportJobStatus.PENDIENTE) {
-      return;
-    }
-
-    job.setStatus(ReportJobStatus.EN_PROCESO);
-    job.setStartedAt(OffsetDateTime.now());
-    job.setAttempts((short) (job.getAttempts() + 1));
-    job.setErrorMessage(null);
-    reportJobRepository.saveAndFlush(job);
+    ReportJobEntity job = null;
 
     try {
+      job = reportJobRepository.findByIdForUpdate(jobId).orElse(null);
+      if (job == null || job.getStatus() != ReportJobStatus.PENDIENTE) {
+        return;
+      }
+
+      job.setStatus(ReportJobStatus.EN_PROCESO);
+      job.setStartedAt(OffsetDateTime.now());
+      job.setAttempts((short) (job.getAttempts() + 1));
+      job.setErrorMessage(null);
+      reportJobRepository.saveAndFlush(job);
+
       GeneratedReport generatedReport = buildReport(job.getReportType(), job.getJobCode());
 
       FileResourceEntity file = localReportStorageService.storeGeneratedReport(
@@ -118,11 +120,19 @@ public class ReportWorkerService {
 
       publishSuccessSideEffects(job, file);
     } catch (Exception exception) {
-      job.setStatus(ReportJobStatus.ERROR);
-      job.setFinishedAt(OffsetDateTime.now());
-      job.setErrorMessage(exception.getMessage());
-      reportJobRepository.save(job);
-      publishFailureSideEffects(job, exception);
+      LOGGER.error("No se pudo procesar el job de reporte {}.", jobId, exception);
+
+      ReportJobEntity failedJob = job != null
+          ? job
+          : reportJobRepository.findById(jobId).orElse(null);
+
+      if (failedJob != null) {
+        failedJob.setStatus(ReportJobStatus.ERROR);
+        failedJob.setFinishedAt(OffsetDateTime.now());
+        failedJob.setErrorMessage(buildErrorMessage(exception));
+        reportJobRepository.save(failedJob);
+        publishFailureSideEffects(failedJob, exception);
+      }
     }
   }
 
@@ -205,6 +215,15 @@ public class ReportWorkerService {
     }
   }
 
+  private String buildErrorMessage(Exception exception) {
+    String message = exception.getMessage();
+    if (message == null || message.isBlank()) {
+      return exception.getClass().getSimpleName();
+    }
+
+    return message.length() <= 255 ? message : message.substring(0, 255);
+  }
+
   private GeneratedReport buildReport(ReportType reportType, String jobCode) {
     return switch (reportType) {
       case RESUMEN_NEGOCIO -> buildBusinessSummary(jobCode);
@@ -251,7 +270,7 @@ public class ReportWorkerService {
     byte[] pdf = reportPdfDocumentService.buildProductionQueuePdf(
         new ReportPdfDocumentService.ProductionQueueData(
             OffsetDateTime.now(),
-            productionRepository.findAll().stream()
+            productionRepository.findAllWithOrderAndClient().stream()
                 .filter(item -> item.getStatus() != ProductionStatus.FINALIZADO)
                 .sorted(java.util.Comparator.comparing(ProductionEntity::getCreatedAt))
                 .map(item -> new ReportPdfDocumentService.ProductionQueueItem(
