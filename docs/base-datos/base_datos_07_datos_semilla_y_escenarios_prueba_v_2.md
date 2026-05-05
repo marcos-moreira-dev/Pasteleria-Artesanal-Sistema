@@ -11,7 +11,7 @@ Su propósito no es modelar datos productivos reales, sino proporcionar una base
 - probar migraciones
 - probar el backend
 - probar los frontends
-- realizar demostraciones del sistema
+- realizar presentación funcionalstraciones del sistema
 - validar consultas, filtros y dashboards
 
 Este documento complementa la estrategia de migraciones y el esquema SQL inicial definidos en documentos anteriores.
@@ -30,9 +30,9 @@ Ejemplos:
 - categorías de producto
 - algunos productos base
 
-### 2.2 Datos de prueba o demo
+### 2.2 Datos de prueba o presentación funcional
 
-Son datos adicionales orientados a validación funcional, demostraciones o desarrollo de frontend.
+Son datos adicionales orientados a validación funcional, presentación funcionalstraciones o desarrollo de frontend.
 
 Ejemplos:
 
@@ -69,7 +69,7 @@ Incluye:
 - categorías de producto
 - productos base
 
-### 4.2 Seed demo
+### 4.2 Datos de arranque
 
 Contiene datos orientados a desarrollo, pruebas visuales y validación funcional.
 
@@ -81,7 +81,7 @@ Incluye:
 - producción
 - usuarios de ejemplo
 
-Esta separación permite reiniciar o regenerar la información demo sin afectar el núcleo base del sistema.
+Esta separación permite reiniciar o regenerar la información presentación funcional sin afectar el núcleo base del sistema.
 
 ---
 
@@ -163,7 +163,7 @@ Justificación:
 
 ### 5.5 Tabla: cliente
 
-Clientes demo sugeridos:
+Clientes presentación funcional sugeridos:
 
 - María López
 - Juan Pérez
@@ -187,7 +187,7 @@ Justificación:
 
 ### 5.6 Tabla: cotizacion
 
-Cotizaciones demo sugeridas:
+Cotizaciones presentación funcional sugeridas:
 
 - una `PENDIENTE`
 - una `APROBADA`
@@ -203,7 +203,7 @@ Justificación:
 
 ### 5.7 Tabla: pedido
 
-Pedidos demo sugeridos:
+Pedidos presentación funcional sugeridos:
 
 - un pedido `REGISTRADO`
 - un pedido `EN_PREPARACION`
@@ -221,7 +221,7 @@ Justificación:
 
 ### 5.8 Tabla: pedido_detalle
 
-Se recomienda que los pedidos demo tengan detalles variados, por ejemplo:
+Se recomienda que los pedidos presentación funcional tengan detalles variados, por ejemplo:
 
 - un pedido con un solo producto
 - un pedido con varios productos
@@ -236,7 +236,7 @@ Justificación:
 
 ### 5.9 Tabla: produccion
 
-Registros demo sugeridos:
+Registros presentación funcional sugeridos:
 
 - una producción `PENDIENTE`
 - una producción `EN_PROCESO`
@@ -269,15 +269,15 @@ V3__seed_categorias.sql
 V4__seed_productos_base.sql
 ```
 
-### 6.2 Scripts auxiliares para demo
+### 6.2 Scripts auxiliares para revisión
 
-Para datos de demostración o desarrollo intensivo, puede usarse una capa adicional fuera del flujo principal de migraciones.
+Para datos de presentación funcionalstración o desarrollo intensivo, puede usarse una capa adicional fuera del flujo principal de migraciones.
 
 Ejemplos:
 
 ```text
-scripts/seed_demo_local.sql
-scripts/reset_demo_data.sql
+scripts/seed_presentación funcional_local.sql
+scripts/reset_presentación funcional_data.sql
 ```
 
 Esto evita inflar las migraciones versionadas con demasiados datos temporales.
@@ -411,7 +411,7 @@ Para este proyecto de práctica, se recomienda mantener el siguiente enfoque:
 - productos base
 - usuario administrador
 
-### Nivel 2 — demo operativa
+### Nivel 2 — operación de revisión
 
 - varios clientes
 - pedidos en estados variados
@@ -444,5 +444,5 @@ Los datos semilla deben respetar las reglas de integridad, catálogos y convenci
 
 La definición explícita de datos semilla y escenarios de prueba permite iniciar el sistema con una base coherente y acelera el desarrollo de backend y frontend.
 
-Este documento sirve como referencia para construir seeds reproducibles, validar flujos principales del negocio y preparar ambientes de demostración y prueba de manera ordenada.
+Este documento sirve como referencia para construir seeds reproducibles, validar flujos principales del negocio y preparar ambientes de presentación funcionalstración y prueba de manera ordenada.
 

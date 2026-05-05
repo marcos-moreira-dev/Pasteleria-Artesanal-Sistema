@@ -6,4 +6,4 @@ Resumen semanal ejecutivo
 - Produccion en curso: 8
 - Meta semanal cubierta con pedidos entregados
 
-Observacion: dataset demo ampliado para mostrar flujo comercial, operativo y de abastecimiento.
+Observacion: dataset escenario operativo ampliado para mostrar flujo comercial, operativo y de abastecimiento.

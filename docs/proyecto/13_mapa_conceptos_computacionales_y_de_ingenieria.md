@@ -209,7 +209,7 @@ Este proyecto tambien te deja practicar nociones mas maduras:
 - deuda tecnica visible vs deuda tecnica tolerable
 - documentacion como parte del sistema
 - criterio de release readiness
-- diseno para demo y para mantenimiento
+- diseno para revisión y para mantenimiento
 
 ---
 

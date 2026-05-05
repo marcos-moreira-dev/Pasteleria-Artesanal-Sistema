@@ -19,11 +19,12 @@ if (Test-Path $errLog) {
 }
 
 if (-not $env:DB_HOST) { $env:DB_HOST = "localhost" }
-if (-not $env:DB_PORT) { $env:DB_PORT = "5432" }
+if (-not $env:DB_PORT) { $env:DB_PORT = "5436" }
 if (-not $env:DB_USER) { $env:DB_USER = "postgres" }
 if (-not $env:DB_PASSWORD) { $env:DB_PASSWORD = "postgres" }
 if (-not $env:DB_NAME) { $env:DB_NAME = "pasteleria" }
 if (-not $env:JWT_SECRET) { $env:JWT_SECRET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
+if (-not $env:SPRING_FLYWAY_ENABLED) { $env:SPRING_FLYWAY_ENABLED = "false" }
 
 $proc = Start-Process "$javaHome\bin\java.exe" `
   -ArgumentList "-jar `"$jarPath`"" `

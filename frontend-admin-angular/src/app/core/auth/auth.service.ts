@@ -49,10 +49,29 @@ export class AuthService {
     }
 
     try {
-      return JSON.parse(raw) as SessionState;
+      const restored = JSON.parse(raw) as SessionState;
+      if (!restored.token || this.isExpiredToken(restored.token)) {
+        localStorage.removeItem(SESSION_KEY);
+        return { token: null, username: null, role: null };
+      }
+
+      return restored;
     } catch {
       localStorage.removeItem(SESSION_KEY);
       return { token: null, username: null, role: null };
+    }
+  }
+
+  private isExpiredToken(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1] ?? "")) as { exp?: number };
+      if (!payload.exp) {
+        return false;
+      }
+
+      return payload.exp * 1000 <= Date.now();
+    } catch {
+      return true;
     }
   }
 }

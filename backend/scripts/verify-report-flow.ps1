@@ -20,6 +20,7 @@ $job = Start-Job -ScriptBlock {
   $env:PATH = "$jh\bin;$env:PATH"
   $env:DB_PORT = $runtimeDbPort
   $env:JWT_SECRET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  $env:SPRING_FLYWAY_ENABLED = "false"
 
   Set-Location $workdir
   & "$jh\bin\java.exe" -jar $jp *> $runtimeLogPath

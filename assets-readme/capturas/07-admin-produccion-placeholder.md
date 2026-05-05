@@ -7,3 +7,6 @@
 - `descripcion`: tablero operativo de producción con prioridades y estados de elaboración
 - `prompt_canonico`: interfaz administrativa de producción para pastelería artesanal, estados de elaboración, prioridad, claridad operativa, estética cálida y profesional
 - `nota`: reemplazar por captura real del módulo de producción
+
+
+> Estado actualizado: la imagen PNG correspondiente ya fue generada para presentación del README.

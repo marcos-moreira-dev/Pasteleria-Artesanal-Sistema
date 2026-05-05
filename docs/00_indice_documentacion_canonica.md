@@ -360,3 +360,15 @@ La documentacion de Pasteleria ya no debe verse solo como una coleccion de markd
 - y finalmente se completa la capa operativa
 
 Ese orden reduce contradicciones, ensena mejor la arquitectura y deja el proyecto mucho mas listo para implementacion asistida por IA.
+
+---
+
+## 11. Actualización de cierre T12
+
+Documento incorporado a la ruta de producto:
+
+- `docs/proyecto/14_guia_operativa_integrada.md`
+
+Este documento explica la integración completa de la guía operativa entre base de datos, backend, Angular y datos semilla.
+
+Estado de cierre: las tandas técnicas 0 a 12 quedaron aplicadas. No hay tandas pendientes dentro de `tandas-pendientes/`.

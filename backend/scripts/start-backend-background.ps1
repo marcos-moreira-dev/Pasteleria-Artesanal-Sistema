@@ -8,6 +8,7 @@ $env:JAVA_HOME = $javaHome
 $env:PATH = "$javaHome\bin;$env:PATH"
 $env:DB_PORT = $dbPort
 $env:JWT_SECRET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+$env:SPRING_FLYWAY_ENABLED = "false"
 
 if (Test-Path $logPath) {
   Remove-Item $logPath -Force

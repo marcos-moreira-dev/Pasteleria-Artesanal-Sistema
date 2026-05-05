@@ -555,7 +555,7 @@ Es un dibujo de alto nivel para entender:
 Porque:
 - 3FN (Tercera Forma Normal) es para base de datos técnicas
 - El modelo conceptual es para ENTENDER, no para implementar
-- En conceptual podemos tener redundancias si ayudan a entender
+- En conceptual popresentación funcionals tener redundancias si ayudan a entender
 - Es como un boceto a lápiz antes del dibujo final
 
 ### Flujo típico de trabajo:

@@ -104,4 +104,51 @@ Regla:
 ## 6. Cierre
 
 Si el shell y las rutas se documentan con fidelidad al codigo real, el admin se
-vuelve mas legible, mas mantenible y mas facil de explicar en demos.
+vuelve mas legible, mas mantenible y mas facil de explicar en presentación funcionals.
+
+
+## Carcasa parametrizable del admin
+
+Desde la Tanda 6, los textos de marca del admin se concentran en:
+
+`frontend-admin-angular/src/app/core/config/business-shell.config.ts`
+
+Este archivo define:
+
+- nombre visible del negocio,
+- nombre operativo de la carcasa,
+- copy lateral,
+- logo cuadrado,
+- textos del login,
+- títulos y cejas por ruta,
+- metas base del dashboard.
+
+Regla: para adaptar esta base a otro rubro, primero se modifica ese archivo central. No se deben duplicar textos de identidad en componentes sueltos.
+
+---
+
+## Ruta de guía operativa
+
+La Tanda 9 incorporó la ruta:
+
+```text
+/guia-operativa
+```
+
+Archivos involucrados:
+
+```text
+src/app/features/guia-operativa/guia-operativa-page.component.ts
+src/app/features/guia-operativa/models/guia-operativa.models.ts
+src/app/core/api/api-client.service.ts
+src/app/app.routes.ts
+src/app/layout/shell/shell.component.ts
+src/app/core/config/business-shell.config.ts
+```
+
+Reglas de UX:
+
+- Nombre visible: **Guía operativa**.
+- Evitar explicar la pantalla como “casos de uso” al usuario final.
+- Mostrar áreas, guías y pasos con lenguaje de trabajo de pastelería.
+- Mantener la estética sobria de la carcasa administrativa.

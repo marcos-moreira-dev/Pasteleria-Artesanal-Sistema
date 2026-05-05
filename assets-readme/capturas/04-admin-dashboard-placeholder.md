@@ -7,3 +7,6 @@
 - `descripcion`: panel administrativo con métricas resumidas de pedidos, producción y atención comercial
 - `prompt_canonico`: dashboard administrativo para una pastelería, métricas de pedidos y producción, interfaz profesional, colores cálidos, operación interna de negocio
 - `nota`: reemplazar por captura real del dashboard Angular
+
+
+> Estado actualizado: la imagen PNG correspondiente ya fue generada para presentación del README.

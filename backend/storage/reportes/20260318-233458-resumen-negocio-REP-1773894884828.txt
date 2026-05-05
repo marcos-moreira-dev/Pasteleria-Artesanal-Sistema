@@ -6,4 +6,4 @@ Productos activos/publicados: 14
 Cotizaciones registradas: 10
 Pedidos registrados: 7
 Producciones activas: 1
-FacturaciÃƒÂ³n cerrada acumulada: 58.00
+Facturación cerrada acumulada: 58.00

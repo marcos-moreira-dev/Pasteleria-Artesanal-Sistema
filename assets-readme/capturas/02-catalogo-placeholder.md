@@ -7,3 +7,6 @@
 - `descripcion`: vista del catálogo con tarjetas de productos artesanales y categorías visibles
 - `prompt_canonico`: interfaz web de catálogo para pastelería artesanal, tarjetas de productos, categorías, estética cálida, composición comercial y ordenada
 - `nota`: reemplazar por captura real de `/catalogo`
+
+
+> Estado actualizado: la imagen PNG correspondiente ya fue generada para presentación del README.

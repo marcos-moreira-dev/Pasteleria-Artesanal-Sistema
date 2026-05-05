@@ -11,11 +11,17 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+  sql:
+    init:
+      mode: never
   web:
     resources:
       static-locations:
         - classpath:/static/
-        - file:./storage/
+        - file:${APP_STORAGE_ROOT:./storage}/
 
 server:
   port: ${APP_PORT:8080}
@@ -52,7 +58,8 @@ app:
     retention-days: ${REPORT_RETENTION_DAYS:14}
     cleanup-cron: ${REPORT_CLEANUP_CRON:0 15 3 * * *}
   storage:
-    report-path: ${REPORT_STORAGE_PATH:./storage/reportes}
+    root: ${APP_STORAGE_ROOT:./storage}
+    report-path: ${REPORT_STORAGE_PATH:${APP_STORAGE_ROOT:./storage}/reportes}
 
 logging:
   pattern:

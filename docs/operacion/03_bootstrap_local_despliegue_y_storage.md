@@ -89,3 +89,39 @@ No mezclar:
 - storage de archivos
 - configuracion de herramientas
 - automatizacion del arranque
+
+---
+
+## 7. Regla Flyway vs SQL canónico
+
+Para arranque local con:
+
+```text
+db/V1/DATABASE_SCHEMA_CANONICO.sql
+db/V1/DATABASE_SEED_CANONICO.sql
+```
+
+debe usarse:
+
+```powershell
+$env:SPRING_FLYWAY_ENABLED='false'
+```
+
+Motivo: el script canónico crea tablas directamente. Si Flyway arranca encima de esa base sin historial `flyway_schema_history`, puede intentar aplicar migraciones sobre objetos ya existentes.
+
+Los scripts de desarrollo ya fijan esta variable para la ruta de presentación local.
+
+Para validar migraciones Flyway, usar una base limpia y no mezclarla con `init-db.ps1`.
+
+## 8. Scripts de validación
+
+Desde la raíz:
+
+```powershell
+.\scripts\check-dev-env.bat
+.\scripts\reset-db-local.ps1
+.\scripts\validate-backend.bat
+.\scripts\validate-admin-angular.bat
+.\scripts\validate-public-astro.bat
+.\scripts\validate-all.bat
+```

@@ -1,28 +1,29 @@
-# Configuración para Docker Compose - Hibernate crea el esquema
+# Configuración para Docker Compose - Flyway administra el esquema
 spring:
   datasource:
     url: jdbc:postgresql://postgres:5432/pasteleria
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-  
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     show-sql: false
-    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  
+
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+
   sql:
     init:
-      mode: always
-  
+      mode: never
+
   servlet:
     multipart:
-      # Configuración para imágenes de productos
-      # Límite: 25MB para soportar fotos de alta calidad
       max-file-size: 25MB
       max-request-size: 25MB
 
@@ -31,3 +32,6 @@ app:
     secret: ${JWT_SECRET:pasteleria-super-secret-key-2024-for-jwt-tokens}
     expiration-seconds: 7200
     issuer: pasteleria-backend
+  storage:
+    root: ${APP_STORAGE_ROOT:/app/storage}
+    report-path: ${REPORT_STORAGE_PATH:/app/storage/reportes}

@@ -10,7 +10,7 @@ canónica del proyecto quedó consolidada fuera del backend en:
 
 - usa la ruta canónica para recrear una base manualmente o para un reset limpio
 - usa las migraciones Flyway como historial técnico del backend y referencia de evolución
-- no uses `V3__seed_demo.sql` ni `V4__seed_enterprise_demo.sql` como bootstrap manual, porque pertenecen a una línea demo legacy
+- no uses `V3__seed_datos_arranque.sql` ni `V4__seed_datos_operativos.sql` como bootstrap manual, porque pertenecen a una línea presentación funcional legacy
 
 ## Nota de implementación
 

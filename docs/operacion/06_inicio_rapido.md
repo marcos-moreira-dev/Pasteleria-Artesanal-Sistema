@@ -36,7 +36,7 @@ Flujo manual equivalente:
 
 ---
 
-## Credenciales demo
+## Credenciales locales de revisión
 
 - Usuario: `admin`
 - Contrasena: `admin12345`

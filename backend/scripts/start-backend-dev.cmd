@@ -1,15 +1,13 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 
-if not defined JAVA_HOME set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot"
-set "PATH=%JAVA_HOME%\bin;%PATH%"
-if not defined DB_HOST set "DB_HOST=localhost"
-if not defined DB_PORT set "DB_PORT=5432"
-if not defined DB_USER set "DB_USER=postgres"
-if not defined DB_PASSWORD set "DB_PASSWORD=postgres"
-if not defined DB_NAME set "DB_NAME=pasteleria"
-if not defined JWT_SECRET set "JWT_SECRET=ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+set "SCRIPT_DIR=%~dp0"
+for %%I in ("%SCRIPT_DIR%..\..") do set "ROOT_DIR=%%~fI"
 
-pushd "%~dp0.."
-call ".\mvnw.cmd" spring-boot:run -Dmaven.test.skip=true
-popd
+echo == Pasteleria Backend :: start-backend-dev.cmd ==
+echo Compatibilidad: delegando a scripts\dev-backend-inline.bat.
+echo.
+
+call "%ROOT_DIR%\scripts\dev-backend-inline.bat"
+endlocal
+exit /b %ERRORLEVEL%

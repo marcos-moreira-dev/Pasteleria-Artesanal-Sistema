@@ -9,6 +9,7 @@ import { QuotationsPageComponent } from "./features/cotizaciones/quotations-page
 import { OrdersPageComponent } from "./features/pedidos/orders-page.component";
 import { ProductionPageComponent } from "./features/produccion/production-page.component";
 import { ReportsPageComponent } from "./features/reportes/reports-page.component";
+import { GuiaOperativaPageComponent } from "./features/guia-operativa/guia-operativa-page.component";
 import { AbastecimientoDashboardComponent } from "./features/abastecimiento/pages/abastecimiento-dashboard.component";
 import { AbastecimientoInventarioComponent } from "./features/abastecimiento/pages/abastecimiento-inventario.component";
 import { AbastecimientoComprasComponent } from "./features/abastecimiento/pages/abastecimiento-compras.component";
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: "reportes", component: ReportsPageComponent },
       { path: "pedidos", component: OrdersPageComponent },
       { path: "produccion", component: ProductionPageComponent },
+      { path: "guia-operativa", component: GuiaOperativaPageComponent },
       {
         path: "abastecimiento",
         children: [

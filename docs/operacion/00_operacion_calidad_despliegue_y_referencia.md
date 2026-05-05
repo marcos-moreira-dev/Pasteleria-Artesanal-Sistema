@@ -83,4 +83,4 @@ Pasteleria debe nacer:
 - documentado
 - reproducible
 - mantenible
-- y listo para demo seria
+- y listo para presentación seria

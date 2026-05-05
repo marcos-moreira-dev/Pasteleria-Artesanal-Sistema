@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../core/auth/auth.service";
 import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
+import { businessShellConfig } from "../../core/config/business-shell.config";
 
 @Component({
   selector: "app-login",
@@ -14,14 +15,14 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
     <main class="login-screen">
       <section class="login-panel">
         <div class="brand-band">
-          <img [src]="logoSquareUrl" alt="Logo de la pastelería" width="60" height="60" />
+          <img [src]="logoSquareUrl" [alt]="shellConfig.brand.logoAlt" width="60" height="60" />
           <div>
-            <p class="eyebrow">Backoffice</p>
-            <h1>Pastelería en marcha</h1>
+            <p class="eyebrow">{{ shellConfig.login.eyebrow }}</p>
+            <h1>{{ shellConfig.login.title }}</h1>
           </div>
         </div>
 
-        <p class="copy">Ingresa con tu usuario operativo para gestionar clientes, pedidos y producción.</p>
+        <p class="copy">{{ shellConfig.login.copy }}</p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
           <label>
@@ -37,8 +38,8 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
           </button>
         </form>
 
-        <p class="hint">Usuarios demo: <strong>admin</strong>, <strong>atencion1</strong>, <strong>produccion1</strong>.</p>
-        <p class="hint hint--secondary">Si el panel no responde, inicia primero <strong>backend\\scripts\\start-backend-dev.cmd</strong>.</p>
+        <p class="hint">{{ shellConfig.login.localAccessLabel }}: <strong>{{ shellConfig.login.localUsers.join(", ") }}</strong>.</p>
+        <p class="hint hint--secondary">{{ shellConfig.login.supportHint }}</p>
         <p class="error" *ngIf="error()">{{ error() }}</p>
       </section>
     </main>
@@ -110,7 +111,8 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
-  readonly logoSquareUrl = getBackendBrandingAsset("logo-cuadrado.png");
+  readonly shellConfig = businessShellConfig;
+  readonly logoSquareUrl = getBackendBrandingAsset(this.shellConfig.brand.logoSquareFileName);
 
   readonly form = this.fb.nonNullable.group({
     username: ["admin", Validators.required],

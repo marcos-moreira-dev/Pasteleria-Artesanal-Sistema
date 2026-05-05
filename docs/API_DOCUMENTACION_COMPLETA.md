@@ -338,7 +338,7 @@ TOKEN=$(curl -s -X POST http://localhost:8081/api/v1/auth/login \
 CLIENT_ID=$(curl -s -X POST http://localhost:8081/api/v1/clientes \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"fullName":"Cliente Demo","phone":"0999999999"}' \
+  -d '{"fullName":"Cliente de Revisión","phone":"0999999999"}' \
   | grep -o '"id":[0-9]*' | cut -d':' -f2)
 
 # 3. Crear pedido

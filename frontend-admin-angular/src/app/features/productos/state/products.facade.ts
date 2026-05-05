@@ -31,4 +31,8 @@ export class ProductsFacadeService {
   uploadProductImage(productId: number, formData: FormData): Observable<string> {
     return this.api.uploadProductImage(productId, formData);
   }
+
+  downloadRecipePdf(productId: number): Observable<Blob> {
+    return this.api.downloadRecipePdf(productId);
+  }
 }

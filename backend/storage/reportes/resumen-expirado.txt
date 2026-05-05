@@ -1,2 +1,2 @@
-Este archivo representa un reporte expirado del seed demo.
+Este archivo representa un reporte expirado del datos de arranque.
 Su presencia permite validar estados historicos de reportes en el panel administrativo.

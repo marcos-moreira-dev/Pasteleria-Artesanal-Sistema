@@ -112,6 +112,7 @@ $env:DB_USER='postgres'
 $env:DB_PASSWORD='postgres'
 $env:DB_NAME='pasteleria'
 $env:JWT_SECRET='__JWT_SECRET__'
+$env:SPRING_FLYWAY_ENABLED='false'
 .\scripts\start-backend-dev.cmd
 '@.Replace("__JWT_SECRET__", $jwtSecret)
 
@@ -148,7 +149,7 @@ Write-Host "- PostgreSQL Docker: localhost:5436"
 Write-Host "- Backend: http://localhost:8080"
 Write-Host "- Admin: http://localhost:4200"
 Write-Host "- Publico: http://localhost:4321"
-Write-Host "- Credenciales demo: admin / admin12345"
+Write-Host "- Credenciales locales de revisión: admin / admin12345"
 if (-not $NoBrowser) {
   Write-Host "- Se abriran automaticamente las pestanas de admin y landing"
 }

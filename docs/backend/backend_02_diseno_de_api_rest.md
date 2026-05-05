@@ -205,3 +205,47 @@ Mapeo HTTP sugerido:
 - `409` conflicto de negocio
 - `422` regla de negocio incumplida
 - `500` error inesperado
+
+---
+
+## 8. Guía operativa
+
+La guía operativa usa endpoints técnicos bajo `/api/v1/casos-uso`, pero su nombre visible en la interfaz es **Guía operativa**.
+
+Endpoints:
+
+```text
+GET /api/v1/casos-uso
+GET /api/v1/casos-uso?modulo=PEDIDOS
+GET /api/v1/casos-uso/hub
+GET /api/v1/casos-uso/{codigo}
+```
+
+Contrato resumido de `/hub`:
+
+```json
+{
+  "totalCasos": 14,
+  "modulos": [
+    {
+      "codigo": "PEDIDOS",
+      "nombre": "Pedidos",
+      "descripcion": "Seguimiento de encargos...",
+      "grupo": "OPERACION",
+      "ordenVisual": 5,
+      "casos": [
+        {
+          "codigo": "CU-GO-006",
+          "titulo": "Registrar un pedido confirmado",
+          "actorPrincipal": "Encargada de mostrador",
+          "objetivo": "Formalizar un encargo...",
+          "puntoInicio": "Abrir Pedidos...",
+          "pasos": []
+        }
+      ]
+    }
+  ]
+}
+```
+
+La respuesta sigue usando `ApiResponse<T>` como el resto del backend.

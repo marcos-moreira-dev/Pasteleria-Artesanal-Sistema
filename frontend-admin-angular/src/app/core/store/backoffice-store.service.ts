@@ -458,7 +458,7 @@ export class BackofficeStoreService {
           ),
         error: () =>
           this.setErrorMessage(
-            "No se pudo cargar la tabla de Ã³rdenes de compra.",
+            "No se pudo cargar la tabla de órdenes de compra.",
           ),
       });
   }

@@ -215,3 +215,49 @@ Estos casos de uso sirven como base para:
 
 Con esto Pasteleria deja de tener solo narrativa funcional y pasa a tener una capa mas profesional de trazabilidad.
 
+---
+
+## 3.1 Casos de uso operativos agregados por la guía interna
+
+### CU-09. Revisar guía operativa
+
+**Objetivo:** consultar procedimientos internos por área para reducir dependencia de memoria informal.
+
+**Actor principal:** administrador, encargada de turno o personal autorizado.
+
+**Requerimientos relacionados:** RF-12.
+
+**Reglas relacionadas:** RN-20, RN-21.
+
+**Flujo básico:**
+
+1. El usuario ingresa al panel administrativo.
+2. Abre la ruta **Guía operativa**.
+3. Selecciona un área de trabajo.
+4. Selecciona el procedimiento que necesita revisar.
+5. Lee responsable, punto de inicio, objetivo y pasos.
+
+**Resultado esperado:** el usuario cuenta con una ruta clara para operar el frente de trabajo elegido.
+
+### CU-10. Revisar abastecimiento operativo
+
+**Objetivo:** consultar inventario, compras, proveedores y movimientos como frente de reposición y control de insumos.
+
+**Actor principal:** administrador o responsable de compras.
+
+**Flujo básico:**
+
+1. El usuario abre el módulo de abastecimiento.
+2. Revisa alertas y stock crítico.
+3. Consulta compras, proveedores o movimientos según necesidad.
+4. Decide si debe ajustar inventario, crear compra o recibir insumos.
+
+**Resultado esperado:** el negocio mantiene trazabilidad de materia prima e insumos críticos.
+
+### CU-11. Atender notificaciones internas
+
+**Objetivo:** revisar avisos operativos generados por reportes, pedidos, producción o abastecimiento.
+
+**Actor principal:** usuario del sistema.
+
+**Resultado esperado:** los avisos importantes no quedan escondidos en memoria verbal.

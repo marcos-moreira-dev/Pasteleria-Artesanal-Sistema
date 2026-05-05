@@ -1,10 +1,10 @@
-# Demo Local Y Checklist De Presentacion
+# Presentación Local Y Checklist De Presentacion
 
 ## Objetivo
 
-Dejar una ruta simple para mostrar `Pasteleria` como producto funcional antes de entrar a una demo mas propagandistica con capturas, logo y README final de exhibicion.
+Dejar una ruta simple para mostrar `Pasteleria` como producto funcional antes de entrar a una presentación funcional mas propagandistica con capturas, logo y README final de exhibicion.
 
-## Orden sugerido de demo
+## Orden sugerido de presentación funcional
 
 1. `.\scripts\init-db.ps1`
 2. `cd backend && .\scripts\start-backend-dev.cmd`
@@ -39,14 +39,14 @@ Dejar una ruta simple para mostrar `Pasteleria` como producto funcional antes de
 - explicar modulos principales
 - explicar JWT, auditoria y estructura modular
 
-## Credenciales demo
+## Credenciales locales de revisión
 
 - usuario: `admin` / contrasena: `admin12345`
 - usuario: `atencion1`
 - usuario: `produccion1`
 
 Nota:
-La cuenta estable de arranque para demo es `admin`.
+La cuenta estable de arranque para revisión es `admin`.
 
 ## Checklist previo a capturas
 

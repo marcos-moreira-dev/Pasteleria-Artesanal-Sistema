@@ -93,3 +93,28 @@ La limpieza automatica la ejecuta el scheduler.
 - impedir descarga sin permiso
 - invalidar descarga cuando expira
 - limpiar temporales segun politica configurada
+
+---
+
+## 8. Assets públicos servidos por backend
+
+Aunque los assets de presentación del README pueden vivir en carpetas documentales, los assets funcionales de catálogo y marca se sirven desde:
+
+```text
+backend/storage/assets/
+```
+
+Subcarpetas principales:
+
+- `branding/`
+- `products/`
+- `placeholders/`
+
+Regla actual:
+
+- el producto guarda rutas lógicas como `/assets/products/slug.png`;
+- el backend resuelve la ruta física desde storage;
+- Astro y Angular consumen la URL pública del backend;
+- si un producto no tiene foto dedicada, se muestra el logo o fallback configurado.
+
+Esto evita duplicar imágenes de catálogo en cada frontend.

@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @Tag(name = "Recetas PDF", description = "Exportación de recetas a PDF")
@@ -34,10 +37,11 @@ public class RecetaPdfController {
   }
 
   @Operation(summary = "Descargar receta en PDF", description = "Genera y descarga la receta de un producto en formato PDF")
-  @GetMapping("/producto/{productoId}/pdf")
+  @Transactional(readOnly = true)
+  @GetMapping(value = "/producto/{productoId}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
   public ResponseEntity<byte[]> descargarRecetaPdf(@PathVariable Long productoId) {
     ProductEntity product = productRepository.findById(productoId)
-        .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + productoId));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado: " + productoId));
     
     ProductSummary producto = productDtoMapper.toSummary(product);
     RecetaJsonDto receta = producto.receta();

@@ -2,7 +2,7 @@
 
 ## 1. Proposito
 
-Este documento cierra la capa operativa antes de release, demo seria o arranque
+Este documento cierra la capa operativa antes de release, presentación seria o arranque
 disciplinado.
 
 ---

@@ -32,7 +32,7 @@ CREATE DATABASE pasteleria;
 
 ## Que contiene el seed canonico
 
-- roles y usuarios demo
+- roles y accesos locales de revisión
 - categorias y productos con los codigos vigentes
 - clientes, cotizaciones, pedidos y produccion
 - ingredientes, insumos, proveedores e inventario

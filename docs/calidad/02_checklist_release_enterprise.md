@@ -11,7 +11,7 @@ Este documento convierte el release en un proceso repetible y no en una memoria 
 1. Confirmar version de Java, Node y dependencias congeladas.
 2. Confirmar variables y secretos por entorno.
 3. Confirmar migraciones Flyway aplicadas.
-4. Confirmar seeds requeridos para la demo o entorno objetivo.
+4. Confirmar seeds requeridos para la presentación funcional o entorno objetivo.
 5. Confirmar builds de backend, frontend publico y frontend admin.
 
 ---
@@ -52,4 +52,18 @@ Este documento convierte el release en un proceso repetible y no en una memoria 
 
 ## 6. Regla final
 
-Si un release no supera este checklist, puede ser una demo improvisada, pero todavia no es una entrega profesional.
+Si un release no supera este checklist, puede ser una entrega improvisada, pero todavia no es una entrega profesional.
+
+---
+
+## 7. Gate agregado T11/T12
+
+Antes de considerar cerrada esta versión, validar también:
+
+1. La ruta `/guia-operativa` carga desde el admin.
+2. El endpoint `GET /api/v1/casos-uso/hub` responde con `ApiResponse.success = true`.
+3. Los seeds canónicos incluyen módulos, guías y pasos.
+4. Astro compila con `npm run build`.
+5. El README menciona guía operativa, abastecimiento, notificaciones y scripts de validación.
+6. La carpeta `tandas-pendientes/` no conserva tareas pendientes ya aplicadas.
+7. No quedan archivos temporales de validación dentro de carpetas que deban publicarse.

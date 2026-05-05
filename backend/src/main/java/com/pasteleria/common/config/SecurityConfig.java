@@ -84,7 +84,7 @@ public class SecurityConfig {
     ));
     configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "X-Request-Id"));
-    configuration.setExposedHeaders(List.of("Authorization"));
+    configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
     configuration.setAllowCredentials(false);
     configuration.setMaxAge(3600L);
 

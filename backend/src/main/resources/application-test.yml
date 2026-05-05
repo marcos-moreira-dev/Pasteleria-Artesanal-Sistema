@@ -1,6 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pasteleria_test}
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+  sql:
+    init:
+      mode: never
 
 app:
   jwt:

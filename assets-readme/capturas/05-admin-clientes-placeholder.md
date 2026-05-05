@@ -7,3 +7,6 @@
 - `descripcion`: listado administrativo de clientes con alta y consulta operativa
 - `prompt_canonico`: interfaz administrativa para gestión de clientes de una pastelería, tabla clara, formulario lateral o modal, tono profesional y cálido
 - `nota`: reemplazar por captura real del módulo de clientes
+
+
+> Estado actualizado: la imagen PNG correspondiente ya fue generada para presentación del README.

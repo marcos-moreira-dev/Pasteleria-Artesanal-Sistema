@@ -108,7 +108,7 @@ Antes de considerar cerrada una version candidata:
 
 1. Probar solo la UI.
 2. Dar por valida una regla porque esta en la documentacion.
-3. Mezclar datos demo rotos con validacion de negocio real.
+3. Mezclar datos de arranque rotos con validacion de negocio real.
 4. Marcar release sin revisar reportes, produccion y abastecimiento.
 
 ---
@@ -129,5 +129,5 @@ Si quieres estudiar calidad de software desde este proyecto, los temas clave son
 
 ## 9. Resultado esperado
 
-Pasteleria debe poder salir a demo o GitHub con una calidad argumentable, no
+Pasteleria debe poder salir a presentación funcional o GitHub con una calidad argumentable, no
 solo con intuicion.

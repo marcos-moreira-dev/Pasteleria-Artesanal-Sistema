@@ -38,6 +38,10 @@ import type {
   UpdateProductionStatusPayload,
 } from "../../features/produccion/models/production.models";
 import type {
+  CasoUsoHubResponse,
+  CasoUsoOperativoResponse,
+} from "../../features/guia-operativa/models/guia-operativa.models";
+import type {
   AbastecimientoDashboard,
   ConsumoProduccionSummary,
   CreateInventarioMovimientoRequest,
@@ -245,6 +249,12 @@ export class ApiClientService {
     });
   }
 
+  downloadRecipePdf(productId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/abastecimiento/recetas/producto/${productId}/pdf`, {
+      responseType: "blob",
+    });
+  }
+
   markNotificationAsRead(
     notificationId: number,
   ): Observable<NotificationSummary> {
@@ -289,6 +299,16 @@ export class ApiClientService {
     return this.delete<ReportActionResult>(
       `/reportes/antiguos?keepLatest=${keepLatest}`,
     );
+  }
+
+  // === GUÍA OPERATIVA ===
+
+  getGuiaOperativaHub(): Observable<CasoUsoHubResponse> {
+    return this.get<CasoUsoHubResponse>("/casos-uso/hub");
+  }
+
+  getGuiaOperativaCasos(): Observable<CasoUsoOperativoResponse[]> {
+    return this.get<CasoUsoOperativoResponse[]>("/casos-uso");
   }
 
   // === ABASTECIMIENTO ===

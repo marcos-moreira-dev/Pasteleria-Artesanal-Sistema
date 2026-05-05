@@ -28,7 +28,7 @@ import { buildBackendAssetUrl } from "../../shared/utils/backend-asset.util";
             </h3>
           </div>
           <p class="surface-copy">
-            Gestión interna del catálogo para vitrina, pedidos y solicitudes
+            Gestión interna del catálogo para vitrina, pedidos, recetas PDF y solicitudes
             personalizadas.
           </p>
           <div class="chip-row">
@@ -327,13 +327,13 @@ import { buildBackendAssetUrl } from "../../shared/utils/backend-asset.util";
               </button>
               <button
                 type="button"
-                class="mini-button mini-button--icon"
+                class="mini-button mini-button--icon mini-button--recipe"
                 *ngIf="product.receta?.titulo || product.receta?.ingredientes"
                 (click)="downloadRecetaPDFInline(product)"
-                title="Descargar receta"
+                title="Descargar receta técnica en PDF"
               >
                 <img src="assets/icons/abastecimiento/download.svg" alt="" aria-hidden="true" />
-                Receta
+                Descargar receta PDF
               </button>
               <button
                 type="button"
@@ -462,6 +462,13 @@ import { buildBackendAssetUrl } from "../../shared/utils/backend-asset.util";
 
       .mini-button--secondary:hover {
         background: #e8ded4;
+      }
+
+      .mini-button--recipe {
+        background: #f6eadf;
+        border: 1px solid #c96e4a;
+        color: #4f2519;
+        font-weight: 700;
       }
 
       /* ESTILOS SECCIÓN RECETA */
@@ -811,186 +818,28 @@ export class ProductsPageComponent implements OnInit {
     this.generateAndOpenRecipePDF(product);
   }
 
-  // Método auxiliar para generar y abrir el PDF
+  // Método auxiliar para descargar el PDF generado por el backend
   private generateAndOpenRecipePDF(product: ProductSummary) {
-    const receta = product.receta;
-    if (!receta) return;
-
-    const imageUrl = product.imagePath ? `http://localhost:8081${product.imagePath}` : null;
-    const ventana = window.open("", "_blank");
-    if (!ventana) {
-      alert("Por favor permite ventanas emergentes para descargar el PDF");
+    if (!product.receta) {
+      alert("Este producto todavía no tiene receta registrada.");
       return;
     }
 
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>${receta.titulo || product.name}</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&display=swap');
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Lato', sans-serif;
-      background: linear-gradient(135deg, #faf7f4 0%, #f5ebe3 100%);
-      padding: 40px;
-      color: #2d201a;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 50px;
-      border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(45, 32, 26, 0.1);
-    }
-
-    .header {
-      text-align: center;
-      border-bottom: 3px solid #8a5c46;
-      padding-bottom: 30px;
-      margin-bottom: 40px;
-    }
-
-    .product-image {
-      width: 200px;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .logo {
-      font-size: 14px;
-      color: #8a5c46;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 15px;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 36px;
-      color: #2d201a;
-      margin-bottom: 10px;
-    }
-
-    .product-code {
-      font-size: 12px;
-      color: #8a5c46;
-      letter-spacing: 2px;
-    }
-
-    .section {
-      margin-bottom: 35px;
-    }
-
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      color: #5a3424;
-      border-left: 4px solid #8a5c46;
-      padding-left: 15px;
-      margin-bottom: 15px;
-    }
-
-    .content {
-      font-size: 15px;
-      line-height: 1.8;
-      color: #4a3f35;
-      white-space: pre-line;
-    }
-
-    .content ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .content li {
-      padding: 8px 0;
-      padding-left: 25px;
-      position: relative;
-    }
-
-    .content li:before {
-      content: "•";
-      color: #8a5c46;
-      font-weight: bold;
-      position: absolute;
-      left: 0;
-    }
-
-    .observaciones {
-      background: #faf7f4;
-      padding: 20px;
-      border-radius: 6px;
-      border-left: 4px solid #c4a77d;
-    }
-
-    .footer {
-      margin-top: 50px;
-      padding-top: 20px;
-      border-top: 1px solid #eaded4;
-      text-align: center;
-      font-size: 12px;
-      color: #8a5c46;
-    }
-
-    @media print {
-      body { background: white; padding: 20px; }
-      .container { box-shadow: none; padding: 30px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">Pastelería Artesanal</div>
-      ${imageUrl ? `<img src="${imageUrl}" alt="${product.name}" class="product-image" onerror="this.style.display='none'">` : ''}
-      <h1>${receta.titulo || product.name}</h1>
-      <div class="product-code">${product.code}</div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">${receta.tituloIngredientes || "Ingredientes"}</h2>
-      <div class="content">${receta.ingredientes || "No especificados"}</div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">${receta.tituloPasos || "Preparación"}</h2>
-      <div class="content">${receta.pasos || "No especificados"}</div>
-    </div>
-
-    ${receta.observaciones ? `
-    <div class="section observaciones">
-      <h2 class="section-title">${receta.tituloObservaciones || "Notas"}</h2>
-      <div class="content">${receta.observaciones}</div>
-    </div>
-    ` : ''}
-
-    <div class="footer">
-      Receta interna - Uso exclusivo de la pastelería
-    </div>
-  </div>
-
-  <script>
-    window.onload = function() {
-      document.title = "${receta.titulo || product.name}";
-    };
-  </script>
-</body>
-</html>
-    `;
-
-    ventana.document.write(htmlContent);
-    ventana.document.close();
+    this.facade.downloadRecipePdf(product.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `Receta_${product.slug}.pdf`;
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        console.error("Error descargando receta PDF", error);
+        const status = error?.status ? ` Código HTTP: ${error.status}.` : "";
+        alert(`No fue posible descargar la receta PDF.${status} Verifica que el backend esté encendido y vuelve a iniciar sesión si el navegador conservó un token anterior.`);
+      },
+    });
   }
 
   // Métodos para manejar subida de imágenes

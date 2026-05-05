@@ -9,6 +9,7 @@ import {
 import { AuthService } from "../../core/auth/auth.service";
 import { ShellFacadeService } from "./shell-facade.service";
 import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
+import { businessShellConfig } from "../../core/config/business-shell.config";
 
 @Component({
   selector: "app-shell",
@@ -22,19 +23,16 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
             <div class="brand-lockup">
               <img
                 [src]="logoSquareUrl"
-                alt="Logo de la pastelería"
+                [alt]="shellConfig.brand.logoAlt"
                 width="56"
                 height="56"
               />
               <div>
-                <p class="brand-kicker">Pastelería artesanal</p>
-                <h1 class="brand-title">Casa de Producción</h1>
+                <p class="brand-kicker">{{ shellConfig.brand.kicker }}</p>
+                <h1 class="brand-title">{{ shellConfig.brand.title }}</h1>
               </div>
             </div>
-            <p class="brand-copy">
-              Clientes, pedidos, vitrinas y cocina coordinados para que cada
-              entrega salga a tiempo.
-            </p>
+            <p class="brand-copy">{{ shellConfig.brand.copy }}</p>
           </section>
 
           <nav class="admin-nav">
@@ -111,6 +109,16 @@ import { getBackendBrandingAsset } from "../../shared/utils/backend-asset.util";
                 aria-hidden="true"
               />
               <span>Producción</span>
+            </a>
+            <a routerLink="/guia-operativa" routerLinkActive="is-active">
+              <img
+                src="assets/icons/guide.svg"
+                alt=""
+                width="20"
+                height="20"
+                aria-hidden="true"
+              />
+              <span>Guía operativa</span>
             </a>
             <a
               routerLink="/abastecimiento"
@@ -794,34 +802,27 @@ export class ShellComponent {
   readonly shellFacade = inject(ShellFacadeService);
   private readonly router = inject(Router);
 
-  readonly logoSquareUrl = getBackendBrandingAsset("logo-cuadrado.png");
+  readonly shellConfig = businessShellConfig;
+  readonly logoSquareUrl = getBackendBrandingAsset(this.shellConfig.brand.logoSquareFileName);
 
   readonly notificationsOpen = signal(false);
   readonly selectedNotificationIds = signal<number[]>([]);
 
-  readonly pageTitle = computed(() => {
-    const currentUrl = this.router.url;
-    if (currentUrl.includes("/clientes")) return "Clientes";
-    if (currentUrl.includes("/productos")) return "Catálogo";
-    if (currentUrl.includes("/cotizaciones")) return "Cotizaciones";
-    if (currentUrl.includes("/reportes")) return "Reportes";
-    if (currentUrl.includes("/pedidos")) return "Pedidos";
-    if (currentUrl.includes("/produccion")) return "Producción";
-    if (currentUrl.includes("/abastecimiento")) return "Abastecimiento";
-    return "Pulso del negocio";
-  });
+  readonly pageTitle = computed(() => this.resolveCurrentPageMeta().title);
 
-  readonly eyebrowTitle = computed(() => {
+  readonly eyebrowTitle = computed(() => this.resolveCurrentPageMeta().eyebrow);
+
+  private resolveCurrentPageMeta() {
     const currentUrl = this.router.url;
-    if (currentUrl.includes("/clientes")) return "Gestión comercial";
-    if (currentUrl.includes("/productos")) return "Catálogo de productos";
-    if (currentUrl.includes("/cotizaciones")) return "Ventas y presupuestos";
-    if (currentUrl.includes("/reportes")) return "Inteligencia de negocio";
-    if (currentUrl.includes("/pedidos")) return "Operaciones";
-    if (currentUrl.includes("/produccion")) return "Planificación";
-    if (currentUrl.includes("/abastecimiento")) return "Cadena de suministro";
-    return "Jornada del día";
-  });
+    const routeKey = Object.keys(this.shellConfig.pageMetaByRoute)
+      .find((candidate) => currentUrl.includes(candidate));
+
+    if (!routeKey) {
+      return this.shellConfig.defaultPage;
+    }
+
+    return this.shellConfig.pageMetaByRoute[routeKey] ?? this.shellConfig.defaultPage;
+  }
 
   readonly allVisibleNotificationsSelected = computed(() => {
     const visibleIds = this.shellFacade

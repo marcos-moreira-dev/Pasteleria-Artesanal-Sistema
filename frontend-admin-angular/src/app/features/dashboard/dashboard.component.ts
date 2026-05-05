@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe, DatePipe } from "@angular/common";
 import { Component, computed, inject } from "@angular/core";
 import { DashboardFacadeService } from "./state/dashboard.facade";
+import { businessShellConfig } from "../../core/config/business-shell.config";
 import type { OrderSummary } from "../pedidos/models/order.models";
 
 interface ChartSegment {
@@ -18,8 +19,8 @@ interface ChartBar {
   helper: string;
 }
 
-const DAILY_REVENUE_TARGET = 90;
-const WEEKLY_REVENUE_TARGET = 420;
+const DAILY_REVENUE_TARGET = businessShellConfig.dashboard.dailyRevenueTarget;
+const WEEKLY_REVENUE_TARGET = businessShellConfig.dashboard.weeklyRevenueTarget;
 
 const ORDER_STATUS_META = [
   { key: "REGISTRADO", label: "Registrado", color: "#8a3f2c" },

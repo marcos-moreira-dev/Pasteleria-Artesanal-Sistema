@@ -47,7 +47,7 @@ export function buildPublicApiUrl(path: string): string {
 
 export function buildPublicAssetUrl(path: string | null | undefined): string {
   if (!path) {
-    return `${publicAssetBaseUrl}/assets/placeholders/product-placeholder.png`;
+    return `${publicAssetBaseUrl}/assets/branding/logo-cuadrado.png`;
   }
 
   if (/^https?:\/\//.test(path)) {
@@ -85,10 +85,11 @@ export async function getActiveCategories(): Promise<ProductCategorySummary[]> {
 export async function getBrandingAssets(): Promise<BrandingAssets> {
   return (
     (await getJson<BrandingAssets>("/public/catalogo/branding")) ?? {
-      logoSquarePath: "/assets/placeholders/product-placeholder.png",
-      logoHorizontalPath: "/assets/placeholders/product-placeholder.png",
+      logoSquarePath: "/assets/branding/logo-cuadrado.png",
+      logoHorizontalPath: "/assets/branding/logo-cuadrado.png",
       bannerPath: "/assets/placeholders/landing-placeholder.png",
-      productPlaceholderPath: "/assets/placeholders/product-placeholder.png",
+      productPlaceholderPath: "/assets/branding/logo-cuadrado.png",
+      categoryBannerPath: "/assets/placeholders/landing-placeholder.png",
     }
   );
 }

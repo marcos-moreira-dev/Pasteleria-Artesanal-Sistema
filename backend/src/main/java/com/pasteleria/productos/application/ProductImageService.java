@@ -1,12 +1,12 @@
 package com.pasteleria.productos.application;
 
+import com.pasteleria.common.config.StorageProperties;
 import com.pasteleria.common.error.ResourceNotFoundException;
 import com.pasteleria.productos.application.port.ProductRepositoryPort;
 import com.pasteleria.productos.infrastructure.persistence.entity.ProductEntity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
@@ -15,43 +15,35 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Guarda imágenes del catálogo bajo una convención estable basada en el slug
- * del producto. Así el frontend solo necesita conocer la ruta pública
- * `/assets/products/<slug>.<ext>` y el backend conserva la responsabilidad de
- * validar formato, tamaño y ubicación física.
+ * del producto.
  */
 @Service
 public class ProductImageService {
 
-  private static final String STORAGE_BASE = "./storage";
   private static final String PRODUCTS_ASSETS_PATH = "/assets/products/";
   private static final List<String> ALLOWED_EXTENSIONS = List.of(".png", ".jpg", ".jpeg", ".webp");
   private static final long MAX_FILE_SIZE = 25L * 1024 * 1024;
 
   private final ProductRepositoryPort productRepository;
+  private final StorageProperties storageProperties;
 
-  public ProductImageService(ProductRepositoryPort productRepository) {
+  public ProductImageService(ProductRepositoryPort productRepository, StorageProperties storageProperties) {
     this.productRepository = productRepository;
+    this.storageProperties = storageProperties;
   }
 
-  /**
-   * Reemplaza o crea la imagen operativa de un producto.
-   *
-   * <p>La ruta se resuelve desde el slug persistido en base de datos para no
-   * acoplar la URL pública al nombre editable del archivo subido por el
-   * usuario.</p>
-   */
   public String uploadProductImage(Long productId, MultipartFile image) {
     ProductEntity product = productRepository.findById(productId)
         .orElseThrow(() -> new ResourceNotFoundException("El producto indicado no existe."));
 
     validateImageFile(image);
 
-    Path productsDir = Paths.get(STORAGE_BASE, PRODUCTS_ASSETS_PATH);
+    Path productsDir = storageProperties.publicPath(PRODUCTS_ASSETS_PATH);
     createProductsDirectory(productsDir);
 
     String extension = resolveExtension(image.getOriginalFilename());
     String filename = product.getSlug() + extension;
-    Path targetPath = productsDir.resolve(filename);
+    Path targetPath = productsDir.resolve(filename).normalize();
 
     try {
       Files.copy(image.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);

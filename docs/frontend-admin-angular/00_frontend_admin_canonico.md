@@ -70,7 +70,7 @@ Lectura correcta:
 
 - categorias se administran dentro de productos, no como ruta separada
 - produccion vive como modulo interno del admin
-- abastecimiento ya es parte real del demo, no una idea futura
+- abastecimiento ya es parte real dla revisión, no una idea futura
 
 ---
 
