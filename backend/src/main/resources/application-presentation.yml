@@ -1,0 +1,21 @@
+# Perfil local de presentación/SIT.
+# Usa SQL canónico estabilizado y storage separado para no contaminar el entorno dev normal.
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5436}/${DB_NAME:pasteleria}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration,classpath:db/dev-migration,classpath:db/presentation-migration
+  jpa:
+    show-sql: false
+
+app:
+  storage:
+    root: ${APP_STORAGE_ROOT:./storage-sit}
+    report-path: ${REPORT_STORAGE_PATH:${APP_STORAGE_ROOT:./storage-sit}/reportes}
+  report:
+    worker-enabled: ${REPORT_WORKER_ENABLED:true}
+    worker-delay-ms: ${REPORT_WORKER_DELAY_MS:2500}
+    worker-batch-size: ${REPORT_WORKER_BATCH_SIZE:3}

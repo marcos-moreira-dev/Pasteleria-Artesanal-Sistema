@@ -1,0 +1,20 @@
+# Perfil productivo.
+# No debe combinarse con dev/presentation.
+# Debe ejecutarse con secretos, DB y storage reales provistos por variables de entorno.
+spring:
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+  jpa:
+    show-sql: false
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:false}
+
+app:
+  storage:
+    root: ${APP_STORAGE_ROOT}
+    report-path: ${REPORT_STORAGE_PATH:${APP_STORAGE_ROOT}/reportes}

@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductGrid from "../../components/public/ProductGrid.astro";
+import CategoryStrip from "../../components/public/CategoryStrip.astro";
+import { getActiveCategories, getPublishedProducts } from "../../lib/api";
+
+const [categories, products] = await Promise.all([
+  getActiveCategories(),
+  getPublishedProducts()
+]);
+---
+<BaseLayout title="Pastelería | Catálogo" lang="es">
+  <main class="page-shell">
+    <section class="section-heading">
+      <p class="section-kicker">Catálogo completo</p>
+      <h1>Productos listos para mesa dulce, celebración o pedido personalizado</h1>
+      <p>Explora la carta de la casa y descubre opciones para cumpleaños, reuniones, detalles sorpresa y celebraciones más grandes.</p>
+      <div class="catalog-stats">
+        <span><strong>{products.length}</strong> productos publicados</span>
+        <span><strong>{categories.length}</strong> familias activas</span>
+      </div>
+    </section>
+  </main>
+  <ProductGrid
+    title="Carta pública"
+    products={products}
+    variant="catalog"
+    emptyTitle="El catálogo todavía no puede cargarse"
+    emptyCopy="Esta vista depende del backend local. Cuando el servicio esté arriba, aquí se mostrarán los productos administrados desde el panel."
+  />
+  <CategoryStrip categories={categories} />
+</BaseLayout>

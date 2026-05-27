@@ -1,0 +1,37 @@
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("/assets/fonts/SourceSans3-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("/assets/fonts/CormorantGaramond-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root {
+  --color-bg: #f3e9e0;
+  --color-surface: #fffaf6;
+  --color-text: #261712;
+  --color-muted: #614d45;
+  --color-accent: #8a3f2c;
+  --color-accent-soft: #ead1c2;
+  --color-border: #decabf;
+  --color-dark: #24140f;
+  --radius-tight: 2px;
+  --radius-soft: 4px;
+  --radius-frame: 6px;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+}

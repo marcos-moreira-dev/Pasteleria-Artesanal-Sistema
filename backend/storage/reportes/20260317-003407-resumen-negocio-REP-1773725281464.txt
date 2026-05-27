@@ -1,0 +1,9 @@
+REPORTE: RESUMEN DE NEGOCIO
+Generado: 2026-03-17T00:34:07.0496096-05:00
+
+Clientes registrados: 12
+Productos activos/publicados: 14
+Cotizaciones registradas: 10
+Pedidos registrados: 6
+Producciones activas: 0
+Facturacion cerrada acumulada: 58.00

@@ -1,0 +1,163 @@
+package com.pasteleria.abastecimiento.application;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import com.pasteleria.abastecimiento.application.mapper.InventarioMovimientoDtoMapper;
+import com.pasteleria.abastecimiento.application.port.IngredienteRepositoryPort;
+import com.pasteleria.abastecimiento.application.port.InsumoRepositoryPort;
+import com.pasteleria.abastecimiento.application.port.InventarioMovimientoRepositoryPort;
+import com.pasteleria.abastecimiento.infrastructure.persistence.entity.IngredienteEntity;
+import com.pasteleria.abastecimiento.infrastructure.persistence.entity.InsumoEntity;
+import com.pasteleria.abastecimiento.infrastructure.persistence.entity.InventarioMovimientoEntity;
+import com.pasteleria.common.error.ResourceNotFoundException;
+import com.pasteleria.common.pagination.PageMapper;
+import com.pasteleria.common.pagination.PageRequestFactory;
+import com.pasteleria.common.pagination.PageResponseDto;
+import com.pasteleria.common.security.OperacionAutorizacionService;
+import com.pasteleria.common.security.Permisos;
+import com.pasteleria.common.security.UserAccessPolicy;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional(readOnly = true)
+public class InventarioMovimientoQueryService {
+
+  private static final String TIPO_INGREDIENTE = "INGREDIENTE";
+  private static final String SUCURSAL_TRANSICIONAL = UserAccessPolicy.DEFAULT_SUCURSAL_ID;
+
+  private final InventarioMovimientoRepositoryPort movimientoRepository;
+  private final IngredienteRepositoryPort ingredienteRepository;
+  private final InsumoRepositoryPort insumoRepository;
+  private final InventarioMovimientoDtoMapper mapper;
+  private final PageMapper pageMapper;
+  private final PageRequestFactory pageRequestFactory;
+  private final OperacionAutorizacionService autorizacionService;
+
+  public InventarioMovimientoQueryService(
+      InventarioMovimientoRepositoryPort movimientoRepository,
+      IngredienteRepositoryPort ingredienteRepository,
+      InsumoRepositoryPort insumoRepository,
+      InventarioMovimientoDtoMapper mapper,
+      PageMapper pageMapper,
+      PageRequestFactory pageRequestFactory,
+      OperacionAutorizacionService autorizacionService
+  ) {
+    this.movimientoRepository = movimientoRepository;
+    this.ingredienteRepository = ingredienteRepository;
+    this.insumoRepository = insumoRepository;
+    this.mapper = mapper;
+    this.pageMapper = pageMapper;
+    this.pageRequestFactory = pageRequestFactory;
+    this.autorizacionService = autorizacionService;
+  }
+
+  public List<InventarioMovimientoSummary> listByItem(String itemTipo, Long itemId) {
+    exigirConsultaInventario();
+    List<InventarioMovimientoEntity> movimientos = movimientoRepository.findByItemOrderByFechaMovimientoDesc(itemTipo, itemId);
+    return movimientos.stream()
+        .map(m -> {
+          String itemNombre = getItemNombre(m.getItemTipo(), m.getItemId());
+          return mapper.toSummary(m, itemNombre);
+        })
+        .toList();
+  }
+
+  public List<InventarioMovimientoSummary> listMovimientos(
+      String itemTipo,
+      Long itemId,
+      String tipoMovimiento,
+      OffsetDateTime fechaDesde,
+      OffsetDateTime fechaHasta
+  ) {
+    exigirConsultaInventario();
+    return movimientoRepository.findByFilters(
+            normalize(itemTipo),
+            itemId,
+            normalize(tipoMovimiento),
+            fechaDesde,
+            fechaHasta
+        ).stream()
+        .map(m -> mapper.toSummary(m, getItemNombre(m.getItemTipo(), m.getItemId())))
+        .toList();
+  }
+
+  public PageResponseDto<InventarioMovimientoSummary> listByItemPage(String itemTipo, Long itemId, int page, int size) {
+    exigirConsultaInventario();
+    var pageable = pageRequestFactory.create(page, size, Sort.by(Sort.Direction.DESC, "fechaMovimiento"));
+    return pageMapper.toPageResponseDto(
+        movimientoRepository.findByItemOrderByFechaMovimientoDesc(itemTipo, itemId, pageable)
+            .map(m -> {
+              String itemNombre = getItemNombre(m.getItemTipo(), m.getItemId());
+              return mapper.toSummary(m, itemNombre);
+            })
+    );
+  }
+
+  public List<InventarioMovimientoSummary> listByReferencia(String referenciaTipo, String referenciaId) {
+    exigirConsultaInventario();
+    List<InventarioMovimientoEntity> movimientos = movimientoRepository.findByReferencia(referenciaTipo, referenciaId);
+    return movimientos.stream()
+        .map(m -> {
+          String itemNombre = getItemNombre(m.getItemTipo(), m.getItemId());
+          return mapper.toSummary(m, itemNombre);
+        })
+        .toList();
+  }
+
+  public PageResponseDto<InventarioMovimientoSummary> listByReferenciaPage(String referenciaTipo, String referenciaId, int page, int size) {
+    exigirConsultaInventario();
+    var pageable = pageRequestFactory.create(page, size, Sort.by(Sort.Direction.DESC, "fechaMovimiento"));
+    return pageMapper.toPageResponseDto(
+        movimientoRepository.findByReferencia(referenciaTipo, referenciaId, pageable)
+            .map(m -> {
+              String itemNombre = getItemNombre(m.getItemTipo(), m.getItemId());
+              return mapper.toSummary(m, itemNombre);
+            })
+    );
+  }
+
+  public Optional<InventarioMovimientoSummary> findById(Long id) {
+    exigirConsultaInventario();
+    return movimientoRepository.findById(id)
+        .map(m -> {
+          String itemNombre = getItemNombre(m.getItemTipo(), m.getItemId());
+          return mapper.toSummary(m, itemNombre);
+        });
+  }
+
+  public InventarioMovimientoSummary getById(Long id) {
+    return findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Movimiento de inventario no encontrado."));
+  }
+
+  private void exigirConsultaInventario() {
+    autorizacionService.exigirAlgunoPermisoSucursal(
+        SUCURSAL_TRANSICIONAL,
+        List.of(Permisos.INVENTARIO_VER, Permisos.INVENTARIO_OPERAR, Permisos.COMPRAS_VER, Permisos.PRODUCCION_VER)
+    );
+  }
+
+  private String normalize(String value) {
+    if (value == null || value.isBlank()) {
+      return null;
+    }
+    return value.trim();
+  }
+
+  private String getItemNombre(String itemTipo, Long itemId) {
+    if (TIPO_INGREDIENTE.equals(itemTipo)) {
+      return ingredienteRepository.findById(itemId)
+          .map(IngredienteEntity::getName)
+          .orElse("Desconocido");
+    } else {
+      return insumoRepository.findById(itemId)
+          .map(InsumoEntity::getName)
+          .orElse("Desconocido");
+    }
+  }
+}

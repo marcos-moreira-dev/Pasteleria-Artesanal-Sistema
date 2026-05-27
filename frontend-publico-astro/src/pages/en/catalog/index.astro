@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ProductGrid from "../../../components/public/ProductGrid.astro";
+import CategoryStrip from "../../../components/public/CategoryStrip.astro";
+import { getActiveCategories, getPublishedProducts } from "../../../lib/api";
+
+const [categories, products] = await Promise.all([
+  getActiveCategories(),
+  getPublishedProducts()
+]);
+---
+<BaseLayout title="Bakery | Catalog" lang="en">
+  <main class="page-shell">
+    <section class="section-heading">
+      <p class="section-kicker">Full catalog</p>
+      <h1>Products ready for dessert tables, celebrations or custom orders</h1>
+      <p>Browse the house menu and find options for birthdays, intimate gatherings, surprise gifts and larger celebrations.</p>
+      <div class="catalog-stats">
+        <span><strong>{products.length}</strong> published products</span>
+        <span><strong>{categories.length}</strong> active groups</span>
+      </div>
+    </section>
+  </main>
+  <ProductGrid
+    title="Public menu"
+    products={products}
+    kicker="Catalog"
+    variant="catalog"
+    fallbackDescription="Artisan product available for order and celebration planning."
+    availableLabel="Available"
+    quoteLabel="Quote"
+    emptyTitle="The catalog cannot be loaded yet"
+    emptyCopy="This page depends on the local backend. Once the service is up, the products managed in the back office will appear here."
+  />
+  <CategoryStrip
+    categories={categories}
+    kicker="Collections"
+    title="Flavors and formats for different moments"
+    fallbackDescription="Active category inside the bakery menu."
+    emptyCopy="The catalog groups will appear here as soon as the local backend is available."
+  />
+</BaseLayout>

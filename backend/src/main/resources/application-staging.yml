@@ -1,0 +1,19 @@
+# Perfil staging: cercano a producción, sin seeds de presentación.
+# Debe usar variables reales del ambiente y no depender de credenciales locales.
+spring:
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+  jpa:
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:false}
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+
+app:
+  storage:
+    root: ${APP_STORAGE_ROOT}
+    report-path: ${REPORT_STORAGE_PATH:${APP_STORAGE_ROOT}/reportes}

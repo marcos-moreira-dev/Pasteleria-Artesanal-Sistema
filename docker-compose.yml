@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: pasteleria-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pasteleria
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - pasteleria-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Servicio backend conservado solo como compatibilidad manual.
+  # El arranque recomendado es scripts\dev.bat.
+  backend:
+    profiles: ["fullstack"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pasteleria-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: pasteleria
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: pasteleria-super-secret-key-2024-for-jwt-tokens-production
+      SPRING_FLYWAY_ENABLED: "false"
+      APP_STORAGE_ROOT: /app/storage
+      REPORT_STORAGE_PATH: /app/storage/reportes
+    volumes:
+      - ./backend/storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pasteleria-postgres-data:

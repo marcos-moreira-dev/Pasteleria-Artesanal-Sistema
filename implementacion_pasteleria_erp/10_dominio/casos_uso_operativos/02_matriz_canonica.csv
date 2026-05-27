@@ -1,0 +1,43 @@
+codigo,modulo,titulo,actor_principal,estado,orden_visual,pasos_detectados
+CU-GO-001,RESUMEN_DIA,Revisar el resumen del día,Administrador o encargada de turno,LISTO,1,5
+CU-GO-002,RESUMEN_DIA,Usar las notificaciones del resumen,Administrador o encargada de turno,LISTO,2,5
+CU-GO-003,RESUMEN_DIA,Interpretar la meta semanal,Administrador,LISTO,3,5
+CU-GO-010,CLIENTES,Registrar cliente de mostrador o encargo,Atención al cliente,LISTO,1,5
+CU-GO-011,CLIENTES,Buscar y corregir datos de cliente,Atención al cliente,LISTO,2,5
+CU-GO-012,CLIENTES,Usar cliente en cotización o pedido,Atención al cliente,LISTO,3,5
+CU-GO-020,CATALOGO,Crear producto de catálogo,Administrador,LISTO,1,5
+CU-GO-021,CATALOGO,Editar producto y descargar receta PDF,Administrador o producción,LISTO,2,5
+CU-GO-022,CATALOGO,Publicar u ocultar producto de la vitrina,Administrador,LISTO,3,5
+CU-GO-030,COTIZACIONES,Crear cotización para torta o mesa dulce,Atención al cliente,LISTO,1,5
+CU-GO-031,COTIZACIONES,Convertir cotización aprobada en pedido,Atención al cliente,LISTO,2,5
+CU-GO-032,COTIZACIONES,Dar seguimiento a cotizaciones pendientes,Administrador o atención,LISTO,3,5
+CU-GO-040,PEDIDOS,Registrar pedido confirmado,Atención al cliente,LISTO,1,5
+CU-GO-041,PEDIDOS,Actualizar estado de pedido,Atención o producción,LISTO,2,5
+CU-GO-042,PEDIDOS,Cerrar pedido entregado,Atención al cliente,LISTO,3,5
+CU-GO-050,PRODUCCION,Organizar cola de producción,Producción,LISTO,1,5
+CU-GO-051,PRODUCCION,Registrar avance de cocina,Producción,LISTO,2,5
+CU-GO-052,PRODUCCION,Consultar receta antes de preparar,Producción,LISTO,3,5
+CU-GO-060,DECORACION_EMPAQUE,Verificar decoración final,Producción o decoración,LISTO,1,5
+CU-GO-061,DECORACION_EMPAQUE,Confirmar empaque y salida,Producción o atención,LISTO,2,5
+CU-GO-062,DECORACION_EMPAQUE,Registrar incidencia de entrega,Atención al cliente,LISTO,3,5
+CU-GO-070,ABASTECIMIENTO,Revisar insumos críticos,Administrador o compras,LISTO,1,5
+CU-GO-071,ABASTECIMIENTO,Registrar movimiento de inventario,Administrador o compras,LISTO,2,5
+CU-GO-072,ABASTECIMIENTO,Crear orden de compra,Administrador o compras,LISTO,3,5
+CU-GO-080,RECETAS,Consultar receta técnica desde Productos,Producción,LISTO,1,5
+CU-GO-081,RECETAS,Editar receta de producto,Administrador o producción autorizada,LISTO,2,5
+CU-GO-082,RECETAS,Usar receta para calcular producción,Producción,LISTO,3,5
+CU-GO-090,PROVEEDORES,Registrar proveedor nuevo,Administrador o compras,LISTO,1,5
+CU-GO-091,PROVEEDORES,Asociar insumo con proveedor,Administrador o compras,LISTO,2,5
+CU-GO-092,PROVEEDORES,Desactivar proveedor problemático,Administrador,LISTO,3,5
+CU-GO-100,REPORTES,Generar reporte de negocio,Administrador,LISTO,1,5
+CU-GO-101,REPORTES,Revisar reportes generados,Administrador,LISTO,2,5
+CU-GO-102,REPORTES,Usar reportes para decidir compras,Administrador,LISTO,3,5
+CU-GO-110,NOTIFICACIONES,Leer notificaciones pendientes,Usuario del sistema,LISTO,1,5
+CU-GO-111,NOTIFICACIONES,Archivar notificaciones atendidas,Usuario del sistema,LISTO,2,5
+CU-GO-112,NOTIFICACIONES,Usar avisos para cambiar de módulo,Usuario del sistema,LISTO,3,5
+CU-GO-120,USUARIOS,Crear usuario interno,Administrador,LISTO,1,5
+CU-GO-121,USUARIOS,Cambiar rol o permiso,Administrador,LISTO,2,5
+CU-GO-122,USUARIOS,Desactivar usuario,Administrador,LISTO,3,5
+CU-GO-130,GUIA_OPERATIVA,Consultar la guía operativa,Cualquier usuario interno,LISTO,1,5
+CU-GO-131,GUIA_OPERATIVA,Capacitar a alguien con la guía,Administrador o responsable de turno,LISTO,2,5
+CU-GO-132,GUIA_OPERATIVA,Detectar procedimiento desactualizado,Usuario interno,LISTO,3,5

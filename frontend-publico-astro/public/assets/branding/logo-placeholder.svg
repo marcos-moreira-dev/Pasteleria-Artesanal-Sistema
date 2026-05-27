@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Logo placeholder de pastelería</title>
+  <desc id="desc">Marca temporal cálida para la interfaz pública de la pastelería.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3e6"/>
+      <stop offset="100%" stop-color="#f1c7aa"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="36" fill="url(#bg)"/>
+  <circle cx="80" cy="70" r="34" fill="#8a3f2c" opacity="0.12"/>
+  <path d="M49 98c5-27 18-42 31-42s26 15 31 42" fill="none" stroke="#8a3f2c" stroke-width="8" stroke-linecap="round"/>
+  <path d="M58 90h44" stroke="#8a3f2c" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="80" cy="53" r="9" fill="#8a3f2c"/>
+  <text x="80" y="132" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-weight="700" fill="#4a2419">PASTELES</text>
+</svg>

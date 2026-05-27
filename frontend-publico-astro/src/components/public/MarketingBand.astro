@@ -1,0 +1,31 @@
+---
+interface Props {
+  kicker?: string;
+  title?: string;
+  description?: string;
+  cta?: string;
+  href?: string;
+}
+
+const {
+  kicker = "Hecho a medida",
+  title = "Tortas, postres y detalles que se adaptan a cada evento.",
+  description = "Si tienes una idea especial, popresentación funcionals convertirla en una propuesta con sabores, tamaño, decoración y presentación pensadas para tu ocasión.",
+  cta = "Coordinar pedido",
+  href = "/contacto"
+} = Astro.props;
+---
+<section class="marketing-band">
+  <article>
+    <p class="section-kicker">{kicker}</p>
+    <h2>{title}</h2>
+    <div class="marketing-band__benefits">
+      <span><img src="/assets/icons/whisk.svg" alt="Icono de producción artesanal" width="24" height="24" /> Producción cuidada por pedido</span>
+      <span><img src="/assets/icons/gift.svg" alt="Icono de celebración" width="24" height="24" /> Presentación pensada para regalar</span>
+    </div>
+  </article>
+  <article class="marketing-note">
+    <p>{description}</p>
+    <a href={href}>{cta}</a>
+  </article>
+</section>

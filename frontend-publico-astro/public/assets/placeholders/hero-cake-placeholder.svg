@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Placeholder hero de torta</title>
+  <desc id="desc">Imagen temporal para el hero público mientras se generan visuales finales.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8e2d0"/>
+      <stop offset="100%" stop-color="#fffaf5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="620" cy="600" rx="250" ry="62" fill="#d7b09b"/>
+  <rect x="470" y="360" width="300" height="180" rx="28" fill="#fff3ea" stroke="#8a3f2c" stroke-opacity=".25" />
+  <rect x="520" y="250" width="200" height="140" rx="24" fill="#ffe8dc" stroke="#8a3f2c" stroke-opacity=".25" />
+  <circle cx="620" cy="230" r="22" fill="#8a3f2c"/>
+  <text x="600" y="120" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="700" fill="#4a2419">Placeholder Visual</text>
+  <text x="600" y="164" text-anchor="middle" font-family="'Trebuchet MS', sans-serif" font-size="24" fill="#7d5b4d">Torta editorial cálida para reemplazo posterior por IA</text>
+</svg>

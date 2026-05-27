@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Placeholder dashboard</title>
+  <desc id="desc">Composición temporal para representar el panel administrativo.</desc>
+  <rect width="1200" height="700" rx="28" fill="#f7ede6"/>
+  <rect x="50" y="50" width="240" height="600" rx="24" fill="#5c2c19"/>
+  <rect x="330" y="60" width="820" height="110" rx="24" fill="#fff8f2" stroke="#d9c2b5"/>
+  <rect x="330" y="210" width="250" height="160" rx="22" fill="#fff8f2" stroke="#d9c2b5"/>
+  <rect x="615" y="210" width="250" height="160" rx="22" fill="#fff8f2" stroke="#d9c2b5"/>
+  <rect x="900" y="210" width="250" height="160" rx="22" fill="#fff8f2" stroke="#d9c2b5"/>
+  <rect x="330" y="405" width="820" height="220" rx="22" fill="#fff8f2" stroke="#d9c2b5"/>
+  <text x="740" y="120" text-anchor="middle" font-family="Georgia, serif" font-size="38" font-weight="700" fill="#40231a">Panel Administrativo Placeholder</text>
+</svg>

@@ -1,0 +1,60 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  primaryCta?: string;
+  primaryHref?: string;
+  secondaryCta?: string;
+  secondaryHref?: string;
+  backgroundImageUrl?: string;
+  backgroundImageAlt?: string;
+}
+
+const {
+  title,
+  description,
+  eyebrow = "Pastelería artesanal",
+  primaryCta = "Ver catálogo",
+  primaryHref = "/catalogo",
+  secondaryCta = "Solicitar cotización",
+  secondaryHref = "/contacto",
+  backgroundImageUrl,
+  backgroundImageAlt = "Fondo del sector artesanal de la pastelería"
+} = Astro.props;
+---
+<section class="hero" style={`--hero-bg: url('${backgroundImageUrl}')`}>
+  <div class="hero__bg-overlay"></div>
+  <div class="hero__content">
+    <p class="hero__eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p>{description}</p>
+    <div class="hero__actions">
+      <a class="button-primary" href={primaryHref}>{primaryCta}</a>
+      <a class="button-secondary" href={secondaryHref}>{secondaryCta}</a>
+    </div>
+    <div class="hero__highlights">
+      <article class="hero-highlight">
+        <img src="/assets/icons/cake.svg" alt="Icono de torta" width="28" height="28" />
+        <div>
+          <strong>Recetas de casa</strong>
+          <span>Sabores clásicos, mesas dulces y tortas de celebración.</span>
+        </div>
+      </article>
+      <article class="hero-highlight">
+        <img src="/assets/icons/quote.svg" alt="Icono de cotización" width="28" height="28" />
+        <div>
+          <strong>Cotización guiada</strong>
+          <span>Te ayudamos a aterrizar tamaño, acabado y entrega.</span>
+        </div>
+      </article>
+      <article class="hero-highlight">
+        <img src="/assets/icons/delivery.svg" alt="Icono de entrega" width="28" height="28" />
+        <div>
+          <strong>Coordinación clara</strong>
+          <span>Pedidos confirmados con tiempos, detalles y seguimiento.</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

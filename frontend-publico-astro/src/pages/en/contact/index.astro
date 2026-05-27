@@ -1,0 +1,206 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { buildPublicApiUrl } from "../../../lib/api";
+
+const publicQuotationUrl = buildPublicApiUrl("/public/cotizaciones");
+---
+<BaseLayout title="Bakery | Contact" lang="en">
+  <main class="page-shell">
+
+    <section class="contact-shell">
+
+      <div class="contact-shell__intro">
+        <div>
+          <p class="section-kicker">Sales contact</p>
+          <h1 class="contact-hero-title">Tell us what kind of celebration you have in mind</h1>
+        </div>
+
+        <p>If you need a custom cake, a dessert table or a special event order, this is the right place to start the conversation.</p>
+
+        <div class="contact-promises">
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/quote.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Clear proposal</strong>
+              <span>Based on servings, style and available budget.</span>
+            </div>
+          </article>
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/whisk.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Artisan production</strong>
+              <span>Coordinated around each order, with attention to detail.</span>
+            </div>
+          </article>
+          <article class="contact-promise-item">
+            <div class="contact-promise-item__icon">
+              <img src="/assets/icons/delivery.svg" alt="" width="20" height="20" />
+            </div>
+            <div class="contact-promise-item__text">
+              <strong>Organized delivery</strong>
+              <span>With confirmed schedule and delivery notes.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="contact-channels">
+        <article class="contact-channel-card contact-channel-card--accent">
+          <div class="contact-channel-card__header">
+            <div class="contact-channel-card__icon">
+              <img src="/assets/icons/quote.svg" alt="" width="22" height="22" />
+            </div>
+            <div>
+              <p class="contact-channel-card__label">Direct contact</p>
+              <h2 class="contact-channel-card__title">Contact channels</h2>
+            </div>
+          </div>
+          <ul class="contact-channel-list">
+            <li>WhatsApp: +593 99 000 0000</li>
+            <li>Email: pedidos@pasteleria.local</li>
+            <li>Mon to Sat · 09:00 to 18:00</li>
+          </ul>
+        </article>
+
+        <article class="contact-channel-card">
+          <div class="contact-channel-card__header">
+            <div class="contact-channel-card__icon">
+              <img src="/assets/icons/gift.svg" alt="" width="22" height="22" />
+            </div>
+            <div>
+              <p class="contact-channel-card__label">Occasions</p>
+              <h2 class="contact-channel-card__title">Ideal for</h2>
+            </div>
+          </div>
+          <ul class="contact-channel-list">
+            <li>Birthdays, anniversaries and baby showers</li>
+            <li>Dessert tables for gatherings and events</li>
+            <li>Special orders with custom theme or reference</li>
+          </ul>
+        </article>
+      </div>
+
+    </section>
+
+    <section class="contact-form-shell">
+      <div class="section-heading">
+        <p class="section-kicker">Quote request</p>
+        <h2>Share the main details and we will answer with a proposal</h2>
+        <p>Fill out this form with the general idea of your order. We can later refine size, flavors, decoration, delivery and budget.</p>
+      </div>
+
+      <form class="quotation-form" id="quotation-form">
+        <div class="form-grid">
+          <label>
+            Full name
+            <input type="text" name="fullName" required maxlength="160" placeholder="Ex. Maria Lopez" />
+          </label>
+          <label>
+            Phone
+            <input type="text" name="phone" maxlength="30" placeholder="Ex. 0990000000" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" maxlength="120" placeholder="Ex. maria@email.com" />
+          </label>
+          <label>
+            Celebration type
+            <input type="text" name="celebrationType" required maxlength="1000" placeholder="Birthday, baby shower, anniversary..." />
+          </label>
+          <label class="wide">
+            What would you like us to quote?
+            <textarea name="requestedProduct" rows="4" required maxlength="1000" placeholder="Tell us if you need a cake, desserts, a dessert table or something more special."></textarea>
+          </label>
+          <label>
+            Estimated servings
+            <input type="number" name="estimatedServings" min="1" required value="20" />
+          </label>
+          <label>
+            Estimated budget
+            <input type="number" name="estimatedBudget" min="0" step="0.01" required value="35.00" />
+          </label>
+          <label class="wide">
+            Additional details
+            <textarea name="notes" rows="4" maxlength="1000" placeholder="Flavors, colors, target date, visual references or any other useful detail."></textarea>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="button-primary">Send request</button>
+          <p class="form-copy">We will contact you to refine the order and confirm availability.</p>
+        </div>
+
+        <p id="quotation-feedback" class="contact-note" aria-live="polite"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <script is:inline define:vars={{ publicQuotationUrl }}>
+    const form = document.getElementById("quotation-form");
+    const feedback = document.getElementById("quotation-feedback");
+
+    if (form && feedback) {
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Sending request...";
+        }
+
+        feedback.textContent = "";
+
+        const formData = new FormData(form);
+        const payload = {
+          fullName: String(formData.get("fullName") ?? ""),
+          phone: String(formData.get("phone") ?? "") || null,
+          email: String(formData.get("email") ?? "") || null,
+          celebrationType: String(formData.get("celebrationType") ?? ""),
+          requestedProduct: String(formData.get("requestedProduct") ?? ""),
+          estimatedServings: Number(formData.get("estimatedServings") ?? 1),
+          estimatedBudget: Number(formData.get("estimatedBudget") ?? 0),
+          notes: String(formData.get("notes") ?? "") || null
+        };
+
+        try {
+          const response = await fetch(publicQuotationUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Request-Id": crypto.randomUUID()
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            throw new Error(result.message ?? "We could not receive your request right now.");
+          }
+
+          feedback.textContent = "We received your request. We will contact you soon to continue with the quote.";
+          feedback.classList.add("contact-note--success");
+          feedback.classList.remove("contact-note--error");
+          form.reset();
+        } catch (error) {
+          feedback.textContent = error instanceof Error
+            ? error.message
+            : "We could not receive your request. Please try again or contact us on WhatsApp.";
+          feedback.classList.add("contact-note--error");
+          feedback.classList.remove("contact-note--success");
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Send request";
+          }
+        }
+      });
+    }
+  </script>
+</BaseLayout>

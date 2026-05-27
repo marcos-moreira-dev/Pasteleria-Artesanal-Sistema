@@ -1,0 +1,60 @@
+---
+import type { ProductCategorySummary } from "../../lib/api";
+
+interface Props {
+  categories: ProductCategorySummary[];
+  kicker?: string;
+  title?: string;
+  fallbackDescription?: string;
+  emptyCopy?: string;
+  backgroundImageUrl?: string;
+  backgroundImageAlt?: string;
+}
+
+const {
+  categories,
+  kicker = "Familias",
+  title = "Sabores y formatos para momentos distintos",
+  fallbackDescription = "Categoría activa dentro de la carta de la casa.",
+  emptyCopy = "Las familias del catálogo aparecerán aquí cuando el backend local esté disponible.",
+  backgroundImageUrl,
+  backgroundImageAlt = "Fondo de familias del catálogo"
+} = Astro.props;
+
+const categoryIcons = [
+  "/assets/icons/cake.svg",
+  "/assets/icons/gift.svg",
+  "/assets/icons/whisk.svg",
+  "/assets/icons/heart.svg",
+  "/assets/icons/catalog.svg",
+  "/assets/icons/sparkles.svg"
+];
+---
+<section class="category-strip-section">
+  <div class="category-strip-header">
+    <div class="section-heading section-heading--compact">
+      <p class="section-kicker">{kicker}</p>
+      <h2>{title}</h2>
+    </div>
+  </div>
+
+  {
+    categories.length > 0 ? (
+      <div class="category-strip">
+        {categories.map((category, index) => (
+          <article class="category-pill category-pill--dark">
+            <div class="category-pill__icon">
+              <img src={categoryIcons[index % categoryIcons.length]} alt={`Icono de ${category.name}`} width="32" height="32" />
+            </div>
+            <strong>{category.name}</strong>
+            <span>{category.description ?? fallbackDescription}</span>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <article class="product-grid-empty product-grid-empty--soft">
+        <p>{emptyCopy}</p>
+      </article>
+    )
+  }
+</section>
